@@ -1,0 +1,51 @@
+package at.technikum.application.repository;
+
+import at.technikum.application.model.Media;
+import at.technikum.application.model.Rating;
+import at.technikum.application.model.User;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+public class MemoryUserRepository implements UserRepository {
+    @Override
+    public Optional<User> find(String id) {
+        User user = new User();
+        user.setId(id);
+        user.setUsername("username");
+        return Optional.of(user);
+    }
+
+    @Override
+    public List<User> findAll() {
+        return List.of();
+    }
+
+    @Override
+    public List<Rating> ratings(String id) {
+        List<Rating> ratings = new ArrayList<>();
+        ratings.add(new Rating("147","movie1","very good"));
+        ratings.add(new Rating("369","movie2","good"));
+        ratings.add(new Rating("9761","movie3","okay"));
+        ratings.add(new Rating("222","movie4","good"));
+        return ratings;
+    }
+
+    @Override
+    public List<Media> favorites(String id) {
+        return List.of();
+    }
+
+    @Override
+    public void update(User update) {
+
+    }
+
+    @Override
+    public void delete(String id) {
+
+    }
+
+
+}

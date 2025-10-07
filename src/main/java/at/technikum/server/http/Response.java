@@ -2,19 +2,45 @@ package at.technikum.server.http;
 
 public class Response {
 
-    private String contentType;
+    private ContentType contentType;
     private String body;
-    private int statusCode;
+    private Status status;
 
-    public String getContentType() {
-        return contentType;
+    public Response() {
+
     }
 
-    public String getBody() {
+   public Response(ContentType contentType, String body, Status status) {
+        this.contentType = contentType;
+        this.body = body;
+        this.status = status;
+   }
+
+   public void setStatus(Status status) {
+        this.status = status;
+   }
+
+   public int getStatusCode() {
+        return status.getCode();
+   }
+
+   public String getStatusMessage() {
+        return status.getMessage();
+   }
+
+   public String getContentType() {
+        return contentType.getMimeType();
+   }
+
+   public void setContentType(ContentType contentType) {
+        this.contentType = contentType;
+   }
+
+   public String getBody() {
         return body;
-    }
+   }
 
-    public int getStatusCode() {
-        return statusCode;
-    }
+   public void setBody(String body) {
+        this.body = body;
+   }
 }

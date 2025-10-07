@@ -1,0 +1,25 @@
+### Get home
+GET http://localhost:8080/
+
+### Get users home
+GET http://localhost:8080/users
+
+### Get user profile
+GET http://localhost:8080/users/1234/profile
+
+
+### Get users ratings
+GET http://localhost:8080/users/4321/ratings
+
+
+### Post auth login
+POST http://localhost:8080/auth/login
+
+{
+    "id": "1234"
+}
+
+### Put users profile
+PUT http://localhost:8080/users/4569/profile
+
+asd

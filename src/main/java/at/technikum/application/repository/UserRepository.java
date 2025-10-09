@@ -16,6 +16,6 @@ public interface UserRepository {
 
     List<Rating> ratings(String id);
     List<Media> favorites(String id);
-    void update(User update);
+    User update(User update);
     void delete(String id);
 }

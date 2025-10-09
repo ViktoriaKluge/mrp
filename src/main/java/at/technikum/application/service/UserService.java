@@ -7,6 +7,7 @@ import at.technikum.application.model.User;
 import at.technikum.application.repository.UserRepository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public class UserService {
@@ -17,9 +18,9 @@ public class UserService {
     }
 
     // maybe private find, weil ratings und favs auch brauchen und delete
-    public User getUser(String id) {
-        return userRepository.find(id)
-                .orElseThrow(EntityNotFoundException::new);
+    public Optional<User> getUser(String id) {
+
+        return this.userRepository.find(id);
     }
 
     // Leaderboard?
@@ -35,16 +36,20 @@ public class UserService {
         return this.userRepository.favorites(id);
     }
 
-    public void update(String id, User update) {
-        User user = this.userRepository.find(id)
-               .orElseThrow(EntityNotFoundException::new);
+    public Optional<User> update(String id, User update) {
+        Optional<User> user = this.userRepository.find(id);
 
-        user.setUsername(update.getUsername());
+        if (user.isPresent()) {
 
-        this.userRepository.update(user);
+            this.userRepository.update(update);
+            return user;
+        }
+
+        return Optional.empty();
     }
 
     public void delete(String id) {
         userRepository.delete(id);
     }
+
 }

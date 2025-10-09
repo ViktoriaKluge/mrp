@@ -5,6 +5,8 @@ import at.technikum.application.model.User;
 import at.technikum.application.service.UserService;
 import at.technikum.server.http.*;
 
+import java.util.Optional;
+
 public class UserController extends Controller {
 
     private final UserService userService;
@@ -55,29 +57,35 @@ public class UserController extends Controller {
         throw new RuntimeException("404");
     }
 
-    private User findUser(String id) {
+    private Optional<User> findUser(String id) {
         return this.userService.getUser(id);
     }
 
     private Response profile(String id) {
         Response response = new Response();
+        Optional<User> user = findUser(id);
+
+        if (user.isEmpty()) {
+            response.setStatus(Status.NOT_FOUND);
+            response.setContentType(ContentType.TEXT_PLAIN);
+            response.setBody("User not found");
+
+            return response;
+        }
 
         response.setStatus(Status.OK);
         response.setContentType(ContentType.TEXT_PLAIN);
         response.setBody("Profil: "+findUser(id).toString());
-        // response.setBody("Profile: "+id);
 
         return response;
     }
 
     private Response ratings(String id) {
         Response response = new Response();
-        User user = new User();
 
         response.setStatus(Status.OK);
         response.setContentType(ContentType.TEXT_PLAIN);
         response.setBody(this.userService.ratings(id).toString());
-        //response.setBody("Ratings: "+id);
 
         return response;
     }
@@ -87,7 +95,7 @@ public class UserController extends Controller {
 
         response.setStatus(Status.OK);
         response.setContentType(ContentType.TEXT_PLAIN);
-        response.setBody(findUser(id).getFavorites().toString());
+        response.setBody(this.userService.favorites(id).toString());
 
         return response;
     }
@@ -97,12 +105,19 @@ public class UserController extends Controller {
 
         // body in user-daten aufteilen
         User update = new User();
+        Optional<User> user = this.userService.update(id,update);
 
-        // this.userService.update(id,update);
+        if (user.isEmpty()) {
+            response.setStatus(Status.NOT_FOUND);
+            response.setContentType(ContentType.TEXT_PLAIN);
+            response.setBody("User not found");
+
+            return response;
+        }
 
         response.setStatus(Status.OK);
         response.setContentType(ContentType.TEXT_PLAIN);
-        response.setBody("User updated successfully "+id+" "+body);
+        response.setBody("User updated successfully "+ user.toString());
 
         return response;
     }

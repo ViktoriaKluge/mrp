@@ -11,10 +11,16 @@ import java.util.Optional;
 public class MemoryUserRepository implements UserRepository {
     @Override
     public Optional<User> find(String id) {
-        User user = new User();
-        user.setId(id);
-        user.setUsername("username");
-        return Optional.of(user);
+
+        if (id.equals("1234")) {
+            User user = new User();
+            user.setId(id);
+            user.setUsername("username");
+
+            return Optional.of(user);
+        }
+
+        return Optional.empty();
     }
 
     @Override
@@ -38,8 +44,9 @@ public class MemoryUserRepository implements UserRepository {
     }
 
     @Override
-    public void update(User update) {
-
+    public User update(User update) {
+        update.setUsername(update.getUsername());
+        return update;
     }
 
     @Override

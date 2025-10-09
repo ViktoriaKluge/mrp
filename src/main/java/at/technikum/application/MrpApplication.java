@@ -62,6 +62,8 @@ public class MrpApplication implements Application {
 
 
         return  controller.handle(request);
+
+
        /* -----------
 
         try {
@@ -73,11 +75,6 @@ public class MrpApplication implements Application {
             // map exception to http response
         }
 
-
-
-        response.setStatus(Status.OK);
-        response.setContentType(ContentType.TEXT_PLAIN);
-        response.setBody("Hello World");
 
         return response;*/
     }

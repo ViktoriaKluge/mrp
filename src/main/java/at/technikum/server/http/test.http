@@ -16,10 +16,10 @@ GET http://localhost:8080/users/4321/ratings
 POST http://localhost:8080/auth/login
 
 {
-    "id": "1234"
+    "id": "1274"
 }
 
 ### Put users profile
-PUT http://localhost:8080/users/4569/profile
+PUT http://localhost:8080/users/1234/profile
 
 asd

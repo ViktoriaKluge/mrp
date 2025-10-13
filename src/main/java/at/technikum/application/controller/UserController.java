@@ -65,6 +65,9 @@ public class UserController extends Controller {
         Response response = new Response();
         Optional<User> user = findUser(id);
 
+
+        // statt Optionals lieber try - catch und throwt ex in Service
+
         if (user.isEmpty()) {
             response.setStatus(Status.NOT_FOUND);
             response.setContentType(ContentType.TEXT_PLAIN);

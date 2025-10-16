@@ -1,24 +1,43 @@
 package at.technikum.application.model;
 
+import java.util.List;
+
 public class Rating {
-    String id;
-    String name;
-    String rating;
+    String mediaId;
+    List<Integer> ratings;
 
     public Rating() {
-        this.id = "";
-        this.name = "";
-        this.rating = "";
+
     }
 
-    public Rating(String id, String name, String rating) {
-        this.id = id;
-        this.name = name;
-        this.rating = rating;
+    public Rating(String id, Integer rating) {
+        this.mediaId = id;
+        this.ratings.add(rating);
     }
 
     @Override
     public String toString() {
-        return String.format("{id:%s, name:%s, rating:%s}", id, name, rating);
+        String ratingsStr = (ratings == null)
+                ? "[]"
+                : ratings.stream()
+                .map(String::valueOf)
+                .collect(java.util.stream.Collectors.joining(", ", "[", "]"));
+        return String.format("{media id:%s, ratings:%s}", mediaId, ratingsStr);
+    }
+
+    public String getMediaId() {
+        return mediaId;
+    }
+
+    public void setMediaId(String mediaId) {
+        this.mediaId = mediaId;
+    }
+
+    public List<Integer> getRatings() {
+        return ratings;
+    }
+
+    public void setRatings(List<Integer> ratings) {
+        this.ratings = ratings;
     }
 }

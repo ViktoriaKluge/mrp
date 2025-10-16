@@ -3,14 +3,14 @@ package at.technikum.application;
 import at.technikum.application.common.Application;
 import at.technikum.application.common.Controller;
 import at.technikum.application.common.Router;
-import at.technikum.application.controller.AuthController;
-import at.technikum.application.controller.UserController;
+import at.technikum.application.controller.*;
 import at.technikum.application.exception.EntityNotFoundException;
 import at.technikum.application.exception.ExceptionMapper;
-import at.technikum.application.repository.MemoryAuthRepository;
-import at.technikum.application.repository.MemoryUserRepository;
-import at.technikum.application.service.AuthService;
-import at.technikum.application.service.UserService;
+import at.technikum.application.exception.JsonConversionException;
+import at.technikum.application.exception.NotJsonBodyException;
+import at.technikum.application.model.Rating;
+import at.technikum.application.repository.*;
+import at.technikum.application.service.*;
 import at.technikum.server.http.ContentType;
 import at.technikum.server.http.Request;
 import at.technikum.server.http.Response;
@@ -28,12 +28,22 @@ public class MrpApplication implements Application {
 
         this.router.addRoute("/users", new UserController(new UserService(new MemoryUserRepository())));
         this.router.addRoute("/auth", new AuthController( new AuthService(new MemoryAuthRepository())));
+        this.router.addRoute("/media", new MediaController( new MediaService(new MemoryMediaRepository())));
+        this.router.addRoute("/rating", new RatingController( new RatingService(new MemoryRatingRepository())));
+        this.router.addRoute("/favorites", new FavoritesController( new FavoritesService(new MemoryFavoritesRepository())));
+        // eventuell irgendwo auslagern
+        // dependency injection?
+
         this.exceptionMapper = new ExceptionMapper();
-        Response response = new Response();
+       /* Response response = new Response();
         response.setStatus(Status.INTERNAL_SERVER_ERROR);
         response.setContentType(ContentType.TEXT_PLAIN);
+        */
 
-        this.exceptionMapper.register(EntityNotFoundException.class, response);
+        this.exceptionMapper.register(EntityNotFoundException.class, Status.NOT_FOUND);
+        this.exceptionMapper.register(NotJsonBodyException.class, Status.BAD_REQUEST);
+        this.exceptionMapper.register(JsonConversionException.class, Status.INTERNAL_SERVER_ERROR);
+
     }
 
     @Override
@@ -72,10 +82,8 @@ public class MrpApplication implements Application {
 
             return controller.handle(request);
         } catch (Exception ex) {
-            // map exception to http response
+            exceptionMapper.toResponse(ex);
         }
-
-
-        return response;*/
+        */
     }
 }

@@ -1,9 +1,15 @@
 package at.technikum.application.controller;
 
 import at.technikum.application.common.Controller;
+import at.technikum.application.dto.UserCreate;
+import at.technikum.application.dto.UserLoggedIn;
+import at.technikum.application.dto.UserLogin;
+import at.technikum.application.enums.UserType;
 import at.technikum.application.model.User;
 import at.technikum.application.service.AuthService;
 import at.technikum.server.http.*;
+import jakarta.mail.internet.AddressException;
+import jakarta.mail.internet.InternetAddress;
 
 public class AuthController extends Controller {
 
@@ -17,6 +23,7 @@ public class AuthController extends Controller {
     public Response handle(Request request) {
         String path = request.getPath();
         String body = request.getBody();
+        String method = request.getMethod();
 
         if (path.equals("/auth")) {
             Response response = new Response();
@@ -27,45 +34,65 @@ public class AuthController extends Controller {
             return  response;
         }
 
-        if (request.getMethod().equals(Method.POST.getVerb())) {
+        if (method.equals(Method.POST.getVerb())) {
 
             if (path.endsWith("/login")) {
                 return login(body);
             }
 
             if (path.endsWith("/register")) {
-                return register(body);
+                return createUser(body);
             }
         }
 
-        throw new RuntimeException("404");
+        /*
+        Response response = new Response();
+        response.setStatus(Status.NOT_FOUND);
+        response.setContentType(ContentType.TEXT_PLAIN);
+        response.setBody("Path not Found");
+
+        return response;
+
+         */
+
+        return null;
+        //throw new RuntimeException("404");
     }
 
     private Response login(String body) {
+        UserLogin userLogin = toObject(body, UserLogin.class);
+
+        if (userLogin.bothHere()) {
+            UserLoggedIn userLoggedIn = this.authService.createToken(userLogin);
+            return json(userLoggedIn, Status.ACCEPTED);
+        }
+
+        /*
         Response response = new Response();
-
-        // noch mockup, später aus body
-        String password = "password";
-        this.authService.login(body, password);
-
-        response.setStatus(Status.OK);
+        response.setStatus(Status.BAD_REQUEST);
         response.setContentType(ContentType.TEXT_PLAIN);
-        response.setBody("User logged in "+body);
+        response.setBody("login nicht geklappt");
 
-        return response;
+         */
+
+        return null;
     }
 
-    private Response register(String body) {
+    private Response createUser(String body) {
+        UserCreate userCreate = toObject(body, UserCreate.class);
+
+        if (userCreate.isUser()) {
+            User user = this.authService.register(userCreate);
+            return json(user, Status.CREATED);
+        }
+
+        /*
         Response response = new Response();
-        User user = new User();
-        //später aus body
-
-        this.authService.register(user);
-
-        response.setStatus(Status.OK);
+        response.setStatus(Status.BAD_REQUEST);
         response.setContentType(ContentType.TEXT_PLAIN);
-        response.setBody("User registered");
+        response.setBody("is not user");
 
-        return response;
+         */
+        return null;
     }
 }

@@ -22,6 +22,7 @@ public class Router {
     }
 
     public void addRoute(String path, Controller controller) {
+
         this.routes.add(new Route(path, controller));
     }
 

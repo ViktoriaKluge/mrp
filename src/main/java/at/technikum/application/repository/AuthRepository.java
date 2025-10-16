@@ -1,9 +1,19 @@
 package at.technikum.application.repository;
 
+import at.technikum.application.dto.UserLogin;
 import at.technikum.application.model.User;
 
-public interface AuthRepository {
+import java.util.ArrayList;
+import java.util.List;
 
-    void register(User user);
-    void login(String username, String password);
+public interface AuthRepository {
+    List<User> userList = new ArrayList<>();
+
+
+    User save(User user);
+    UserLogin login(UserLogin userLogin);
+
+    User findByUsername(String username);
+    User findByEmail(String email);
+    User findByID(String id);
 }

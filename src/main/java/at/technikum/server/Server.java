@@ -34,7 +34,7 @@ public class Server {
             );
             this.httpServer.start();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Could not start http server");
         }
     }
 }

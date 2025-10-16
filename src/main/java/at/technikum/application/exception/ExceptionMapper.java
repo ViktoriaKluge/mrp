@@ -9,8 +9,7 @@ import java.util.Map;
 
 public class ExceptionMapper {
 
-    private final Map<Class<?>, Response> map;
-
+    private final Map<Class<?>, Status> map;
     public ExceptionMapper() {
         this.map = new HashMap<>();
     }
@@ -20,21 +19,20 @@ public class ExceptionMapper {
 
         // nochmal nachlesen
 
-        response = map.get(exception.getClass());
+        Status status = map.get(exception.getClass());
 
-        if (null != response) {
-            response.setBody(exception.getMessage());
-            return response;
+        if (null == status) {
+            status = Status.INTERNAL_SERVER_ERROR;
         }
 
         response.setBody(exception.getMessage());
-        response.setStatus(Status.INTERNAL_SERVER_ERROR);
+        response.setStatus(status);
         response.setContentType(ContentType.TEXT_PLAIN);
 
         return response;
     }
 
-    public void register(Class<?> clazz, Response response) {
-        map.put(clazz, response);
+    public void register(Class<?> clazz, Status status) {
+        map.put(clazz, status);
     }
 }

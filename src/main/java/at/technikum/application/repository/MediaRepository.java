@@ -12,4 +12,8 @@ public interface MediaRepository {
     void save(Media media);
     void delete(String id);
     void update(Media media);
+
+    void add(String id);
+
+    boolean find(String id);
 }

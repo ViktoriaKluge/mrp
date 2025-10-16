@@ -1,9 +1,11 @@
 package at.technikum.application.repository;
 
+import at.technikum.application.dto.UserLogin;
 import at.technikum.application.model.Media;
 import at.technikum.application.model.Rating;
 import at.technikum.application.model.User;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 

@@ -1,10 +1,16 @@
 package at.technikum.application.controller;
 
 import at.technikum.application.common.Controller;
+import at.technikum.application.dto.UserCreate;
+import at.technikum.application.dto.UserUpdate;
+import at.technikum.application.model.Media;
+import at.technikum.application.model.Rating;
 import at.technikum.application.model.User;
 import at.technikum.application.service.UserService;
 import at.technikum.server.http.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class UserController extends Controller {
@@ -57,24 +63,13 @@ public class UserController extends Controller {
         throw new RuntimeException("404");
     }
 
-    private Optional<User> findUser(String id) {
+    private User findUser(String id) {
         return this.userService.getUser(id);
     }
 
     private Response profile(String id) {
         Response response = new Response();
-        Optional<User> user = findUser(id);
-
-
-        // statt Optionals lieber try - catch und throwt ex in Service
-
-        if (user.isEmpty()) {
-            response.setStatus(Status.NOT_FOUND);
-            response.setContentType(ContentType.TEXT_PLAIN);
-            response.setBody("User not found");
-
-            return response;
-        }
+        User user = findUser(id);
 
         response.setStatus(Status.OK);
         response.setContentType(ContentType.TEXT_PLAIN);
@@ -86,9 +81,11 @@ public class UserController extends Controller {
     private Response ratings(String id) {
         Response response = new Response();
 
+        List<Rating> ratings = this.userService.ratings(id);
+
         response.setStatus(Status.OK);
         response.setContentType(ContentType.TEXT_PLAIN);
-        response.setBody(this.userService.ratings(id).toString());
+        response.setBody(ratings.toString());
 
         return response;
     }
@@ -96,27 +93,27 @@ public class UserController extends Controller {
     private Response favorites(String id) {
         Response response = new Response();
 
+        List<Media> favorites = this.userService.favorites(id);
+
         response.setStatus(Status.OK);
         response.setContentType(ContentType.TEXT_PLAIN);
-        response.setBody(this.userService.favorites(id).toString());
+        response.setBody(favorites.toString());
 
         return response;
     }
 
+
+
+
+    // check ab hier downwards
     private Response update(String id, String body) {
+        UserUpdate userUpdate = toObject(body, UserUpdate.class);
+
         Response response = new Response();
 
         // body in user-daten aufteilen
         User update = new User();
         Optional<User> user = this.userService.update(id,update);
-
-        if (user.isEmpty()) {
-            response.setStatus(Status.NOT_FOUND);
-            response.setContentType(ContentType.TEXT_PLAIN);
-            response.setBody("User not found");
-
-            return response;
-        }
 
         response.setStatus(Status.OK);
         response.setContentType(ContentType.TEXT_PLAIN);

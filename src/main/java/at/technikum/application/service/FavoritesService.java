@@ -1,7 +1,6 @@
 package at.technikum.application.service;
 
 import at.technikum.application.exception.EntityNotFoundException;
-import at.technikum.application.model.Media;
 import at.technikum.application.repository.FavoritesRepository;
 
 public class FavoritesService {

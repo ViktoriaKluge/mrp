@@ -2,6 +2,7 @@ package at.technikum.application.model;
 
 import at.technikum.application.enums.MediaType;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Media {
@@ -24,6 +25,14 @@ public class Media {
         this.genre = genre;
         this.releaseYear = releaseYear;
         this.ageRestriction = ageRestriction;
+    }
+
+    public List<Media> createMockMedia() {
+        List<Media> media = new ArrayList<>();
+        media.add(new Media("123","Super movie","a super movie", List.of("Horror","Supermovie"),2025,16));
+        media.add(new Media("8774","Sad movie","a super sad movie", List.of("Drama"),2024,12));
+        return media;
+
     }
 
     public String getId() {

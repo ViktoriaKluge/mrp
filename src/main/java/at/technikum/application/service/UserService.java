@@ -1,6 +1,9 @@
 package at.technikum.application.service;
 
+import at.technikum.application.dto.UserUpdate;
+import at.technikum.application.dto.UserUpdated;
 import at.technikum.application.exception.EntityNotFoundException;
+import at.technikum.application.exception.UnprocessableEntityException;
 import at.technikum.application.model.Media;
 import at.technikum.application.model.Rating;
 import at.technikum.application.model.User;
@@ -17,39 +20,54 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    // maybe private find, weil ratings und favs auch brauchen und delete
-    public Optional<User> getUser(String id) {
-
-        return this.userRepository.find(id);
+    public User getUser(String id) {
+        User user = this.userRepository.find(id);
+        if (user == null) {
+            throw new EntityNotFoundException("User not found");
+        }
+        return user;
     }
 
-    // Leaderboard?
     public List<User> getAll() {
-        return this.userRepository.findAll();
+        List<User> users = this.userRepository.findAll();
+        if (users.isEmpty()) {
+            throw new EntityNotFoundException("Users not found");
+        }
+        return users;
     }
 
     public List<Rating> ratings(String id) {
-        return this.userRepository.ratings(id);
+        List<Rating> ratings = this.userRepository.ratings(id);
+        if (ratings.isEmpty()) {
+            throw new EntityNotFoundException("Ratings not found");
+        }
+        return ratings;
     }
 
     public List<Media> favorites(String id) {
-        return this.userRepository.favorites(id);
-    }
-
-    public Optional<User> update(String id, User update) {
-        Optional<User> user = this.userRepository.find(id);
-
-        if (user.isPresent()) {
-            // user =
-            this.userRepository.update(update);
-            return user;
+        List<Media> favorites = this.userRepository.favorites(id);
+        if (favorites.isEmpty()) {
+            throw new EntityNotFoundException("Favorites not found");
         }
-
-        return Optional.empty();
+        return favorites;
     }
 
-    public void delete(String id) {
-        userRepository.delete(id);
+    public UserUpdated update(String id, UserUpdate update) {
+        if (update.isUpdate()) {
+            UserUpdated userUpdated = this.userRepository.update(id, update);
+            if (userUpdated == null) {
+                throw new EntityNotFoundException("User not found or password invalid");
+            }
+            return userUpdated;
+        }
+        throw new UnprocessableEntityException("Not enough parameters");
     }
 
+    public String delete(String id) {
+        String deleted = this.userRepository.delete(id);
+        if (deleted == null) {
+            throw new EntityNotFoundException("User not found");
+        }
+        return deleted;
+    }
 }

@@ -1,5 +1,7 @@
 package at.technikum.application.dto;
 
+import at.technikum.application.exception.UnprocessableEntityException;
+
 public class UserLogin {
     private String username;
     private String password;
@@ -21,7 +23,9 @@ public class UserLogin {
     }
 
     public boolean bothHere() {
-        return username != null && !username.isEmpty() && password != null
-                && !password.isEmpty();
+        if (username == null || password == null || password.isEmpty() || username.isEmpty()) {
+            throw new UnprocessableEntityException("Username and password are mandatory");
+        }
+        return true;
     }
 }

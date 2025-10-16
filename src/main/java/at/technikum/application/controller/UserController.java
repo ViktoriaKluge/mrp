@@ -3,6 +3,8 @@ package at.technikum.application.controller;
 import at.technikum.application.common.Controller;
 import at.technikum.application.dto.UserCreate;
 import at.technikum.application.dto.UserUpdate;
+import at.technikum.application.dto.UserUpdated;
+import at.technikum.application.exception.EntityNotFoundException;
 import at.technikum.application.model.Media;
 import at.technikum.application.model.Rating;
 import at.technikum.application.model.User;
@@ -59,78 +61,32 @@ public class UserController extends Controller {
             return delete(path[2]);
         }
 
-        // return notFound() ? oder Exception?
-        throw new RuntimeException("404");
-    }
-
-    private User findUser(String id) {
-        return this.userService.getUser(id);
+        throw new EntityNotFoundException("Path not found");
     }
 
     private Response profile(String id) {
-        Response response = new Response();
-        User user = findUser(id);
-
-        response.setStatus(Status.OK);
-        response.setContentType(ContentType.TEXT_PLAIN);
-        response.setBody("Profil: "+findUser(id).toString());
-
-        return response;
+        User user = this.userService.getUser(id);
+        return json(user,Status.OK);
     }
 
     private Response ratings(String id) {
-        Response response = new Response();
-
         List<Rating> ratings = this.userService.ratings(id);
-
-        response.setStatus(Status.OK);
-        response.setContentType(ContentType.TEXT_PLAIN);
-        response.setBody(ratings.toString());
-
-        return response;
+        return json(ratings, Status.OK);
     }
 
     private Response favorites(String id) {
-        Response response = new Response();
-
         List<Media> favorites = this.userService.favorites(id);
-
-        response.setStatus(Status.OK);
-        response.setContentType(ContentType.TEXT_PLAIN);
-        response.setBody(favorites.toString());
-
-        return response;
+        return json(favorites, Status.OK);
     }
 
-
-
-
-    // check ab hier downwards
     private Response update(String id, String body) {
         UserUpdate userUpdate = toObject(body, UserUpdate.class);
-
-        Response response = new Response();
-
-        // body in user-daten aufteilen
-        User update = new User();
-        Optional<User> user = this.userService.update(id,update);
-
-        response.setStatus(Status.OK);
-        response.setContentType(ContentType.TEXT_PLAIN);
-        response.setBody("User updated successfully "+ user.toString());
-
-        return response;
+        UserUpdated user = this.userService.update(id,userUpdate);
+        return json(user,Status.OK);
     }
 
     private Response delete(String id) {
-        Response response = new Response();
-
-        // this.userService.delete(id);
-
-        response.setStatus(Status.OK);
-        response.setContentType(ContentType.TEXT_PLAIN);
-        response.setBody("User deleted successfully");
-
-        return response;
+        String username = this.userService.delete(id);
+        return json(username,Status.OK);
     }
 }

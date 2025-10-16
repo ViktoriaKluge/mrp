@@ -1,60 +1,86 @@
 package at.technikum.application.repository;
 
-import at.technikum.application.dto.UserLogin;
+import at.technikum.application.dto.UserUpdate;
+import at.technikum.application.dto.UserUpdated;
 import at.technikum.application.model.Media;
 import at.technikum.application.model.Rating;
 import at.technikum.application.model.User;
-
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class MemoryUserRepository implements UserRepository {
 
+    List<User> users;
+
+    public MemoryUserRepository() {
+        User user = new User();
+        this.users = user.createMockUsers();
+    }
+
     @Override
-    public Optional<User> find(String id) {
-
-        if (id.equals("1234")) {
-            User user = new User();
-            user.setId(id);
-            user.setUsername("username");
-
-            return Optional.of(user);
+    public User find(String id) {
+        for (User user : users) {
+            if (user.getId().equals(id)) {
+                return user;
+            }
         }
-
-        return Optional.empty();
+        return null;
     }
 
     @Override
     public List<User> findAll() {
-        return List.of();
+        return this.users;
     }
 
     @Override
     public List<Rating> ratings(String id) {
-        List<Rating> ratings = new ArrayList<>();
-        ratings.add(new Rating("147",1));
-        ratings.add(new Rating("369",2));
-        ratings.add(new Rating("9761",3));
-        ratings.add(new Rating("369",2));
-        return ratings;
+        Rating rating = new Rating();
+        return rating.createMockRatings();
     }
 
     @Override
     public List<Media> favorites(String id) {
-        return List.of();
+        Media media = new Media();
+        return media.createMockMedia();
     }
 
     @Override
-    public User update(User update) {
-        update.setUsername(update.getUsername());
-        return update;
+    public UserUpdated update(String id, UserUpdate update) {
+        for (User user : users) {
+            if (user.getId().equals(id)) {
+                if(user.getPassword().equals(update.getPasswordOld())) {
+                    user.setUsername(update.getUsername());
+                    user.setPassword(checkPassword(update));
+                    return updateToUpdated(update,user);
+                }
+            }
+        }
+        return null;
     }
 
     @Override
-    public void delete(String id) {
-
+    public String delete(String id) {
+        for (User user : users) {
+            if (user.getId().equals(id)) {
+                String username = user.getUsername();
+                users.remove(user);
+                return username;
+            }
+        }
+       return null;
     }
 
+    private String checkPassword(UserUpdate update) {
+        if (update.getPasswordNew1()!=null && !update.getPasswordNew1().isEmpty()) {
+            return update.getPasswordNew1();
+        }
+        return update.getPasswordOld();
+    }
 
+    private UserUpdated updateToUpdated(UserUpdate update, User user) {
+        UserUpdated userUpdated = new UserUpdated();
+        userUpdated.setUsername(update.getUsername());
+        userUpdated.setEmail(user.getEmail());
+        userUpdated.setId(user.getId());
+        return userUpdated;
+    }
 }

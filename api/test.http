@@ -5,10 +5,10 @@ GET http://localhost:8080/
 GET http://localhost:8080/users
 
 ### Get user profile
-GET http://localhost:8080/users/1234/profile
+GET http://localhost:8080/users/9632/profile
 
 ### Get users ratings
-GET http://localhost:8080/users/1234/ratings
+GET http://localhost:8080/users/9632/ratings
 
 ### try auth
 POST http://localhost:8080/auth
@@ -18,10 +18,10 @@ POST http://localhost:8080/auth/register
 Content-Type: application/json
 
 {
-    "userName": "testUser",
+    "username": "testUser7",
     "password1": "123",
     "password2": "123",
-    "email": "example@test.com",
+    "email": "example@test7.com",
     "userType": "User"
 }
 
@@ -35,6 +35,12 @@ Content-Type: application/json
 }
 
 ### Put users profile
-PUT http://localhost:8080/users/1234/profile
+PUT http://localhost:8080/users/9632/profile
+Content-Type: application/json
 
-asd
+{
+  "username": "testUser",
+  "passwordOld": "127",
+  "passwordNew1": "127",
+  "passwordNew2": "127"
+}

@@ -5,7 +5,7 @@ import jakarta.mail.internet.AddressException;
 import jakarta.mail.internet.InternetAddress;
 
 public class UserCreate {
-    private String userName;
+    private String username;
     private String password1;
     private String password2;
     private String email;
@@ -21,7 +21,7 @@ public class UserCreate {
     }
 
     private boolean testUsername() {
-        return this.userName != null && !this.userName.isEmpty();
+        return this.username != null && !this.username.isEmpty();
     }
 
     private boolean testUserType() {
@@ -46,12 +46,12 @@ public class UserCreate {
         }
     }
 
-    public String getUserName() {
-        return userName;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUsername(String userName) {
+        this.username = userName;
     }
 
     public String getPassword1() {

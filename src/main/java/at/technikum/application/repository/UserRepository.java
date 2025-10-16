@@ -1,6 +1,8 @@
 package at.technikum.application.repository;
 
 import at.technikum.application.dto.UserLogin;
+import at.technikum.application.dto.UserUpdate;
+import at.technikum.application.dto.UserUpdated;
 import at.technikum.application.model.Media;
 import at.technikum.application.model.Rating;
 import at.technikum.application.model.User;
@@ -11,13 +13,10 @@ import java.util.Optional;
 
 public interface UserRepository {
 
-    Optional<User> find(String id);
-
-    // Leaderboard
+    User find(String id);
     List<User> findAll();
-
     List<Rating> ratings(String id);
     List<Media> favorites(String id);
-    User update(User update);
-    void delete(String id);
+    UserUpdated update(String id, UserUpdate update);
+    String delete(String id);
 }

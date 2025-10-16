@@ -4,10 +4,7 @@ import at.technikum.application.common.Application;
 import at.technikum.application.common.Controller;
 import at.technikum.application.common.Router;
 import at.technikum.application.controller.*;
-import at.technikum.application.exception.EntityNotFoundException;
-import at.technikum.application.exception.ExceptionMapper;
-import at.technikum.application.exception.JsonConversionException;
-import at.technikum.application.exception.NotJsonBodyException;
+import at.technikum.application.exception.*;
 import at.technikum.application.model.Rating;
 import at.technikum.application.repository.*;
 import at.technikum.application.service.*;
@@ -43,7 +40,7 @@ public class MrpApplication implements Application {
         this.exceptionMapper.register(EntityNotFoundException.class, Status.NOT_FOUND);
         this.exceptionMapper.register(NotJsonBodyException.class, Status.BAD_REQUEST);
         this.exceptionMapper.register(JsonConversionException.class, Status.INTERNAL_SERVER_ERROR);
-
+        this.exceptionMapper.register(UnprocessableEntityException.class, Status.BAD_REQUEST);
     }
 
     @Override
@@ -58,6 +55,7 @@ public class MrpApplication implements Application {
             return response;
         }
 
+        /*
         Optional<Controller> controllerOpt = this.router.findController(request.getPath());
 
         if (controllerOpt.isEmpty()) {
@@ -74,7 +72,7 @@ public class MrpApplication implements Application {
         return  controller.handle(request);
 
 
-       /* -----------
+       */
 
         try {
             Controller controller = router.findController(request.getPath())
@@ -82,8 +80,7 @@ public class MrpApplication implements Application {
 
             return controller.handle(request);
         } catch (Exception ex) {
-            exceptionMapper.toResponse(ex);
+            return exceptionMapper.toResponse(ex);
         }
-        */
     }
 }

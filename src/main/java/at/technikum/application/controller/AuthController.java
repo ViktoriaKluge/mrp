@@ -5,6 +5,7 @@ import at.technikum.application.dto.UserCreate;
 import at.technikum.application.dto.UserLoggedIn;
 import at.technikum.application.dto.UserLogin;
 import at.technikum.application.enums.UserType;
+import at.technikum.application.exception.EntityNotFoundException;
 import at.technikum.application.model.User;
 import at.technikum.application.service.AuthService;
 import at.technikum.server.http.*;
@@ -45,54 +46,18 @@ public class AuthController extends Controller {
             }
         }
 
-        /*
-        Response response = new Response();
-        response.setStatus(Status.NOT_FOUND);
-        response.setContentType(ContentType.TEXT_PLAIN);
-        response.setBody("Path not Found");
-
-        return response;
-
-         */
-
-        return null;
-        //throw new RuntimeException("404");
+        throw new EntityNotFoundException("Path not found");
     }
 
     private Response login(String body) {
         UserLogin userLogin = toObject(body, UserLogin.class);
-
-        if (userLogin.bothHere()) {
-            UserLoggedIn userLoggedIn = this.authService.createToken(userLogin);
-            return json(userLoggedIn, Status.ACCEPTED);
-        }
-
-        /*
-        Response response = new Response();
-        response.setStatus(Status.BAD_REQUEST);
-        response.setContentType(ContentType.TEXT_PLAIN);
-        response.setBody("login nicht geklappt");
-
-         */
-
-        return null;
+        UserLoggedIn userLoggedIn = this.authService.createToken(userLogin);
+        return json(userLoggedIn, Status.ACCEPTED);
     }
 
     private Response createUser(String body) {
         UserCreate userCreate = toObject(body, UserCreate.class);
-
-        if (userCreate.isUser()) {
-            User user = this.authService.register(userCreate);
-            return json(user, Status.CREATED);
-        }
-
-        /*
-        Response response = new Response();
-        response.setStatus(Status.BAD_REQUEST);
-        response.setContentType(ContentType.TEXT_PLAIN);
-        response.setBody("is not user");
-
-         */
-        return null;
+        User user = this.authService.register(userCreate);
+        return json(user, Status.CREATED);
     }
 }

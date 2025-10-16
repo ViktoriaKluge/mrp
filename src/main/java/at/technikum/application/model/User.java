@@ -2,6 +2,7 @@ package at.technikum.application.model;
 
 import at.technikum.application.enums.UserType;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class User {
@@ -16,6 +17,21 @@ public class User {
 
     public User() {
 
+    }
+
+    public User(String id, String username, String password, String email, UserType userType) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.userType = userType;
+    }
+
+    public List<User> createMockUsers() {
+        List<User> users = new ArrayList<>();
+        users.add(new User("1234","testuser","safepassword","test@example.com",UserType.Admin));
+        users.add(new User("9632","userlein","securepassword","example@test.com",UserType.User));
+        return users;
     }
 
     @Override

@@ -1,28 +1,33 @@
 package at.technikum.application.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Rating {
     String mediaId;
-    List<Integer> ratings;
+    Integer rating;
 
     public Rating() {
 
     }
 
     public Rating(String id, Integer rating) {
-        this.mediaId = id;
-        this.ratings.add(rating);
+       this.mediaId = id;
+       this.rating = rating;
+    }
+
+    public List<Rating> createMockRatings(){
+        List<Rating> ratingMock = new ArrayList<>();
+        ratingMock.add(new Rating("147",1));
+        ratingMock.add(new Rating("369",4));
+        ratingMock.add(new Rating("9761",3));
+        ratingMock.add(new Rating("369",2));
+        return ratingMock;
     }
 
     @Override
     public String toString() {
-        String ratingsStr = (ratings == null)
-                ? "[]"
-                : ratings.stream()
-                .map(String::valueOf)
-                .collect(java.util.stream.Collectors.joining(", ", "[", "]"));
-        return String.format("{media id:%s, ratings:%s}", mediaId, ratingsStr);
+        return String.format("{media id:%s, rating:%s}", this.mediaId, this.rating);
     }
 
     public String getMediaId() {
@@ -33,11 +38,11 @@ public class Rating {
         this.mediaId = mediaId;
     }
 
-    public List<Integer> getRatings() {
-        return ratings;
+    public Integer getRating() {
+        return rating;
     }
 
-    public void setRatings(List<Integer> ratings) {
-        this.ratings = ratings;
+    public void setRating(Integer rating) {
+        this.rating = rating;
     }
 }

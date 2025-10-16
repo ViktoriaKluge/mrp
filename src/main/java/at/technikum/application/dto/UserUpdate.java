@@ -1,13 +1,11 @@
 package at.technikum.application.dto;
 
-import at.technikum.application.enums.UserType;
-import jakarta.mail.internet.AddressException;
-import jakarta.mail.internet.InternetAddress;
+import at.technikum.application.exception.UnprocessableEntityException;
 
 public class UserUpdate {
 
     private String id;
-    private String userName;
+    private String username;
     private String passwordOld;
     private String passwordNew1;
     private String passwordNew2;
@@ -15,24 +13,27 @@ public class UserUpdate {
     public UserUpdate() {
 
     }
-    // check, ob username möglich + ob id oder username gefunden werden
-    // id final?
-    // nur update, falls altes passwort stimmt
-    // neues Passwort nur, wenn auch 2 neue passen
 
-    public boolean isUser() {
-
+    public boolean isUpdate() {
         return testUsername() && testUpdatePassword();
     }
 
     private boolean testUsername() {
-        return this.userName != null && !this.userName.isEmpty();
+        if (username == null || username.isEmpty()) {
+            throw new UnprocessableEntityException("Username cannot be empty");
+        }
+        return true;
     }
 
     private boolean testUpdatePassword() {
-        if (passwordNew1 == null || passwordNew1.isEmpty()) {
-            return false;
-        } else return passwordNew1.equals(passwordNew2);
+        if (passwordOld == null || passwordOld.isEmpty()) {
+            throw new UnprocessableEntityException("Old Password cannot be empty");
+        } else if(passwordNew1 == null || passwordNew1.isEmpty()) {
+            return true;
+        } else if(!passwordNew1.equals(passwordNew2)) {
+            throw new UnprocessableEntityException("New Passwords do not match");
+        }
+        return true;
     }
 
     public String getId() {
@@ -43,12 +44,12 @@ public class UserUpdate {
         this.id = id;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUsername(String userName) {
+        this.username = userName;
     }
 
     public String getPasswordOld() {

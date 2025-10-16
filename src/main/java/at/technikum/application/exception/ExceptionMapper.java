@@ -16,9 +16,6 @@ public class ExceptionMapper {
 
     public Response toResponse(Exception exception) {
         Response response = new Response();
-
-        // nochmal nachlesen
-
         Status status = map.get(exception.getClass());
 
         if (null == status) {

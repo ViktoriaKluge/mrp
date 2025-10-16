@@ -1,6 +1,7 @@
 package at.technikum.application.controller;
 
 import at.technikum.application.common.Controller;
+import at.technikum.application.exception.EntityNotFoundException;
 import at.technikum.application.service.FavoritesService;
 import at.technikum.server.http.*;
 
@@ -25,7 +26,7 @@ public class FavoritesController extends Controller {
             return delete(body);
         }
 
-        throw new RuntimeException("404");
+        throw new EntityNotFoundException("Path not found");
     }
 
     private Response add(String body) {

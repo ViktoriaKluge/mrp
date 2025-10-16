@@ -19,8 +19,8 @@ Content-Type: application/json
 
 {
     "username": "testUser7",
-    "password1": "123",
-    "password2": "123",
+    "password1": "124",
+    "password2": "124",
     "email": "example@test7.com",
     "userType": "User"
 }
@@ -30,7 +30,7 @@ POST http://localhost:8080/auth/login
 Content-Type: application/json
 
 {
-    "username": "testUser",
+    "username": "testUser4",
     "password": "123"
 }
 

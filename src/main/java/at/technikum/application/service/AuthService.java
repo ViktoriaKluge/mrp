@@ -45,7 +45,7 @@ public class AuthService {
         if (userLogin.bothHere()) {
             userLogin = this.authRepository.login(userLogin);
             if(userLogin == null) {
-                throw new EntityNotFoundException("User not found");
+                throw new EntityNotFoundException("Username and password dont match");
             }
             return newToken(userLogin.getUsername());
         }

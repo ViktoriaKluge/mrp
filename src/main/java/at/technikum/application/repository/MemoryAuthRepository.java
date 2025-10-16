@@ -42,7 +42,7 @@ public class MemoryAuthRepository implements AuthRepository {
                 return u;
             }
         }
-        throw new RuntimeException(new EntityNotFoundException());
+        throw new EntityNotFoundException("User not found");
     }
 
     @Override

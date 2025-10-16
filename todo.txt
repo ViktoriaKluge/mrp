@@ -1,36 +1,21 @@
 mandatory:
     Git public
     UML Diagram
-    MrpApplication: alle Routes anlegen
-    Alle Controller
-    Alle Services
-    Alle Repositories
-    Alle MemoryRepositories
-    Model User, Rating & Media fertig stellen
-    UserController, AuthController: wo genau JSON in Daten aufteilen?
 
 nice to have:
-    MrpApplication: routing auslagern, dependency injection?
-        Response wo anders kreieren - orElseThrow
-    alle exceptions? MrpApplication register & MapperClasses
+    Routing: dependency injection?
     ExceptionMapper nochmal anschauen, vllt optimieren
-    UserService: private find() erstellen, wohin mit getAll()?
-    Optionals loswerden? (zB Services, Controller) - try catch herum?
-    Wo werden welche Exceptions geworfen? (forumpost?)
-    Alle Controller: Response auslagern, Exception oder Status.notfound?
-
-
 
 only if time:
     alles schön gleichmäßig formatieren
-    Server: e.printStackTrace? was macht das? vllt anders?
     Exceptions: was heißt das super?
-    zB ExceptionMapper register(): Class<?> gleich <T>?
-    MrpApplication response.setBody(  .formatted)
+    Routes anders aufbauen, dass Auth weg
+    Favorites, Media & Rating Controller ausbauen
+    Favorites, Media & Rating Services ausbauen
+    Favoites, Media & Rating Repos ausbauen
 
 Errors:
-    Errorhandling
-    Auth login User nicht gefunden - Rot
+    alles mehrfach testen
 
 nachfragen:
     route auth?

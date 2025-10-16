@@ -8,6 +8,8 @@ import at.technikum.application.exception.*;
 import at.technikum.application.model.Rating;
 import at.technikum.application.repository.*;
 import at.technikum.application.service.*;
+import at.technikum.application.util.ExceptionMapperCreater;
+import at.technikum.application.util.RouterCreater;
 import at.technikum.server.http.ContentType;
 import at.technikum.server.http.Request;
 import at.technikum.server.http.Response;
@@ -21,26 +23,12 @@ public class MrpApplication implements Application {
     private final ExceptionMapper exceptionMapper;
 
     public MrpApplication() {
-        this.router = new Router();
-
-        this.router.addRoute("/users", new UserController(new UserService(new MemoryUserRepository())));
-        this.router.addRoute("/auth", new AuthController( new AuthService(new MemoryAuthRepository())));
-        this.router.addRoute("/media", new MediaController( new MediaService(new MemoryMediaRepository())));
-        this.router.addRoute("/rating", new RatingController( new RatingService(new MemoryRatingRepository())));
-        this.router.addRoute("/favorites", new FavoritesController( new FavoritesService(new MemoryFavoritesRepository())));
-        // eventuell irgendwo auslagern
+        RouterCreater routerCreater = new RouterCreater();
+        ExceptionMapperCreater exceptionMapperCreater = new ExceptionMapperCreater();
+        this.router = routerCreater.getRouter();
+        this.exceptionMapper = exceptionMapperCreater.getExceptionMapper();
         // dependency injection?
 
-        this.exceptionMapper = new ExceptionMapper();
-       /* Response response = new Response();
-        response.setStatus(Status.INTERNAL_SERVER_ERROR);
-        response.setContentType(ContentType.TEXT_PLAIN);
-        */
-
-        this.exceptionMapper.register(EntityNotFoundException.class, Status.NOT_FOUND);
-        this.exceptionMapper.register(NotJsonBodyException.class, Status.BAD_REQUEST);
-        this.exceptionMapper.register(JsonConversionException.class, Status.INTERNAL_SERVER_ERROR);
-        this.exceptionMapper.register(UnprocessableEntityException.class, Status.BAD_REQUEST);
     }
 
     @Override
@@ -54,25 +42,6 @@ public class MrpApplication implements Application {
 
             return response;
         }
-
-        /*
-        Optional<Controller> controllerOpt = this.router.findController(request.getPath());
-
-        if (controllerOpt.isEmpty()) {
-            response.setStatus(Status.NOT_FOUND);
-            response.setContentType(ContentType.TEXT_PLAIN);
-            response.setBody("Not Found controller");
-
-            return response;
-        }
-
-        Controller controller = controllerOpt.get();
-
-
-        return  controller.handle(request);
-
-
-       */
 
         try {
             Controller controller = router.findController(request.getPath())

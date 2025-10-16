@@ -1,6 +1,7 @@
 package at.technikum.application.controller;
 
 import at.technikum.application.common.Controller;
+import at.technikum.application.exception.EntityNotFoundException;
 import at.technikum.application.model.Media;
 import at.technikum.application.model.User;
 import at.technikum.application.service.MediaService;
@@ -41,8 +42,7 @@ public class MediaController extends Controller {
             return delete(body);
         }
 
-        // return notFound() ? oder Exception?
-        throw new RuntimeException("404");
+        throw new EntityNotFoundException("Path not found");
     }
 
     private Media findMedia(String id) {

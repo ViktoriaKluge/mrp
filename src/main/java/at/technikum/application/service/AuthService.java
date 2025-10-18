@@ -1,13 +1,12 @@
 package at.technikum.application.service;
 
-import at.technikum.application.dto.UserCreate;
-import at.technikum.application.dto.UserLoggedIn;
-import at.technikum.application.dto.UserLogin;
+import at.technikum.application.dto.auth.UserCreateDto;
+import at.technikum.application.dto.auth.UserLoggedInDto;
+import at.technikum.application.dto.auth.UserLoginDto;
 import at.technikum.application.exception.EntityNotFoundException;
 import at.technikum.application.exception.UnprocessableEntityException;
 import at.technikum.application.model.User;
 import at.technikum.application.repository.AuthRepository;
-import at.technikum.application.repository.UserRepository;
 
 import java.util.UUID;
 
@@ -19,9 +18,9 @@ public class AuthService {
         this.authRepository = authRepository;
     }
 
-    public User register(UserCreate userCreate) {
-        if (userCreate.isUser()) {
-            User user = createToUser(userCreate);
+    public User register(UserCreateDto userCreateDto) {
+        if (userCreateDto.isUser()) {
+            User user = createToUser(userCreateDto);
             user.setId(UUID.randomUUID().toString());
             User registeredUser = authRepository.save(user);
             if (registeredUser == null) {
@@ -32,30 +31,30 @@ public class AuthService {
         throw new EntityNotFoundException("Not enough parameters");
     }
 
-    private User createToUser(UserCreate userCreate) {
+    private User createToUser(UserCreateDto userCreateDto) {
         User user = new User();
-        user.setUsername(userCreate.getUsername());
-        user.setEmail(userCreate.getEmail());
-        user.setUserType(userCreate.getUserType());
-        user.setPassword(userCreate.getPassword1());
+        user.setUsername(userCreateDto.getUsername());
+        user.setEmail(userCreateDto.getEmail());
+        user.setUserType(userCreateDto.getUserType());
+        user.setPassword(userCreateDto.getPassword1());
         return user;
     }
 
-    public UserLoggedIn createToken(UserLogin userLogin) {
-        if (userLogin.bothHere()) {
-            userLogin = this.authRepository.login(userLogin);
-            if(userLogin == null) {
+    public UserLoggedInDto createToken(UserLoginDto userLoginDto) {
+        if (userLoginDto.bothHere()) {
+            userLoginDto = this.authRepository.login(userLoginDto);
+            if(userLoginDto == null) {
                 throw new EntityNotFoundException("Username and password dont match");
             }
-            return newToken(userLogin.getUsername());
+            return newToken(userLoginDto.getUsername());
         }
         throw new EntityNotFoundException("Not enough parameters");
     }
 
-    private UserLoggedIn newToken(String username) {
-        UserLoggedIn userLoggedIn = new UserLoggedIn();
-        userLoggedIn.setUsername(username);
-        userLoggedIn.setToken(username+"-mrpToken");
-        return userLoggedIn;
+    private UserLoggedInDto newToken(String username) {
+        UserLoggedInDto userLoggedInDto = new UserLoggedInDto();
+        userLoggedInDto.setUsername(username);
+        userLoggedInDto.setToken(username+"-mrpToken");
+        return userLoggedInDto;
     }
 }

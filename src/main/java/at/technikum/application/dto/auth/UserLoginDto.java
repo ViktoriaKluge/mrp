@@ -1,8 +1,8 @@
-package at.technikum.application.dto;
+package at.technikum.application.dto.auth;
 
 import at.technikum.application.exception.UnprocessableEntityException;
 
-public class UserLogin {
+public class UserLoginDto {
     private String username;
     private String password;
 

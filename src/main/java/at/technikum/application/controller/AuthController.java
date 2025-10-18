@@ -1,16 +1,13 @@
 package at.technikum.application.controller;
 
 import at.technikum.application.common.Controller;
-import at.technikum.application.dto.UserCreate;
-import at.technikum.application.dto.UserLoggedIn;
-import at.technikum.application.dto.UserLogin;
-import at.technikum.application.enums.UserType;
+import at.technikum.application.dto.auth.UserCreateDto;
+import at.technikum.application.dto.auth.UserLoggedInDto;
+import at.technikum.application.dto.auth.UserLoginDto;
 import at.technikum.application.exception.EntityNotFoundException;
 import at.technikum.application.model.User;
 import at.technikum.application.service.AuthService;
 import at.technikum.server.http.*;
-import jakarta.mail.internet.AddressException;
-import jakarta.mail.internet.InternetAddress;
 
 public class AuthController extends Controller {
 
@@ -50,14 +47,14 @@ public class AuthController extends Controller {
     }
 
     private Response login(String body) {
-        UserLogin userLogin = toObject(body, UserLogin.class);
-        UserLoggedIn userLoggedIn = this.authService.createToken(userLogin);
-        return json(userLoggedIn, Status.ACCEPTED);
+        UserLoginDto userLoginDto = toObject(body, UserLoginDto.class);
+        UserLoggedInDto userLoggedInDto = this.authService.createToken(userLoginDto);
+        return json(userLoggedInDto, Status.ACCEPTED);
     }
 
     private Response createUser(String body) {
-        UserCreate userCreate = toObject(body, UserCreate.class);
-        User user = this.authService.register(userCreate);
+        UserCreateDto userCreateDto = toObject(body, UserCreateDto.class);
+        User user = this.authService.register(userCreateDto);
         return json(user, Status.CREATED);
     }
 }

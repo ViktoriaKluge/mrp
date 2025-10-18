@@ -1,8 +1,8 @@
-package at.technikum.application.dto;
+package at.technikum.application.dto.users;
 
 import at.technikum.application.exception.UnprocessableEntityException;
 
-public class UserUpdate {
+public class UserUpdateDto {
 
     private String id;
     private String username;
@@ -10,7 +10,7 @@ public class UserUpdate {
     private String passwordNew1;
     private String passwordNew2;
 
-    public UserUpdate() {
+    public UserUpdateDto() {
 
     }
 

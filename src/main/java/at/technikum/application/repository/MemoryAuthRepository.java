@@ -1,8 +1,7 @@
 package at.technikum.application.repository;
 
-import at.technikum.application.dto.UserLogin;
+import at.technikum.application.dto.auth.UserLoginDto;
 import at.technikum.application.exception.EntityNotFoundException;
-import at.technikum.application.exception.UnprocessableEntityException;
 import at.technikum.application.model.User;
 import java.util.List;
 
@@ -27,10 +26,10 @@ public class MemoryAuthRepository implements AuthRepository {
     }
 
     @Override
-    public UserLogin login(UserLogin userLogin) {
-        User checkUser = findByUsername(userLogin.getUsername());
-        if (checkUser.getPassword().equals(userLogin.getPassword())) {
-            return userLogin;
+    public UserLoginDto login(UserLoginDto userLoginDto) {
+        User checkUser = findByUsername(userLoginDto.getUsername());
+        if (checkUser.getPassword().equals(userLoginDto.getPassword())) {
+            return userLoginDto;
         }
         return null;
     }

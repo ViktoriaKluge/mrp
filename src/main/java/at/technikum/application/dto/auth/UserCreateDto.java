@@ -1,17 +1,17 @@
-package at.technikum.application.dto;
+package at.technikum.application.dto.auth;
 
 import at.technikum.application.enums.UserType;
 import jakarta.mail.internet.AddressException;
 import jakarta.mail.internet.InternetAddress;
 
-public class UserCreate {
+public class UserCreateDto {
     private String username;
     private String password1;
     private String password2;
     private String email;
     private String userType;
 
-    public UserCreate() {
+    public UserCreateDto() {
 
     }
 

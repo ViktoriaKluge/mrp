@@ -1,3 +1,11 @@
+# bei users/ und bei auth/ gibt es mock user:
+# (id, username, password, email, usertype)
+# ("1234","testuser","safepassword","test[at]example.com",UserType.Admin));
+# ("9632","userlein","securepassword","example[at]test.com",UserType.User));
+# Nach Registrierung -> neue User auch über auth/ aufrufbar
+# Profil Update: geht nur mit mock usern - id muss stimmen, username und password
+# können geändert werden
+
 ### Get home
 GET http://localhost:8080/
 
@@ -6,22 +14,24 @@ GET http://localhost:8080/users
 
 ### Get user profile
 GET http://localhost:8080/users/9632/profile
+Authorization: Bearer userlein-mrpToken
 
-### Get users ratings
+### Get user ratings
 GET http://localhost:8080/users/9632/ratings
+Authorization: Bearer userlein-mrpToken
 
 ### try auth
-POST http://localhost:8080/auth
+GET http://localhost:8080/auth
 
 ### Post auth register
 POST http://localhost:8080/auth/register
 Content-Type: application/json
 
 {
-    "username": "testUser7",
+    "username": "testuser1",
     "password1": "124",
     "password2": "124",
-    "email": "example@test7.com",
+    "email": "example@test1.com",
     "userType": "User"
 }
 
@@ -30,17 +40,22 @@ POST http://localhost:8080/auth/login
 Content-Type: application/json
 
 {
-    "username": "testUser4",
-    "password": "123"
+    "username": "testuser1",
+    "password": "124"
 }
 
 ### Put users profile
 PUT http://localhost:8080/users/9632/profile
 Content-Type: application/json
+Authorization: Bearer userlein-mrpToken
 
 {
-  "username": "testUser",
-  "passwordOld": "127",
+  "username": "userlein",
+  "passwordOld": "securepassword",
   "passwordNew1": "127",
   "passwordNew2": "127"
 }
+
+### Delete user
+DELETE http://localhost:8080/users/9632/delete
+Authorization: Bearer userlein-mrpToken

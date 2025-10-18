@@ -1,7 +1,7 @@
 package at.technikum.application.repository;
 
-import at.technikum.application.dto.UserUpdate;
-import at.technikum.application.dto.UserUpdated;
+import at.technikum.application.dto.users.UserUpdateDto;
+import at.technikum.application.dto.users.UserUpdatedDto;
 import at.technikum.application.model.Media;
 import at.technikum.application.model.Rating;
 import at.technikum.application.model.User;
@@ -44,7 +44,7 @@ public class MemoryUserRepository implements UserRepository {
     }
 
     @Override
-    public UserUpdated update(String id, UserUpdate update) {
+    public UserUpdatedDto update(String id, UserUpdateDto update) {
         for (User user : users) {
             if (user.getId().equals(id)) {
                 if(user.getPassword().equals(update.getPasswordOld())) {
@@ -69,18 +69,18 @@ public class MemoryUserRepository implements UserRepository {
        return null;
     }
 
-    private String checkPassword(UserUpdate update) {
+    private String checkPassword(UserUpdateDto update) {
         if (update.getPasswordNew1()!=null && !update.getPasswordNew1().isEmpty()) {
             return update.getPasswordNew1();
         }
         return update.getPasswordOld();
     }
 
-    private UserUpdated updateToUpdated(UserUpdate update, User user) {
-        UserUpdated userUpdated = new UserUpdated();
-        userUpdated.setUsername(update.getUsername());
-        userUpdated.setEmail(user.getEmail());
-        userUpdated.setId(user.getId());
-        return userUpdated;
+    private UserUpdatedDto updateToUpdated(UserUpdateDto update, User user) {
+        UserUpdatedDto userUpdatedDto = new UserUpdatedDto();
+        userUpdatedDto.setUsername(update.getUsername());
+        userUpdatedDto.setEmail(user.getEmail());
+        userUpdatedDto.setId(user.getId());
+        return userUpdatedDto;
     }
 }

@@ -15,6 +15,7 @@ public class ExceptionMapperCreater {
         exceptionMapper.register(NotJsonBodyException.class, Status.BAD_REQUEST);
         exceptionMapper.register(JsonConversionException.class, Status.INTERNAL_SERVER_ERROR);
         exceptionMapper.register(UnprocessableEntityException.class, Status.BAD_REQUEST);
+        exceptionMapper.register(NotAuthorizedException.class, Status.UNAUTHORIZED);
         return exceptionMapper;
     }
 }

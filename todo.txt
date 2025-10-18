@@ -2,13 +2,8 @@ mandatory:
     Git public
     UML Diagram
 
-nice to have:
-    Routing: dependency injection?
-    ExceptionMapper nochmal anschauen, vllt optimieren
-
 only if time:
     alles schön gleichmäßig formatieren
-    Exceptions: was heißt das super?
     Routes anders aufbauen, dass Auth weg
     Favorites, Media & Rating Controller ausbauen
     Favorites, Media & Rating Services ausbauen

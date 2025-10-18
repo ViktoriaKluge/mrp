@@ -1,11 +1,11 @@
-package at.technikum.application.dto;
+package at.technikum.application.dto.users;
 
-public class UserUpdated {
+public class UserUpdatedDto {
     String username;
     String email;
     String id;
 
-    public UserUpdated() {
+    public UserUpdatedDto() {
 
     }
 

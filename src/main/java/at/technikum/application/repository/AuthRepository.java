@@ -1,6 +1,6 @@
 package at.technikum.application.repository;
 
-import at.technikum.application.dto.UserLogin;
+import at.technikum.application.dto.auth.UserLoginDto;
 import at.technikum.application.model.User;
 
 import java.util.ArrayList;
@@ -11,7 +11,7 @@ public interface AuthRepository {
 
 
     User save(User user);
-    UserLogin login(UserLogin userLogin);
+    UserLoginDto login(UserLoginDto userLoginDto);
 
     User findByUsername(String username);
     User findByEmail(String email);

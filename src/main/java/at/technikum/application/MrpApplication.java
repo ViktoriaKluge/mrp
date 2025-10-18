@@ -5,7 +5,6 @@ import at.technikum.application.common.Controller;
 import at.technikum.application.common.Router;
 import at.technikum.application.controller.*;
 import at.technikum.application.exception.*;
-import at.technikum.application.model.Rating;
 import at.technikum.application.repository.*;
 import at.technikum.application.service.*;
 import at.technikum.application.util.ExceptionMapperCreater;
@@ -14,8 +13,6 @@ import at.technikum.server.http.ContentType;
 import at.technikum.server.http.Request;
 import at.technikum.server.http.Response;
 import at.technikum.server.http.Status;
-
-import java.util.Optional;
 
 public class MrpApplication implements Application {
 

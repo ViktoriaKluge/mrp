@@ -1,19 +1,12 @@
 package at.technikum.application.controller;
 
 import at.technikum.application.common.Controller;
-import at.technikum.application.dto.UserCreate;
-import at.technikum.application.dto.UserUpdate;
-import at.technikum.application.dto.UserUpdated;
+import at.technikum.application.dto.media.MediaListAuthorizedDto;
+import at.technikum.application.dto.rating.RatingListAuthorizedDto;
+import at.technikum.application.dto.users.*;
 import at.technikum.application.exception.EntityNotFoundException;
-import at.technikum.application.model.Media;
-import at.technikum.application.model.Rating;
-import at.technikum.application.model.User;
 import at.technikum.application.service.UserService;
 import at.technikum.server.http.*;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 public class UserController extends Controller {
 
@@ -28,6 +21,7 @@ public class UserController extends Controller {
         String[] path = request.getPath().split("/");
         String method = request.getMethod();
         String body = request.getBody();
+        String token = request.getBearerToken();
 
         if (path.length == 2) {
             Response response = new Response();
@@ -37,56 +31,57 @@ public class UserController extends Controller {
             return response;
         }
 
+        UserAuthorizeDto userAuthorizeDto = new UserAuthorizeDto(path[2],token);
         if (method.equals(Method.GET.getVerb())) {
             if (path[3].equals("profile")) {
-                return profile(path[2]);
+                return profile(userAuthorizeDto);
             }
 
             if (path[3].equals("ratings")) {
-                return ratings(path[2]);
+                return ratings(userAuthorizeDto);
             }
 
             if (path[3].endsWith("favorites")) {
-                return favorites(path[2]);
+                return favorites(userAuthorizeDto);
             }
         }
 
         if (method.equals(Method.PUT.getVerb())) {
             if (path[3].equals("profile")) {
-                return update(path[2], body);
+                return update(userAuthorizeDto, body);
             }
         }
 
         if (method.equals(Method.DELETE.getVerb())) {
-            return delete(path[2]);
+            return delete(userAuthorizeDto);
         }
 
         throw new EntityNotFoundException("Path not found");
     }
 
-    private Response profile(String id) {
-        User user = this.userService.getUser(id);
+    private Response profile(UserAuthorizeDto userAuthorizeDto) {
+        UserAuthorizedDto user = this.userService.getUser(userAuthorizeDto);
         return json(user,Status.OK);
     }
 
-    private Response ratings(String id) {
-        List<Rating> ratings = this.userService.ratings(id);
+    private Response ratings(UserAuthorizeDto userAuthorizeDto) {
+        RatingListAuthorizedDto ratings = this.userService.ratings(userAuthorizeDto);
         return json(ratings, Status.OK);
     }
 
-    private Response favorites(String id) {
-        List<Media> favorites = this.userService.favorites(id);
+    private Response favorites(UserAuthorizeDto userAuthorizeDto) {
+        MediaListAuthorizedDto favorites = this.userService.favorites(userAuthorizeDto);
         return json(favorites, Status.OK);
     }
 
-    private Response update(String id, String body) {
-        UserUpdate userUpdate = toObject(body, UserUpdate.class);
-        UserUpdated user = this.userService.update(id,userUpdate);
+    private Response update(UserAuthorizeDto userAuthorizeDto, String body) {
+        UserUpdateDto userUpdateDto = toObject(body, UserUpdateDto.class);
+        UserUpdatedAuthorizedDto user = this.userService.update(userAuthorizeDto, userUpdateDto);
         return json(user,Status.OK);
     }
 
-    private Response delete(String id) {
-        String username = this.userService.delete(id);
-        return json(username,Status.OK);
+    private Response delete(UserAuthorizeDto userAuthorizeDto) {
+        String username = this.userService.delete(userAuthorizeDto);
+        return json(username+" deleted",Status.OK);
     }
 }

@@ -1,6 +1,6 @@
-package at.technikum.application.dto;
+package at.technikum.application.dto.auth;
 
-public class UserLoggedIn {
+public class UserLoggedInDto {
     String username;
     String token;
 

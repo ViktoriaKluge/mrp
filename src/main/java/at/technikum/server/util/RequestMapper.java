@@ -2,6 +2,7 @@ package at.technikum.server.util;
 
 import at.technikum.server.http.Method;
 import at.technikum.server.http.Request;
+import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 
 import java.io.IOException;
@@ -14,6 +15,7 @@ public class RequestMapper {
         Request request=new Request();
         request.setMethod(Method.valueOf(exchange.getRequestMethod()));
         request.setPath(exchange.getRequestURI().getPath());
+        request.setHeaders(exchange.getRequestHeaders());
         InputStream is = exchange.getRequestBody();
 
         if (is == null) {

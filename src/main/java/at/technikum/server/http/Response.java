@@ -5,6 +5,7 @@ public class Response {
     private ContentType contentType;
     private String body;
     private Status status;
+    private String token;
 
     public Response() {
 
@@ -43,4 +44,16 @@ public class Response {
    public void setBody(String body) {
         this.body = body;
    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
 }

@@ -1,0 +1,104 @@
+@startuml
+title Full sequence: HTTP request -> /auth (detailed)
+
+actor Client
+participant "HTTP Server" as HttpServer
+participant "Handler" as Handler
+participant "RequestMapper" as RequestMapper
+participant "Request (model)" as Request
+participant "MrpApplication" as App
+participant "Router" as Router
+participant "AuthController" as AuthCtrl
+participant "AuthService" as AuthSvc
+participant "MemoryAuthRepository" as AuthRepo
+participant "ExceptionMapper" as ExMapper
+participant "Response (model)" as Response
+
+== Client -> Server ==
+Client -> HttpServer : HTTP GET/POST /auth or /auth/login /auth/register
+HttpServer -> Handler : HttpExchange
+
+== Exchange -> Request model ==
+Handler -> RequestMapper : fromExchange(HttpExchange)
+RequestMapper -> Request : set method, path, headers, body
+RequestMapper --> Handler : Request
+Handler -> App : handle(Request)
+
+== Application routing ==
+App -> App : if (request.path == "/") return home
+alt path != "/"
+  App -> Router : findController(request.path)
+  Router --> App : Optional<AuthController> (path.startsWith("/auth"))
+  alt controller found
+    App -> AuthCtrl : handle(Request)
+
+    AuthCtrl -> AuthCtrl : read path, method, body
+    alt path == "/auth"
+      AuthCtrl -> Response : create Response(Status.OK, ContentType.TEXT_PLAIN, "Auth overview")
+      AuthCtrl --> App : Response
+    else method == POST
+      alt path endsWith "/login"
+        AuthCtrl -> AuthCtrl : UserLoginDto dto = toObject(body, UserLoginDto.class)
+        AuthCtrl -> AuthSvc : createToken(dto)
+        AuthSvc -> AuthSvc : if dto.bothHere()
+        alt both credentials present
+          AuthSvc -> AuthRepo : login(UserLoginDto)
+          alt password matches
+            AuthRepo --> AuthSvc : UserLoginDto (returned)
+            AuthSvc -> AuthSvc : newToken(username) -> UserLoggedInDto
+            AuthSvc --> AuthCtrl : UserLoggedInDto
+            AuthCtrl -> Response : json(UserLoggedInDto, Status.ACCEPTED)
+            AuthCtrl --> App : Response
+          else password mismatch
+            AuthRepo --> AuthSvc : null
+            AuthSvc -> AuthSvc : throw EntityNotFoundException("Username and password dont match")
+          end
+        else missing params
+          AuthSvc -> AuthSvc : throw EntityNotFoundException("Not enough parameters")
+        end
+
+      else path endsWith "/register"
+        AuthCtrl -> AuthCtrl : UserCreateDto dto = toObject(body, UserCreateDto.class)
+        AuthCtrl -> AuthSvc : register(dto)
+        AuthSvc -> AuthSvc : if dto.isUser()
+        alt dto valid
+          AuthSvc -> AuthSvc : user = createToUser(dto); user.setId(UUID.randomUUID().toString())
+          AuthSvc -> AuthRepo : save(user)
+          alt save success (returns User)
+            AuthRepo --> AuthSvc : User (registered)
+            AuthSvc --> AuthCtrl : User
+            AuthCtrl -> Response : json(User, Status.CREATED)
+            AuthCtrl --> App : Response
+          else save failed (user exists -> returns null)
+            AuthRepo --> AuthSvc : null
+            AuthSvc -> AuthSvc : throw UnprocessableEntityException("User already exists")
+          end
+        else dto invalid
+          AuthSvc -> AuthSvc : throw EntityNotFoundException("Not enough parameters")
+        end
+      end
+    end
+  else controller not found
+    App -> App : throw RuntimeException()  // Router returned empty
+  end
+end
+
+== Exception mapping and response send ==
+alt exception thrown in controller/service/repo
+  App -> ExMapper : toResponse(exception)
+  ExMapper --> App : error Response (mapped status & body)
+  App --> Handler : Response
+else no exception
+  App --> Handler : Response
+end
+
+Handler -> HttpServer : sendResponseHeaders(response.statusCode, body.length) and write body
+HttpServer -> Client : HTTP response (status, headers, body)
+
+note right of AuthSvc
+  - Token format created in newToken(): username + "-mrpToken"
+  - AuthService.register() assigns UUID id and relies on AuthRepository.save() returning null when user exists
+  - AuthService.createToken() relies on AuthRepository.login() to verify credentials
+end note
+
+@enduml

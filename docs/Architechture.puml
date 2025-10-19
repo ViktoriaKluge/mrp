@@ -1,0 +1,119 @@
+@startuml
+' Architecture class diagram (layers only: Server / Controller / Service / Repository)
+title Architecture — Layer overview (no Model/DTO, no Utils/Exceptions)
+
+package "Server / HTTP" {
+  class HttpServer {
+    +start(port)
+    +sendResponse(Response)
+  }
+  class Handler {
+    +handle(HttpExchange)
+  }
+  class RequestMapper {
+    +fromExchange(HttpExchange): Request
+  }
+  class MrpApplication {
+    +handle(Request): Response
+  }
+  class Router {
+    +findController(path): Optional<Controller>
+  }
+}
+
+package "Controller Layer" {
+  abstract class Controller {
+    +handle(Request): Response
+  }
+  class AuthController {
+    +handle(Request): Response
+    -login(body): Response
+    -register(body): Response
+  }
+  class UserController {
+    +handle(Request): Response
+  }
+  class MediaController {
+    +handle(Request): Response
+  }
+}
+
+package "Service Layer" {
+  class AuthService {
+    +register(...)
+    +createToken(...)
+  }
+  class UserService {
+    +getUser(...)
+    +update(...)
+    +delete(...)
+  }
+  class MediaService {
+    +getMedia(...)
+    +search(...)
+  }
+}
+
+package "Repository Layer" {
+  interface AuthRepository {
+    +save(User): User
+    +login(...)
+    +findByUsername(String): User
+  }
+  interface UserRepository {
+    +find(String): User
+    +findAll(): List<User>
+    +update(String, ...): ...
+  }
+  interface MediaRepository {
+    +find(String): Media
+    +search(...): List<Media>
+  }
+
+  class MemoryAuthRepository
+  class MemoryUserRepository
+  class MemoryMediaRepository
+}
+
+' Relationships
+HttpServer --> Handler : forwards HttpExchange
+Handler --> RequestMapper : builds Request
+Handler --> MrpApplication : handle(Request)
+MrpApplication --> Router : findController(path)
+Router --> Controller : returns concrete controller
+
+AuthController ..> AuthService : uses
+UserController ..> UserService : uses
+MediaController ..> MediaService : uses
+
+AuthService ..> AuthRepository : uses
+UserService ..> UserRepository : uses
+MediaService ..> MediaRepository : uses
+
+AuthRepository <|.. MemoryAuthRepository
+UserRepository <|.. MemoryUserRepository
+MediaRepository <|.. MemoryMediaRepository
+
+' High-level notes
+note left of Controller
+  Controllers:
+  - parse Request (path, method, body)
+  - map body to DTOs (not shown)
+  - call Service layer
+  - return Response
+end note
+
+note right of "Service Layer"
+  Services:
+  - implement business logic, validation, authorization checks
+  - orchestrate repository calls
+  - convert between DTOs and domain models (not shown)
+end note
+
+note right of "Repository Layer"
+  Repositories:
+  - persistence abstraction (in-memory or DB)
+  - return domain models or DTOs to services
+end note
+
+@enduml

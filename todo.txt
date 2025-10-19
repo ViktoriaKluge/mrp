@@ -1,16 +1,8 @@
 mandatory:
-    Git public
-    UML Diagram
 
-only if time:
-    alles schön gleichmäßig formatieren
-    Routes anders aufbauen, dass Auth weg
+for final hand-in:
+    Routes anders aufbauen (laut Angabe)
     Favorites, Media & Rating Controller ausbauen
     Favorites, Media & Rating Services ausbauen
     Favoites, Media & Rating Repos ausbauen
 
-Errors:
-    alles mehrfach testen
-
-nachfragen:
-    route auth?

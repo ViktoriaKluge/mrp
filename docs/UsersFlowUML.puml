@@ -1,0 +1,76 @@
+@startuml
+actor Client
+participant "com.sun.net.httpserver.HttpServer" as HttpServer
+participant "Handler" as Handler
+participant "RequestMapper" as RequestMapper
+participant "Request (model)" as Request
+participant "MrpApplication" as App
+participant "Router" as Router
+participant "UserController" as UserCtrl
+participant "UserService" as UserSvc
+participant "MemoryUserRepository" as UserRepo
+participant "ExceptionMapper" as ExMapper
+participant "Response (model)" as Response
+
+Client -> HttpServer : HTTP GET/PUT/DELETE /users... 
+HttpServer -> Handler : HttpExchange
+Handler -> RequestMapper : fromExchange(exchange)
+RequestMapper -> Request : set method, path, headers, body
+RequestMapper --> Handler : Request
+Handler -> App : handle(request)
+
+App -> App : if (path == "/") return home
+alt not root
+  App -> Router : findController(request.path)
+  Router --> App : UserController (if path startsWith "/users")
+  App -> UserCtrl : handle(request)
+  UserCtrl -> UserCtrl : split path, read method, body, bearerToken
+  alt path == "/users" (length==2)
+    UserCtrl -> Response : return "Users overview" (Status.OK, text/plain)
+  else /users/{id}/...
+    alt method == GET and segment == "profile"
+      UserCtrl -> UserSvc : profile(UserAuthorizeDto(id,token))
+      UserSvc -> UserSvc : isAuthorized(dto)  // verifies token via repository.find(...)
+      UserSvc -> UserRepo : find(id)
+      UserRepo --> UserSvc : User (or null -> EntityNotFound)
+      UserSvc --> UserCtrl : UserAuthorizedDto
+      UserCtrl -> Response : json(user, Status.OK)
+    else method == GET and segment == "ratings"
+      UserCtrl -> UserSvc : ratings(UserAuthorizeDto(id,token))
+      UserSvc -> UserRepo : ratings(id)
+      UserRepo --> UserSvc : List<Rating>
+      UserSvc --> UserCtrl : RatingListAuthorizedDto
+      UserCtrl -> Response : json(ratings, Status.OK)
+    else method == GET and segment endsWith "favorites"
+      UserCtrl -> UserSvc : favorites(UserAuthorizeDto(id,token))
+      UserSvc -> UserRepo : favorites(id)
+      UserRepo --> UserSvc : List<Media>
+      UserSvc --> UserCtrl : MediaListAuthorizedDto
+      UserCtrl -> Response : json(favorites, Status.OK)
+    else method == PUT and segment == "profile"
+      UserCtrl -> UserSvc : update(UserAuthorizeDto(id,token), UserUpdateDto)
+      UserSvc -> UserRepo : update(...)
+      UserRepo --> UserSvc : UserUpdated
+      UserSvc --> UserCtrl : UserUpdatedAuthorizedDto
+      UserCtrl -> Response : json(userUpdated, Status.OK)
+    else method == DELETE
+      UserCtrl -> UserSvc : delete(UserAuthorizeDto(id,token))
+      UserSvc -> UserRepo : delete(id)
+      UserRepo --> UserSvc : deletedUsername or null (-> EntityNotFound)
+      UserSvc --> UserCtrl : deletedUsername
+      UserCtrl -> Response : json(username+" deleted", Status.OK)
+    else
+      UserCtrl -> App : throw EntityNotFoundException("Path not found")
+    end
+  end
+end
+
+App <-- UserCtrl : Response (or exception)
+alt exception thrown in controller/service/repo
+  App -> ExMapper : toResponse(exception)
+  ExMapper --> App : Response (error status & message)
+end
+App --> Handler : Response
+Handler -> HttpServer : sendResponseHeaders(...)
+HttpServer -> Client : HTTP response (status, headers, body)
+@enduml

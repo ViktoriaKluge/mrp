@@ -1,0 +1,137 @@
+@startuml
+    title Full sequence: HTTP request -> /users (detailed)
+
+    actor Client
+    participant "HTTP Server" as HttpServer
+    participant "Handler" as Handler
+    participant "RequestMapper" as RequestMapper
+    participant "Request (model)" as Request
+    participant "MrpApplication" as App
+    participant "Router" as Router
+    participant "UserController" as UserCtrl
+    participant "UserService" as UserSvc
+    participant "MemoryUserRepository" as UserRepo
+    participant "ExceptionMapper" as ExMapper
+    participant "Response (model)" as Response
+
+    == Client to server ==
+    Client -> HttpServer : HTTP GET/PUT/DELETE /users...
+    HttpServer -> Handler : HttpExchange
+    Handler -> RequestMapper : fromExchange(exchange)
+    RequestMapper -> Request : set method, path, headers, body
+    RequestMapper --> Handler : Request
+    Handler -> App : handle(Request)
+
+    == Top-level application handling ==
+    App -> App : if (request.path == "/") return home
+    alt path != "/"
+      App -> Router : findController(request.path)
+      Router --> App : Optional<UserController> (path.startsWith("/users"))
+      alt controller found
+        App -> UserCtrl : handle(Request)
+
+        UserCtrl -> UserCtrl : split path into segments, method = request.getMethod(),\nbody = request.getBody(), token = request.getBearerToken()
+        alt path length == 2 (/users)  -- overview
+          UserCtrl -> Response : create Response(Status.OK, ContentType.TEXT_PLAIN, "Users overview")
+          UserCtrl --> App : Response
+        else path length > 2 (/users/{id}/...)
+          UserCtrl -> UserCtrl : UserAuthorizeDto dto = new UserAuthorizeDto(path[2], token)
+          alt method == GET
+            alt path[3] == "profile"
+              UserCtrl -> UserSvc : profile(dto)
+              UserSvc -> UserSvc : isAuthorized(dto)  // calls userRepository.find(id), validate token
+              UserSvc -> UserRepo : find(dto.id)
+              UserRepo --> UserSvc : User or throws/returns null
+              alt user found
+                UserSvc --> UserCtrl : UserAuthorizedDto
+                UserCtrl -> Response : json(UserAuthorizedDto, Status.OK)
+                UserCtrl --> App : Response
+              else user not found -> exception
+                UserSvc -> UserSvc : throw EntityNotFoundException("User not found")
+              end
+            else path[3] == "ratings"
+              UserCtrl -> UserSvc : ratings(dto)
+              UserSvc -> UserSvc : isAuthorized(dto)
+              UserSvc -> UserRepo : ratings(dto.id)
+              UserRepo --> UserSvc : List<Rating> (or empty)
+              alt ratings not empty
+                UserSvc --> UserCtrl : RatingListAuthorizedDto
+                UserCtrl -> Response : json(ratings, Status.OK)
+                UserCtrl --> App : Response
+              else
+                UserSvc -> UserSvc : throw EntityNotFoundException("Ratings not found")
+              end
+            else path[3] endsWith "favorites"
+              UserCtrl -> UserSvc : favorites(dto)
+              UserSvc -> UserSvc : isAuthorized(dto)
+              UserSvc -> UserRepo : favorites(dto.id)
+              UserRepo --> UserSvc : List<Media> (or empty)
+              alt favorites not empty
+                UserSvc --> UserCtrl : MediaListAuthorizedDto
+                UserCtrl -> Response : json(favorites, Status.OK)
+                UserCtrl --> App : Response
+              else
+                UserSvc -> UserSvc : throw EntityNotFoundException("Favorites not found")
+              end
+            end
+          else if method == PUT
+            alt path[3] == "profile"
+              UserCtrl -> UserCtrl : userUpdateDto = toObject(body, UserUpdateDto.class)
+              UserCtrl -> UserSvc : update(dto, userUpdateDto)
+              UserSvc -> UserSvc : isAuthorized(dto)
+              UserSvc -> UserRepo : update(dto.id, userUpdateDto)
+              UserRepo --> UserSvc : UserUpdatedDto or null
+              alt update success
+                UserSvc --> UserCtrl : UserUpdatedAuthorizedDto
+                UserCtrl -> Response : json(userUpdated, Status.OK)
+                UserCtrl --> App : Response
+              else
+                UserSvc -> UserSvc : throw EntityNotFoundException("User not found or password invalid")
+              end
+            else
+              UserCtrl -> UserCtrl : throw EntityNotFoundException("Path not found")
+            end
+          else if method == DELETE
+            UserCtrl -> UserSvc : delete(dto)
+            UserSvc -> UserSvc : isAuthorized(dto)
+            UserSvc -> UserRepo : delete(dto.id)
+            UserRepo --> UserSvc : deletedUsername or null
+            alt delete success
+              UserSvc --> UserCtrl : deletedUsername
+              UserCtrl -> Response : json(deletedUsername + " deleted", Status.OK)
+              UserCtrl --> App : Response
+            else
+              UserSvc -> UserSvc : throw EntityNotFoundException("User not found")
+            end
+          else
+            UserCtrl -> UserCtrl : throw EntityNotFoundException("Path not found")
+          end
+        end
+      else if method == PUT
+        UserCtrl -> UserCtrl : throw EntityNotFoundException("Path not found")
+      end
+    end
+  else controller not found
+    App -> App : throw RuntimeException()   // router returned empty
+  end
+end
+
+== Exception mapping and response send ==
+App --> Handler : Response (if returned normally)
+alt exception thrown anywhere (controller/service/repo)
+  App -> ExMapper : toResponse(exception)
+  ExMapper --> App : error Response (mapped status & body)
+  App --> Handler : Response
+end
+
+Handler -> HttpServer : sendResponseHeaders(response.statusCode, body.length) and write body
+HttpServer -> Client : HTTP response (status, headers, body)
+
+note right of UserSvc
+  Authorization check details:
+  - isAuthorized(dto) calls userRepository.find(dto.id)
+  - token must equal user.getUsername() + "-mrpToken"
+  - if token invalid -> throw NotAuthorizedException
+end note
+
+@enduml

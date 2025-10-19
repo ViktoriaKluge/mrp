@@ -112,3 +112,6 @@ Code eingeben.
 
 /api/test.http beinhaltet die derzeit funktionierenden Hauptfunktionen (MockUser-Daten als Kommentar 
 enthalten).
+
+GitHub-Link:
+https://github.com/ViktoriaKluge/mrp.git

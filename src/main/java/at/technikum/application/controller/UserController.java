@@ -18,18 +18,20 @@ public class UserController extends Controller {
 
     @Override
     public Response handle(Request request) {
-        String[] path = request.getPath().split("/");
-        String method = request.getMethod();
-        String body = request.getBody();
-        String token = request.getBearerToken();
 
-        if (path.length == 2) {
+
+        if (request.getPath().equals("/users")) {
             Response response = new Response();
             response.setStatus(Status.OK);
             response.setContentType(ContentType.TEXT_PLAIN);
             response.setBody("Users overview");
             return response;
         }
+
+        String[] path = request.getPath().split("/");
+        String method = request.getMethod();
+        String body = request.getBody();
+        String token = request.getBearerToken();
 
         UserAuthorizeDto userAuthorizeDto = new UserAuthorizeDto(path[2],token);
         if (method.equals(Method.GET.getVerb())) {

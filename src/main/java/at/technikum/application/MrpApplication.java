@@ -3,12 +3,9 @@ package at.technikum.application;
 import at.technikum.application.common.Application;
 import at.technikum.application.common.Controller;
 import at.technikum.application.common.Router;
-import at.technikum.application.controller.*;
 import at.technikum.application.exception.*;
-import at.technikum.application.repository.*;
-import at.technikum.application.service.*;
-import at.technikum.application.util.ExceptionMapperCreater;
-import at.technikum.application.util.RouterCreater;
+import at.technikum.application.util.ExceptionMapperCreator;
+import at.technikum.application.util.RouterCreator;
 import at.technikum.server.http.ContentType;
 import at.technikum.server.http.Request;
 import at.technikum.server.http.Response;
@@ -20,10 +17,10 @@ public class MrpApplication implements Application {
     private final ExceptionMapper exceptionMapper;
 
     public MrpApplication() {
-        RouterCreater routerCreater = new RouterCreater();
-        ExceptionMapperCreater exceptionMapperCreater = new ExceptionMapperCreater();
-        this.router = routerCreater.getRouter();
-        this.exceptionMapper = exceptionMapperCreater.getExceptionMapper();
+        RouterCreator routerCreator = new RouterCreator();
+        ExceptionMapperCreator exceptionMapperCreator = new ExceptionMapperCreator();
+        this.router = routerCreator.getRouter();
+        this.exceptionMapper = exceptionMapperCreator.getExceptionMapper();
         // dependency injection?
 
     }

@@ -3,10 +3,7 @@ package at.technikum.application.controller;
 import at.technikum.application.common.Controller;
 import at.technikum.application.exception.EntityNotFoundException;
 import at.technikum.application.service.RatingService;
-import at.technikum.server.http.ContentType;
-import at.technikum.server.http.Request;
-import at.technikum.server.http.Response;
-import at.technikum.server.http.Status;
+import at.technikum.server.http.*;
 
 public class RatingController extends Controller {
 
@@ -18,19 +15,43 @@ public class RatingController extends Controller {
 
     @Override
     public Response handle(Request request) {
-        String path = request.getPath();
+        String[] path = request.getPath().split("/");
         String method = request.getMethod();
         String body = request.getBody();
 
-        if (path.equals("/rating")) {
-            Response response = new Response();
-            response.setStatus(Status.OK);
-            response.setContentType(ContentType.TEXT_PLAIN);
-            response.setBody("Rating overview");
+        if (method.equals(Method.POST.getVerb())) {
+            if(path[3].equals("like")){
+                return like(path[2]);
+            }
+            if(path[3].equals("confirm")){
+                return confirm(path[2]);
+            }
+        }
 
-            return  response;
+        if (method.equals(Method.PUT.getVerb())) {
+            return putRating(path[2]);
+        }
+
+        if (method.equals(Method.DELETE.getVerb())) {
+            return delete(path[2]);
         }
 
         throw new EntityNotFoundException("Path not found");
+    }
+
+    private Response delete(String s) {
+        return null;
+    }
+
+    private Response putRating(String s) {
+        return null;
+    }
+
+    private Response confirm(String s) {
+        return null;
+    }
+
+    private Response like(String s) {
+        return null;
     }
 }

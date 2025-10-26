@@ -6,23 +6,23 @@ import at.technikum.application.dto.auth.UserLoginDto;
 import at.technikum.application.exception.EntityNotFoundException;
 import at.technikum.application.exception.UnprocessableEntityException;
 import at.technikum.application.model.User;
-import at.technikum.application.repository.AuthRepository;
+import at.technikum.application.repository.UserRepository;
 
 import java.util.UUID;
 
 public class AuthService {
 
-    private final AuthRepository authRepository;
+    private final UserRepository userRepository;
 
-    public AuthService(AuthRepository authRepository) {
-        this.authRepository = authRepository;
+    public AuthService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     public User register(UserCreateDto userCreateDto) {
         if (userCreateDto.isUser()) {
             User user = createToUser(userCreateDto);
             user.setId(UUID.randomUUID().toString());
-            User registeredUser = authRepository.save(user);
+            User registeredUser = userRepository.save(user);
             if (registeredUser == null) {
                 throw new UnprocessableEntityException("User already exists");
             }
@@ -42,7 +42,7 @@ public class AuthService {
 
     public UserLoggedInDto createToken(UserLoginDto userLoginDto) {
         if (userLoginDto.bothHere()) {
-            userLoginDto = this.authRepository.login(userLoginDto);
+            userLoginDto = this.userRepository.login(userLoginDto);
             if(userLoginDto == null) {
                 throw new EntityNotFoundException("Username and password dont match");
             }

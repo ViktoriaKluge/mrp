@@ -22,13 +22,13 @@ public class UserService {
 
     public UserAuthorizedDto getUser(UserAuthorizeDto userAuthorizeDto) {
         String token = isAuthorized(userAuthorizeDto);
-        User user = this.userRepository.find(userAuthorizeDto.getId());
+        User user = this.userRepository.findByID(userAuthorizeDto.getId());
         return new UserAuthorizedDto(user,token);
     }
 
     public UserListAuthorizedDto getAll(UserAuthorizeDto userAuthorizeDto) {
         String token = isAuthorized(userAuthorizeDto);
-        List<User> users = this.userRepository.findAll();
+        List<User> users = this.userRepository.userList();
         if (users.isEmpty()) {
             throw new EntityNotFoundException("Users not found");
         }
@@ -75,7 +75,7 @@ public class UserService {
     }
 
     private String isAuthorized(UserAuthorizeDto userAuthorizeDto) {
-        User user = this.userRepository.find(userAuthorizeDto.getId());
+        User user = this.userRepository.findByID(userAuthorizeDto.getId());
         if (user == null) {
             throw new EntityNotFoundException("User not found");
         }

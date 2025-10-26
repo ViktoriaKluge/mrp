@@ -24,7 +24,7 @@ Authorization: Bearer userlein-mrpToken
 GET http://localhost:8080/auth
 
 ### Post auth register
-POST http://localhost:8080/auth/register
+POST http://localhost:8080/users/register
 Content-Type: application/json
 
 {
@@ -36,7 +36,7 @@ Content-Type: application/json
 }
 
 ### Post auth login
-POST http://localhost:8080/auth/login
+POST http://localhost:8080/users/login
 Content-Type: application/json
 
 {

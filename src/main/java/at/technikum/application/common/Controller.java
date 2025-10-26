@@ -43,16 +43,6 @@ public abstract class Controller {
         }
     }
 
-    protected Response json(Object o, Status status, String token) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            String json = objectMapper.writeValueAsString(o);
-            return r(status, ContentType.APPLICATION_JSON, json);
-        } catch (Exception ex) {
-            throw new JsonConversionException(ex);
-        }
-    }
-
     protected Response r(Status status, ContentType contentType, String body) {
         Response response = new Response();
         response.setStatus(status);

@@ -3,8 +3,8 @@ package at.technikum.application.util;
 import at.technikum.application.exception.*;
 import at.technikum.server.http.Status;
 
-public class ExceptionMapperCreater {
-    public ExceptionMapperCreater() {
+public class ExceptionMapperCreator {
+    public ExceptionMapperCreator() {
 
     }
 

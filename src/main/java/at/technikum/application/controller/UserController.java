@@ -1,24 +1,35 @@
 package at.technikum.application.controller;
 
 import at.technikum.application.common.Controller;
+import at.technikum.application.dto.auth.UserCreateDto;
+import at.technikum.application.dto.auth.UserLoggedInDto;
+import at.technikum.application.dto.auth.UserLoginDto;
 import at.technikum.application.dto.media.MediaListAuthorizedDto;
 import at.technikum.application.dto.rating.RatingListAuthorizedDto;
 import at.technikum.application.dto.users.*;
 import at.technikum.application.exception.EntityNotFoundException;
+import at.technikum.application.model.User;
+import at.technikum.application.service.AuthService;
+import at.technikum.application.service.RecommendationService;
 import at.technikum.application.service.UserService;
 import at.technikum.server.http.*;
 
 public class UserController extends Controller {
 
     private final UserService userService;
+    private final AuthService authService;
+    private final RecommendationService recommendationService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, AuthService authService,
+                          RecommendationService recommendationService) {
+
         this.userService = userService;
+        this.authService = authService;
+        this.recommendationService = recommendationService;
     }
 
     @Override
     public Response handle(Request request) {
-
 
         if (request.getPath().equals("/users")) {
             Response response = new Response();
@@ -31,31 +42,47 @@ public class UserController extends Controller {
         String[] path = request.getPath().split("/");
         String method = request.getMethod();
         String body = request.getBody();
-        String token = request.getBearerToken();
 
-        UserAuthorizeDto userAuthorizeDto = new UserAuthorizeDto(path[2],token);
-        if (method.equals(Method.GET.getVerb())) {
-            if (path[3].equals("profile")) {
-                return profile(userAuthorizeDto);
+        if (method.equals(Method.POST.getVerb())) {
+
+            if (path[2].equals("login")) {
+                return login(body);
             }
 
-            if (path[3].equals("ratings")) {
-                return ratings(userAuthorizeDto);
+            if (path[2].equals("register")) {
+                return createUser(body);
+            }
+        } else {
+
+            String token = request.getBearerToken();
+            UserAuthorizeDto userAuthorizeDto = new UserAuthorizeDto(path[2], token);
+            if (method.equals(Method.GET.getVerb())) {
+                if (path[3].equals("profile")) {
+                    return profile(userAuthorizeDto);
+                }
+
+                if (path[3].equals("ratings")) {
+                    return ratings(userAuthorizeDto);
+                }
+
+                if (path[3].endsWith("favorites")) {
+                    return favorites(userAuthorizeDto);
+                }
+
+                if (path[3].endsWith("recommendations")) {
+                    return null;
+                }
             }
 
-            if (path[3].endsWith("favorites")) {
-                return favorites(userAuthorizeDto);
+            if (method.equals(Method.PUT.getVerb())) {
+                if (path[3].equals("profile")) {
+                    return update(userAuthorizeDto, body);
+                }
             }
-        }
 
-        if (method.equals(Method.PUT.getVerb())) {
-            if (path[3].equals("profile")) {
-                return update(userAuthorizeDto, body);
+            if (method.equals(Method.DELETE.getVerb())) {
+                return delete(userAuthorizeDto);
             }
-        }
-
-        if (method.equals(Method.DELETE.getVerb())) {
-            return delete(userAuthorizeDto);
         }
 
         throw new EntityNotFoundException("Path not found");
@@ -84,6 +111,18 @@ public class UserController extends Controller {
 
     private Response delete(UserAuthorizeDto userAuthorizeDto) {
         String username = this.userService.delete(userAuthorizeDto);
-        return json(username+" deleted",Status.OK);
+        return text(username+" deleted",Status.OK);
+    }
+
+    private Response login(String body) {
+        UserLoginDto userLoginDto = toObject(body, UserLoginDto.class);
+        UserLoggedInDto userLoggedInDto = this.authService.createToken(userLoginDto);
+        return json(userLoggedInDto, Status.ACCEPTED);
+    }
+
+    private Response createUser(String body) {
+        UserCreateDto userCreateDto = toObject(body, UserCreateDto.class);
+        User user = this.authService.register(userCreateDto);
+        return json(user, Status.CREATED);
     }
 }

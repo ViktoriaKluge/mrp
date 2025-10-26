@@ -7,12 +7,12 @@ import java.util.Optional;
 
 public class MemoryMediaRepository implements MediaRepository {
     @Override
-    public Optional<Media> findById(String id) {
-        return Optional.empty();
+    public Media findById(String id) {
+        return null;
     }
 
     @Override
-    public List<Media> findAll() {
+    public List<Media> mediaList() {
         return List.of();
     }
 
@@ -36,8 +36,4 @@ public class MemoryMediaRepository implements MediaRepository {
 
     }
 
-    @Override
-    public boolean find(String id) {
-        return false;
-    }
 }

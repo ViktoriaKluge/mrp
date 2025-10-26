@@ -18,31 +18,50 @@ public class MediaController extends Controller {
 
     @Override
     public Response handle(Request request) {
-        String path = request.getPath();
+        String[] path = request.getPath().split("/");
         String method = request.getMethod();
         String body = request.getBody();
 
         if (method.equals(Method.GET.getVerb())) {
-            if (path.equals("/media")) {
+            if (path.length==2) {
                 return allMedia();
             }
 
-            return mediaByID(body);
+            return mediaByID(path[2]);
         }
 
         if (method.equals(Method.POST.getVerb())) {
-            return create(body);
+            if (path.length==2) {
+                return create(body);
+            }
+            if(path[3].equals("rate")){
+                return null;
+            }
+            if(path[3].equals("favorite")){
+                return addFavorite(path[2]);
+            }
         }
 
         if (method.equals(Method.PUT.getVerb())) {
-            return update(body);
+            return update(path[2]);
         }
 
         if (method.equals(Method.DELETE.getVerb())) {
-            return delete(body);
+            if(path[3].equals("favorite")){
+                return deleteFavorite(path[2]);
+            }
+            return delete(path[2]);
         }
 
         throw new EntityNotFoundException("Path not found");
+    }
+
+    private Response deleteFavorite(String s) {
+        return null;
+    }
+
+    private Response addFavorite(String s) {
+        return null;
     }
 
     private Media findMedia(String id) {

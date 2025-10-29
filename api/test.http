@@ -20,9 +20,6 @@ Authorization: Bearer userlein-mrpToken
 GET http://localhost:8080/users/9632/ratings
 Authorization: Bearer userlein-mrpToken
 
-### try auth
-GET http://localhost:8080/auth
-
 ### Post auth register
 POST http://localhost:8080/users/register
 Content-Type: application/json

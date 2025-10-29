@@ -1,12 +1,14 @@
 package at.technikum.application.common;
 
 import at.technikum.application.dto.authmiddleware.RequestDto;
+import at.technikum.application.exception.IncompatiblePayloadTypeException;
 import at.technikum.application.exception.JsonConversionException;
 import at.technikum.application.exception.NotJsonBodyException;
 import at.technikum.server.http.ContentType;
 import at.technikum.server.http.Request;
 import at.technikum.server.http.Response;
 import at.technikum.server.http.Status;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public abstract class Controller {
@@ -44,5 +46,16 @@ public abstract class Controller {
         return response;
     }
 
+    private static final ObjectMapper MAPPER = new ObjectMapper()
+            .findAndRegisterModules()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+    protected <T> T toOtherObject(RequestDto requestDto, Class<T> target) {
+        try {
+            return MAPPER.convertValue(requestDto, target);
+        } catch (Exception ex) {
+            throw new IncompatiblePayloadTypeException("Incompatible type for dto");
+        }
+    }
 
 }

@@ -17,7 +17,7 @@ public interface UserRepository {
     List<User> userList();
     List<Rating> ratings(String id);
     List<Media> favorites(String id);
-    UserUpdatedDto update(String id, UserUpdateDto update);
+    UserUpdatedDto update(UserUpdateDto update);
     String delete(String id);
     User save(User user);
     UserLoginDto login(UserLoginDto userLoginDto);

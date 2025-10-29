@@ -1,37 +1,32 @@
 package at.technikum.application.service;
 
 import at.technikum.application.exception.EntityNotFoundException;
+import at.technikum.application.exception.UnprocessableEntityException;
+import at.technikum.application.model.Media;
+import at.technikum.application.repository.MediaRepository;
 
 public class FavoritesService {
 
-    private final FavoritesRepository favoritesRepository;
+    private final MediaRepository mediaRepository;
 
-    public FavoritesService(FavoritesRepository favoritesRepository) {
-        this.favoritesRepository = favoritesRepository;
+    public FavoritesService(MediaRepository mediaRepository) {
+        this.mediaRepository = mediaRepository;
     }
 
-    public void add(String id) {
-
-        if (exists(id)) {
-            this.favoritesRepository.add(id);
+    public Media add(String id) {
+        Media media = this.mediaRepository.addFavorite(id);
+        if (media==null){
+            throw new UnprocessableEntityException("Media already exists");
         }
+        return media;
     }
 
-    public void delete(String id) {
-
-        if (exists(id)) {
-            this.favoritesRepository.delete(id);
+    public String delete(String id) {
+        String title = this.mediaRepository.delete(id);
+        if (title==null){
+            throw new EntityNotFoundException("Media Not Found");
         }
+        return title;
     }
 
-    private boolean exists(String id) {
-        boolean exists = false;
-
-        exists = this.favoritesRepository.find(id);
-        if (!exists) {
-            throw (EntityNotFoundException) new EntityNotFoundException();
-        }
-
-        return exists;
-    }
 }

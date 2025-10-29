@@ -1,18 +1,29 @@
 package at.technikum.application.service;
 
+import at.technikum.application.exception.EntityNotFoundException;
 import at.technikum.application.model.User;
 import at.technikum.application.repository.MemoryUserRepository;
+import at.technikum.application.repository.UserRepository;
 
 import java.util.List;
 
 public class LeaderboardService {
-    private final MemoryUserRepository memoryUserRepository;
+    private final UserRepository userRepository;
+    private List<User> users;
 
-    public LeaderboardService(MemoryUserRepository memoryUserRepository) {
-        this.memoryUserRepository = memoryUserRepository;
+    public LeaderboardService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     public List<User> showLeaderboard() {
         return List.of();
+    }
+
+    public List<User> getAll() {
+        this.users = this.userRepository.userList();
+        if (users.isEmpty()) {
+            throw new EntityNotFoundException("Users not found");
+        }
+        return users;
     }
 }

@@ -20,70 +20,47 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public UserAuthorizedDto getUser(UserAuthorizeDto userAuthorizeDto) {
-        String token = isAuthorized(userAuthorizeDto);
-        User user = this.userRepository.findByID(userAuthorizeDto.getId());
-        return new UserAuthorizedDto(user,token);
-    }
-
-    public UserListAuthorizedDto getAll(UserAuthorizeDto userAuthorizeDto) {
-        String token = isAuthorized(userAuthorizeDto);
-        List<User> users = this.userRepository.userList();
-        if (users.isEmpty()) {
-            throw new EntityNotFoundException("Users not found");
+    public User getUser(String id) {
+        User user = this.userRepository.findByID(id);
+        if (user == null) {
+            throw new EntityNotFoundException("User not found");
         }
-        return new UserListAuthorizedDto(token,users);
+        return user;
     }
 
-    public RatingListAuthorizedDto ratings(UserAuthorizeDto userAuthorizeDto) {
-        String token = isAuthorized(userAuthorizeDto);
-        List<Rating> ratings = this.userRepository.ratings(userAuthorizeDto.getId());
+    public List<Rating> ratings(String id) {
+        List<Rating> ratings = this.userRepository.ratings(id);
         if (ratings.isEmpty()) {
             throw new EntityNotFoundException("Ratings not found");
         }
-        return new RatingListAuthorizedDto(token,ratings);
+        return ratings;
     }
 
-    public MediaListAuthorizedDto favorites(UserAuthorizeDto userAuthorizeDto) {
-        String token = isAuthorized(userAuthorizeDto);
-        List<Media> favorites = this.userRepository.favorites(userAuthorizeDto.getId());
+    public List<Media> favorites(String id) {
+        List<Media> favorites = this.userRepository.favorites(id);
         if (favorites.isEmpty()) {
             throw new EntityNotFoundException("Favorites not found");
         }
-        return new MediaListAuthorizedDto(token,favorites);
+        return favorites;
     }
 
-    public UserUpdatedAuthorizedDto update(UserAuthorizeDto userAuthorizeDto, UserUpdateDto update) {
-        String token = isAuthorized(userAuthorizeDto);
+    public UserUpdatedDto update(UserUpdateDto update) {
         if (update.isUpdate()) {
-            UserUpdatedDto userUpdatedDto = this.userRepository.update(userAuthorizeDto.getId(), update);
+            UserUpdatedDto userUpdatedDto = this.userRepository.update(update);
             if (userUpdatedDto == null) {
                 throw new EntityNotFoundException("User not found or password invalid");
             }
-            return new UserUpdatedAuthorizedDto(token, userUpdatedDto);
+            return userUpdatedDto;
         }
         throw new UnprocessableEntityException("Not enough parameters");
     }
 
-    public String delete(UserAuthorizeDto userAuthorizeDto) {
-        String token = isAuthorized(userAuthorizeDto);
-        String deleted = this.userRepository.delete(userAuthorizeDto.getId());
+    public String delete(String id) {
+        String deleted = this.userRepository.delete(id);
         if (deleted == null) {
             throw new EntityNotFoundException("User not found");
         }
         return deleted;
     }
 
-    private String isAuthorized(UserAuthorizeDto userAuthorizeDto) {
-        User user = this.userRepository.findByID(userAuthorizeDto.getId());
-        if (user == null) {
-            throw new EntityNotFoundException("User not found");
-        }
-        String token = userAuthorizeDto.getToken();
-        final String suffix = "-mrpToken";
-        if (token == null || token.isEmpty() || !token.equals(user.getUsername()+suffix)) {
-            throw new NotAuthorizedException("Not authorized");
-        }
-        return token;
-    }
 }

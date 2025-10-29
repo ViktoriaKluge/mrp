@@ -5,7 +5,6 @@ import at.technikum.application.common.Application;
 import at.technikum.application.common.Controller;
 import at.technikum.application.common.Router;
 import at.technikum.application.dto.authmiddleware.RequestDto;
-import at.technikum.application.dto.authmiddleware.UserAuthenticated;
 import at.technikum.application.exception.*;
 import at.technikum.application.util.ExceptionMapperCreator;
 import at.technikum.application.util.RouterCreator;
@@ -13,6 +12,8 @@ import at.technikum.server.http.ContentType;
 import at.technikum.server.http.Request;
 import at.technikum.server.http.Response;
 import at.technikum.server.http.Status;
+
+import java.util.Arrays;
 
 public class MrpApplication implements Application {
 
@@ -26,7 +27,6 @@ public class MrpApplication implements Application {
         this.router = routerCreator.getRouter();
         this.exceptionMapper = exceptionMapperCreator.getExceptionMapper();
         this.authMiddleware = new AuthMiddleware(routerCreator.getMemoryUserRepository());
-
     }
 
     @Override
@@ -42,12 +42,24 @@ public class MrpApplication implements Application {
         }
 
         try {
+            /*
+            response.setStatus(Status.OK);
+            response.setContentType(ContentType.TEXT_PLAIN);
+
+            response.setBody(Arrays.toString(requestDto.getPath()));
+            return response;
+
+             */
             RequestDto requestDto = request.getRequestDto();
-            authMiddleware.authenticate(requestDto);
+            requestDto.setId(authMiddleware.authenticate(requestDto));
+
             Controller controller = router.findController(request.getPath())
                     .orElseThrow(RuntimeException::new);
 
+
             return controller.handle(requestDto);
+
+
         } catch (Exception ex) {
             return exceptionMapper.toResponse(ex);
         }

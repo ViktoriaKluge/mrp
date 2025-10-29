@@ -5,16 +5,21 @@ import at.technikum.application.dto.authmiddleware.RequestDto;
 import at.technikum.application.exception.EntityNotFoundException;
 import at.technikum.application.model.Media;
 import at.technikum.application.model.User;
+import at.technikum.application.service.FavoritesService;
 import at.technikum.application.service.MediaService;
 import at.technikum.application.service.UserService;
 import at.technikum.server.http.*;
 
+import java.util.List;
+
 public class MediaController extends Controller {
 
     private final MediaService mediaService;
+    private final FavoritesService favoritesService;
 
-    public MediaController(MediaService mediaService) {
+    public MediaController(MediaService mediaService, FavoritesService favoritesService) {
         this.mediaService = mediaService;
+        this.favoritesService = favoritesService;
     }
 
     @Override
@@ -56,36 +61,31 @@ public class MediaController extends Controller {
         throw new EntityNotFoundException("Path not found");
     }
 
-    private Response deleteFavorite(String s) {
-        return null;
+    private Response deleteFavorite(String id) {
+        String title = this.favoritesService.delete(id);
+        Response response = new Response();
+        response.setBody(title+" deleted");
+        response.setStatus(Status.OK);
+        response.setContentType(ContentType.TEXT_PLAIN);
+        return response;
     }
 
-    private Response addFavorite(String s) {
-        return null;
-    }
+    private Response addFavorite(String id) {
+        Media media = this.favoritesService.add(id);
 
-    private Media findMedia(String id) {
-        return this.mediaService.findById(id);
+        return json(media,Status.OK);
     }
 
     private Response allMedia() {
-        Response response = new Response();
+        List<Media> mediaList = this.mediaService.findAll();
 
-        response.setStatus(Status.OK);
-        response.setContentType(ContentType.TEXT_PLAIN);
-        response.setBody(this.mediaService.findAll().toString());
-
-        return response;
+        return json(mediaList,Status.OK);
     }
 
     private Response mediaByID(String id) {
-        Response response = new Response();
+        Media media = this.mediaService.findById(id);
 
-        response.setStatus(Status.OK);
-        response.setContentType(ContentType.TEXT_PLAIN);
-        response.setBody(this.findMedia(id).toString());
-
-        return response;
+        return json(media,Status.OK);
     }
 
     private Response create(String body) {

@@ -21,17 +21,18 @@ public class Request {
     }
 
     public RequestDto getRequestDto(){
+
         RequestDto requestDto =toObject();
         requestDto.setToken(getBearerToken());
         requestDto.setMethod(this.method);
-        requestDto.setPath(path.split("/"));
+        requestDto.setPath(this.path.split("/"));
         return requestDto;
     }
 
     private String getHeader(String name) {
        List<String> list = headers.get(name);
        if (list == null || list.isEmpty()) {
-           throw new EntityNotFoundException("No such header " + name);
+           return "No header found";
        }
        return list.getFirst();
     }
@@ -46,11 +47,15 @@ public class Request {
     }
 
     private RequestDto toObject() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            return objectMapper.readValue(this.body, RequestDto.class);
-        } catch (Exception ex) {
-            throw new NotJsonBodyException(ex);
+        if (this.body == null || this.body.isEmpty()) {
+            return new RequestDto();
+        } else {
+            ObjectMapper objectMapper = new ObjectMapper();
+            try {
+                return objectMapper.readValue(this.body, RequestDto.class);
+            } catch (Exception ex) {
+                throw new NotJsonBodyException("ToObject doesnt work");
+            }
         }
     }
 

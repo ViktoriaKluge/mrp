@@ -16,12 +16,15 @@ public class MediaService {
     }
 
     public List<Media> findAll() {
-        return mediaRepository.findAll();
+        return mediaRepository.mediaList();
     }
 
     public Media findById(String id) {
-        return mediaRepository.findById(id)
-                .orElseThrow(EntityNotFoundException::new);
+        Media media = mediaRepository.findById(id);
+        if (media == null) {
+            throw new EntityNotFoundException("Media not found");
+        }
+        return media;
     }
 
     public void create(Media media) {

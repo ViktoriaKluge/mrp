@@ -7,16 +7,19 @@ import at.technikum.application.service.*;
 
 public class RouterCreator {
     private MemoryUserRepository memoryUserRepository;
+    private MemoryMediaRepository memoryMediaRepository;
     private Router router;
 
     public RouterCreator() {
-        Router router = new Router();
+        this.router = new Router();
         this.memoryUserRepository = new MemoryUserRepository();
-        router.addRoute("/users", new UserController(new UserService(this.memoryUserRepository),
+        this.memoryMediaRepository = new MemoryMediaRepository();
+        this.router.addRoute("/users", new UserController(new UserService(this.memoryUserRepository),
                 new AuthService(this.memoryUserRepository),new RecommendationService(this.memoryUserRepository)));
-        router.addRoute("/media", new MediaController( new MediaService(new MemoryMediaRepository())));
-        router.addRoute("/rating", new RatingController( new RatingService(new MemoryRatingRepository())));
-        router.addRoute("/leaderboard", new LeaderboardController(new LeaderboardService(memoryUserRepository)));
+        this.router.addRoute("/media", new MediaController( new MediaService(this.memoryMediaRepository),
+                new FavoritesService(this.memoryMediaRepository)));
+        this.router.addRoute("/rating", new RatingController( new RatingService(new MemoryRatingRepository())));
+        this.router.addRoute("/leaderboard", new LeaderboardController(new LeaderboardService(this.memoryUserRepository)));
     }
 
     public Router getRouter() {

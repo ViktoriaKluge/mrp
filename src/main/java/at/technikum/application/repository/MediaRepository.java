@@ -9,9 +9,11 @@ public interface MediaRepository {
 
     Media findById(String id);
     List<Media> mediaList();
-    void save(Media media);
-    void delete(String id);
-    void update(Media media);
-    void add(String id);
-
+    Media save(Media media);
+    String delete(String id);
+    Media update(Media media);
+    Media addRating(String id);
+    Media removeRating(String id);
+    Media addFavorite(String id);
+    Media removeFavorite(String id);
 }

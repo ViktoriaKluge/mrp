@@ -18,19 +18,6 @@ public class MemoryUserRepository implements UserRepository {
         this.users = user.createMockUsers();
     }
 
-    /*
-    @Override
-    public User find(String id) {
-        for (User user : users) {
-            if (user.getId().equals(id)) {
-                return user;
-            }
-        }
-        return null;
-    }
-
-     */
-
     @Override
     public List<User> userList() {
         return this.users;
@@ -49,9 +36,9 @@ public class MemoryUserRepository implements UserRepository {
     }
 
     @Override
-    public UserUpdatedDto update(String id, UserUpdateDto update) {
+    public UserUpdatedDto update(UserUpdateDto update) {
         for (User user : users) {
-            if (user.getId().equals(id)) {
+            if (user.getId().equals(update.getId())) {
                 if(user.getPassword().equals(update.getPasswordOld())) {
                     user.setUsername(update.getUsername());
                     user.setPassword(checkPassword(update));
@@ -87,10 +74,10 @@ public class MemoryUserRepository implements UserRepository {
     }
 
     @Override
-    public UserLoginDto login(UserLoginDto userLoginDto) {
-        User checkUser = findByUsername(userLoginDto.getUsername());
-        if (checkUser.getPassword().equals(userLoginDto.getPassword())) {
-            return userLoginDto;
+    public UserLoginDto login(UserLoginDto userLogin) {
+        User checkUser = findByUsername(userLogin.getUsername());
+        if (checkUser.getPassword().equals(userLogin.getPassword())) {
+            return userLogin;
         }
         return null;
     }
@@ -102,7 +89,7 @@ public class MemoryUserRepository implements UserRepository {
                 return u;
             }
         }
-        throw new EntityNotFoundException("User not found");
+        return null;
     }
 
     @Override
@@ -112,7 +99,7 @@ public class MemoryUserRepository implements UserRepository {
                 return u;
             }
         }
-        throw new RuntimeException(new EntityNotFoundException());
+        return null;
     }
 
     @Override
@@ -133,10 +120,10 @@ public class MemoryUserRepository implements UserRepository {
     }
 
     private UserUpdatedDto updateToUpdated(UserUpdateDto update, User user) {
-        UserUpdatedDto userUpdatedDto = new UserUpdatedDto();
-        userUpdatedDto.setUsername(update.getUsername());
-        userUpdatedDto.setEmail(user.getEmail());
-        userUpdatedDto.setId(user.getId());
-        return userUpdatedDto;
+        UserUpdatedDto userUpdated = new UserUpdatedDto();
+        userUpdated.setUsername(update.getUsername());
+        userUpdated.setEmail(user.getEmail());
+        userUpdated.setId(user.getId());
+        return userUpdated;
     }
 }

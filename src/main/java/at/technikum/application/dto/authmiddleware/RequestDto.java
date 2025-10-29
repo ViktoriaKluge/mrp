@@ -2,6 +2,7 @@ package at.technikum.application.dto.authmiddleware;
 
 import at.technikum.application.model.Media;
 import at.technikum.application.model.Rating;
+import at.technikum.server.http.ContentType;
 import at.technikum.server.http.Method;
 
 import java.util.List;
@@ -22,6 +23,7 @@ public class RequestDto {
     private List<Rating>  ratingList;
     private String[] path;
     private Method method;
+    private ContentType contentType;
 
     public RequestDto() {
 
@@ -145,5 +147,13 @@ public class RequestDto {
 
     public void setMethod(Method method) {
         this.method = method;
+    }
+
+    public ContentType getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(ContentType contentType) {
+        this.contentType = contentType;
     }
 }

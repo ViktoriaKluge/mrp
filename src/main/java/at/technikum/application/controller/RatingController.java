@@ -1,6 +1,7 @@
 package at.technikum.application.controller;
 
 import at.technikum.application.common.Controller;
+import at.technikum.application.dto.authmiddleware.RequestDto;
 import at.technikum.application.exception.EntityNotFoundException;
 import at.technikum.application.service.RatingService;
 import at.technikum.server.http.*;
@@ -14,12 +15,11 @@ public class RatingController extends Controller {
     }
 
     @Override
-    public Response handle(Request request) {
-        String[] path = request.getPath().split("/");
-        String method = request.getMethod();
-        String body = request.getBody();
+    public Response handle(RequestDto requestDto) {
+        String[] path = requestDto.getPath();
+        Method method = requestDto.getMethod();
 
-        if (method.equals(Method.POST.getVerb())) {
+        if (method.equals(Method.POST)) {
             if(path[3].equals("like")){
                 return like(path[2]);
             }
@@ -28,11 +28,11 @@ public class RatingController extends Controller {
             }
         }
 
-        if (method.equals(Method.PUT.getVerb())) {
+        if (method.equals(Method.PUT)) {
             return putRating(path[2]);
         }
 
-        if (method.equals(Method.DELETE.getVerb())) {
+        if (method.equals(Method.DELETE)) {
             return delete(path[2]);
         }
 

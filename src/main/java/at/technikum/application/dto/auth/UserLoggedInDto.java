@@ -1,8 +1,8 @@
 package at.technikum.application.dto.auth;
 
 public class UserLoggedInDto {
-    String username;
-    String token;
+    private String username;
+    private String token;
 
     public String getUsername() {
         return username;

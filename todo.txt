@@ -10,3 +10,6 @@ evtl Security cross cutting conserns
 next steps:
     Authentifizierung - authMiddleware oder SecuCCC
     *Controller - 404 path not found maybe unnötig mit neuem Router?
+    Recommendations überlegen
+
+    von requestDto vllt to user - media - rating?

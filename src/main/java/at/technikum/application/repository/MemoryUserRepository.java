@@ -122,7 +122,7 @@ public class MemoryUserRepository implements UserRepository {
                 return u;
             }
         }
-        throw new RuntimeException(new EntityNotFoundException());
+        return null;
     }
 
     private String checkPassword(UserUpdateDto update) {

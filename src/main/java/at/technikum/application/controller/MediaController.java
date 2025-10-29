@@ -1,6 +1,7 @@
 package at.technikum.application.controller;
 
 import at.technikum.application.common.Controller;
+import at.technikum.application.dto.authmiddleware.RequestDto;
 import at.technikum.application.exception.EntityNotFoundException;
 import at.technikum.application.model.Media;
 import at.technikum.application.model.User;
@@ -17,12 +18,11 @@ public class MediaController extends Controller {
     }
 
     @Override
-    public Response handle(Request request) {
-        String[] path = request.getPath().split("/");
-        String method = request.getMethod();
-        String body = request.getBody();
+    public Response handle(RequestDto requestDto) {
+        String[] path = requestDto.getPath();
+        Method method = requestDto.getMethod();
 
-        if (method.equals(Method.GET.getVerb())) {
+        if (method.equals(Method.GET)) {
             if (path.length==2) {
                 return allMedia();
             }
@@ -30,9 +30,9 @@ public class MediaController extends Controller {
             return mediaByID(path[2]);
         }
 
-        if (method.equals(Method.POST.getVerb())) {
+        if (method.equals(Method.POST)) {
             if (path.length==2) {
-                return create(body);
+                return create("body");
             }
             if(path[3].equals("rate")){
                 return null;
@@ -42,11 +42,11 @@ public class MediaController extends Controller {
             }
         }
 
-        if (method.equals(Method.PUT.getVerb())) {
+        if (method.equals(Method.PUT)) {
             return update(path[2]);
         }
 
-        if (method.equals(Method.DELETE.getVerb())) {
+        if (method.equals(Method.DELETE)) {
             if(path[3].equals("favorite")){
                 return deleteFavorite(path[2]);
             }

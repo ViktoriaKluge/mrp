@@ -1,6 +1,7 @@
 package at.technikum.application.controller;
 
 import at.technikum.application.common.Controller;
+import at.technikum.application.dto.authmiddleware.RequestDto;
 import at.technikum.application.service.LeaderboardService;
 import at.technikum.server.http.Request;
 import at.technikum.server.http.Response;
@@ -13,7 +14,7 @@ public class LeaderboardController extends Controller {
     }
 
     @Override
-    public Response handle(Request request) {
+    public Response handle(RequestDto requestDto) {
         return null;
     }
 }

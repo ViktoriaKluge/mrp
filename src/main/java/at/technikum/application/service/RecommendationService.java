@@ -1,5 +1,6 @@
 package at.technikum.application.service;
 
+import at.technikum.application.dto.users.UserAuthorizeDto;
 import at.technikum.application.model.Media;
 import at.technikum.application.model.User;
 import at.technikum.application.repository.MemoryUserRepository;
@@ -13,7 +14,8 @@ public class RecommendationService {
         this.memoryUserRepository = memoryUserRepository;
     }
 
-    public List<Media> getRecommendations(User user) {
-        return List.of();
+    public List<Media> getRecommendations(UserAuthorizeDto user, String genre) {
+        Media media = new Media();
+        return media.createMockMedia();
     }
 }

@@ -1,5 +1,6 @@
 package at.technikum.application.common;
 
+import at.technikum.application.dto.authmiddleware.RequestDto;
 import at.technikum.application.exception.JsonConversionException;
 import at.technikum.application.exception.NotJsonBodyException;
 import at.technikum.server.http.ContentType;
@@ -10,16 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public abstract class Controller {
 
-    public abstract Response handle(Request request);
-
-    protected <T> T toObject(String content, Class<T> valueType) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            return objectMapper.readValue(content, valueType);
-        } catch (Exception ex) {
-            throw new NotJsonBodyException(ex);
-        }
-    }
+    public abstract Response handle(RequestDto requestDto);
 
     protected Response ok() {
         return status(Status.OK);

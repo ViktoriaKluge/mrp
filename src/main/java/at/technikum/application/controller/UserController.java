@@ -4,15 +4,19 @@ import at.technikum.application.common.Controller;
 import at.technikum.application.dto.auth.UserCreateDto;
 import at.technikum.application.dto.auth.UserLoggedInDto;
 import at.technikum.application.dto.auth.UserLoginDto;
+import at.technikum.application.dto.authmiddleware.RequestDto;
 import at.technikum.application.dto.media.MediaListAuthorizedDto;
 import at.technikum.application.dto.rating.RatingListAuthorizedDto;
 import at.technikum.application.dto.users.*;
 import at.technikum.application.exception.EntityNotFoundException;
 import at.technikum.application.model.User;
+import at.technikum.application.model.Media;
 import at.technikum.application.service.AuthService;
 import at.technikum.application.service.RecommendationService;
 import at.technikum.application.service.UserService;
 import at.technikum.server.http.*;
+
+import java.util.List;
 
 public class UserController extends Controller {
 
@@ -29,9 +33,13 @@ public class UserController extends Controller {
     }
 
     @Override
-    public Response handle(Request request) {
+    public Response handle(RequestDto requestDto) {
+        String[] path = requestDto.getPath();
+        Method method = requestDto.getMethod();
 
-        if (request.getPath().equals("/users")) {
+        // request to user?
+
+        if (path.length==1) {
             Response response = new Response();
             response.setStatus(Status.OK);
             response.setContentType(ContentType.TEXT_PLAIN);
@@ -39,66 +47,67 @@ public class UserController extends Controller {
             return response;
         }
 
-        String[] path = request.getPath().split("/");
-        String method = request.getMethod();
-        String body = request.getBody();
-
-        if (method.equals(Method.POST.getVerb())) {
+        if (method.equals(Method.POST)) {
 
             if (path[2].equals("login")) {
-                return login(body);
+                return login("body");
             }
 
             if (path[2].equals("register")) {
-                return createUser(body);
+                return createUser("body");
             }
         } else {
 
-            String token = request.getBearerToken();
-            UserAuthorizeDto userAuthorizeDto = new UserAuthorizeDto(path[2], token);
-            if (method.equals(Method.GET.getVerb())) {
+            if (method.equals(Method.GET)) {
                 if (path[3].equals("profile")) {
-                    return profile(userAuthorizeDto);
+                    return profile(requestDto);
                 }
 
                 if (path[3].equals("ratings")) {
-                    return ratings(userAuthorizeDto);
+                    return ratings(requestDto);
                 }
 
                 if (path[3].endsWith("favorites")) {
-                    return favorites(userAuthorizeDto);
+                    return favorites(requestDto);
                 }
 
                 if (path[3].endsWith("recommendations")) {
-                    return null;
+                    return recommendations(requestDto);
                 }
             }
 
             if (method.equals(Method.PUT.getVerb())) {
                 if (path[3].equals("profile")) {
-                    return update(userAuthorizeDto, body);
+                    return update(requestDto);
                 }
             }
 
             if (method.equals(Method.DELETE.getVerb())) {
-                return delete(userAuthorizeDto);
+                return delete(requestDto);
             }
         }
 
         throw new EntityNotFoundException("Path not found");
     }
 
-    private Response profile(UserAuthorizeDto userAuthorizeDto) {
+    private Response recommendations(RequestDto requestDto) {
+        List<Media> recommendations = this.recommendationService.getRecommendations(
+                userAuthorizeDto,body
+        );
+        return json(recommendations,Status.OK);
+    }
+
+    private Response profile(RequestDto requestDto) {
         UserAuthorizedDto user = this.userService.getUser(userAuthorizeDto);
         return json(user,Status.OK);
     }
 
-    private Response ratings(UserAuthorizeDto userAuthorizeDto) {
+    private Response ratings(RequestDto requestDto) {
         RatingListAuthorizedDto ratings = this.userService.ratings(userAuthorizeDto);
         return json(ratings, Status.OK);
     }
 
-    private Response favorites(UserAuthorizeDto userAuthorizeDto) {
+    private Response favorites(RequestDto requestDto) {
         MediaListAuthorizedDto favorites = this.userService.favorites(userAuthorizeDto);
         return json(favorites, Status.OK);
     }

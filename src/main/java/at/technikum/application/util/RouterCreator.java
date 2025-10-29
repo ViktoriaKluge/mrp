@@ -6,19 +6,26 @@ import at.technikum.application.repository.*;
 import at.technikum.application.service.*;
 
 public class RouterCreator {
+    private MemoryUserRepository memoryUserRepository;
+    private Router router;
+
     public RouterCreator() {
-
-    }
-
-    public Router getRouter() {
         Router router = new Router();
-        MemoryUserRepository memoryUserRepository = new MemoryUserRepository();
-        router.addRoute("/users", new UserController(new UserService(memoryUserRepository),
-                new AuthService(memoryUserRepository),new RecommendationService(memoryUserRepository)));
+        this.memoryUserRepository = new MemoryUserRepository();
+        router.addRoute("/users", new UserController(new UserService(this.memoryUserRepository),
+                new AuthService(this.memoryUserRepository),new RecommendationService(this.memoryUserRepository)));
         router.addRoute("/media", new MediaController( new MediaService(new MemoryMediaRepository())));
         router.addRoute("/rating", new RatingController( new RatingService(new MemoryRatingRepository())));
         router.addRoute("/leaderboard", new LeaderboardController(new LeaderboardService(memoryUserRepository)));
+    }
+
+    public Router getRouter() {
+
         return router;
+    }
+
+    public MemoryUserRepository getMemoryUserRepository() {
+        return memoryUserRepository;
     }
 }
 /*

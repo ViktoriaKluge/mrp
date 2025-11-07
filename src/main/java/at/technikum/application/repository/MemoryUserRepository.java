@@ -1,5 +1,6 @@
 package at.technikum.application.repository;
 
+import at.technikum.application.dto.auth.UserLoggedInDto;
 import at.technikum.application.dto.auth.UserLoginDto;
 import at.technikum.application.dto.users.UserUpdateDto;
 import at.technikum.application.dto.users.UserUpdatedDto;
@@ -74,10 +75,13 @@ public class MemoryUserRepository implements UserRepository {
     }
 
     @Override
-    public UserLoginDto login(UserLoginDto userLogin) {
+    public UserLoggedInDto login(UserLoginDto userLogin) {
         User checkUser = findByUsername(userLogin.getUsername());
+        if(checkUser == null) {
+            return null;
+        }
         if (checkUser.getPassword().equals(userLogin.getPassword())) {
-            return userLogin;
+            return new UserLoggedInDto(checkUser.getUsername(),checkUser.getId());
         }
         return null;
     }

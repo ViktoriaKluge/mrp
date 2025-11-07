@@ -1,9 +1,10 @@
 package at.technikum.application.dto.users;
 
 public class UserUpdatedDto {
-    String username;
-    String email;
-    String id;
+    private String username;
+    private String email;
+    private String id;
+    private String newToken;
 
     public UserUpdatedDto() {
 
@@ -31,5 +32,13 @@ public class UserUpdatedDto {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getNewToken() {
+        return newToken;
+    }
+
+    public void setNewToken(String newToken) {
+        this.newToken = newToken;
     }
 }

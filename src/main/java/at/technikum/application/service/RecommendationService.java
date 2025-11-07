@@ -4,15 +4,16 @@ import at.technikum.application.dto.users.UserAuthorizeDto;
 import at.technikum.application.model.Media;
 import at.technikum.application.model.User;
 import at.technikum.application.repository.MemoryUserRepository;
+import at.technikum.application.repository.UserRepository;
 import at.technikum.server.http.ContentType;
 
 import java.util.List;
 
 public class RecommendationService {
-    private final MemoryUserRepository memoryUserRepository;
+    private final UserRepository userRepository;
 
-    public RecommendationService(MemoryUserRepository memoryUserRepository) {
-        this.memoryUserRepository = memoryUserRepository;
+    public RecommendationService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     public List<Media> getRecommendations(String id, ContentType contentType) {

@@ -4,16 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Rating {
-    String mediaId;
-    Integer rating;
+    private String id;
+    private String comment;
+    private Integer stars;
 
     public Rating() {
 
     }
 
     public Rating(String id, Integer rating) {
-       this.mediaId = id;
-       this.rating = rating;
+       this.comment = id;
+       this.stars = rating;
     }
 
     public List<Rating> createMockRatings(){
@@ -27,22 +28,22 @@ public class Rating {
 
     @Override
     public String toString() {
-        return String.format("{media id:%s, rating:%s}", this.mediaId, this.rating);
+        return String.format("{media id:%s, rating:%s}", this.comment, this.stars);
     }
 
-    public String getMediaId() {
-        return mediaId;
+    public String getComment() {
+        return comment;
     }
 
-    public void setMediaId(String mediaId) {
-        this.mediaId = mediaId;
+    public void setComment(String mediaId) {
+        this.comment = mediaId;
     }
 
     public Integer getRating() {
-        return rating;
+        return stars;
     }
 
     public void setRating(Integer rating) {
-        this.rating = rating;
+        this.stars = rating;
     }
 }

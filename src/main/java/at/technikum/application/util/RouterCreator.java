@@ -1,25 +1,35 @@
 package at.technikum.application.util;
 
+import at.technikum.application.common.ConnectionPool;
 import at.technikum.application.common.Router;
 import at.technikum.application.controller.*;
 import at.technikum.application.repository.*;
 import at.technikum.application.service.*;
 
 public class RouterCreator {
-    private MemoryUserRepository memoryUserRepository;
+    private UserRepository userRepository;
     private MemoryMediaRepository memoryMediaRepository;
     private Router router;
+    private final ConnectionPool connectionPool;
 
     public RouterCreator() {
         this.router = new Router();
-        this.memoryUserRepository = new MemoryUserRepository();
+        this.connectionPool = new ConnectionPool(
+                "postgresql",
+                "localhost",
+                5432,
+                "mrpUser",
+                "mrp-pw",
+                "mrp"
+        );
+        this.userRepository= new DbUserRepository(connectionPool);
         this.memoryMediaRepository = new MemoryMediaRepository();
-        this.router.addRoute("/users", new UserController(new UserService(this.memoryUserRepository),
-                new AuthService(this.memoryUserRepository),new RecommendationService(this.memoryUserRepository)));
+        this.router.addRoute("/users", new UserController(new UserService(this.userRepository),
+                new AuthService(this.userRepository),new RecommendationService(this.userRepository)));
         this.router.addRoute("/media", new MediaController( new MediaService(this.memoryMediaRepository),
                 new FavoritesService(this.memoryMediaRepository)));
         this.router.addRoute("/rating", new RatingController( new RatingService(new MemoryRatingRepository())));
-        this.router.addRoute("/leaderboard", new LeaderboardController(new LeaderboardService(this.memoryUserRepository)));
+        this.router.addRoute("/leaderboard", new LeaderboardController(new LeaderboardService(this.userRepository)));
     }
 
     public Router getRouter() {
@@ -27,8 +37,8 @@ public class RouterCreator {
         return router;
     }
 
-    public MemoryUserRepository getMemoryUserRepository() {
-        return memoryUserRepository;
+    public UserRepository getUserRepository() {
+        return userRepository;
     }
 }
 /*

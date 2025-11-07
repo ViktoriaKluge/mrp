@@ -4,16 +4,20 @@ for final hand-in:
     Controller vervollständigen
     Services vervollständigen
     Repos vervollständigen
-
-evtl Security cross cutting conserns
+    Alle Dtos gebraucht?
 
 next steps:
-    Authentifizierung - authMiddleware oder SecuCCC
-    *Controller - 404 path not found maybe unnötig mit neuem Router?
+    wo brauch ich token, wie gebe ich ihn zurück (user update!)
+    
     Recommendations überlegen
-
     von requestDto vllt to user - media - rating?
     memorymedia update, rating, favs
 
+    Update models + repositories
+    Update Ratings
+    Update docs
+
 errors:
-    toOtherObject
+
+little things:
+    DbUserRepository try catch Blöcke wiederholen sich

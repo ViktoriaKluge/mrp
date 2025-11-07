@@ -43,18 +43,17 @@ public class AuthService {
 
     public UserLoggedInDto createToken(UserLoginDto userLoginDto) {
         if (userLoginDto.bothHere()) {
-            userLoginDto = this.userRepository.login(userLoginDto);
-            if(userLoginDto == null) {
+            UserLoggedInDto userLoggedInDto = this.userRepository.login(userLoginDto);
+            if(userLoggedInDto == null) {
                 throw new EntityNotFoundException("Username and password dont match");
             }
-            return newToken(userLoginDto.getUsername());
+            return newToken(userLoggedInDto);
         }
         throw new EntityNotFoundException("Not enough parameters");
     }
 
-    private UserLoggedInDto newToken(String username) {
-        UserLoggedInDto userLoggedInDto = new UserLoggedInDto();
-        userLoggedInDto.setUsername(username);
+    private UserLoggedInDto newToken(UserLoggedInDto userLoggedInDto) {
+        String username = userLoggedInDto.getUsername();
         userLoggedInDto.setToken(username+"-mrpToken");
         return userLoggedInDto;
     }

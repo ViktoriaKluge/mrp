@@ -13,19 +13,19 @@ GET http://localhost:8080/
 GET http://localhost:8080/users
 
 ### Get user profile
-GET http://localhost:8080/users/9632/profile
-Authorization: Bearer userlein-mrpToken
+GET http://localhost:8080/users/f4dfe7f0-66b0-48a2-b823-b6d3d1b90f9a/profile
+Authorization: Bearer userleini-mrpToken
 
 ### Get user ratings
-GET http://localhost:8080/users/9632/ratings
-Authorization: Bearer userlein-mrpToken
+GET http://localhost:8080/users/d05e40bc-3a56-40f5-aaac-37fd98335a07/ratings
+Authorization: Bearer testuser1-mrpToken
 
 ### Post auth register
 POST http://localhost:8080/users/register
 Content-Type: application/json
 
 {
-    "username": "testuser1",
+    "username": "userleini",
     "password1": "124",
     "password2": "124",
     "email": "example@test1.com",
@@ -37,22 +37,22 @@ POST http://localhost:8080/users/login
 Content-Type: application/json
 
 {
-    "username": "testuser1",
-    "password": "124"
+    "username": "userleini",
+    "password": "127"
 }
 
 ### Put users profile
-PUT http://localhost:8080/users/9632/profile
+PUT http://localhost:8080/users/2252699f-8a32-44d1-be85-1b7a643332f7/profile
 Content-Type: application/json
-Authorization: Bearer userlein-mrpToken
+Authorization: Bearer username-mrpToken
 
 {
-  "username": "userlein",
-  "passwordOld": "securepassword",
+  "username": "userleini",
+  "passwordOld": "124",
   "passwordNew1": "127",
   "passwordNew2": "127"
 }
 
 ### Delete user
-DELETE http://localhost:8080/users/9632/delete
+DELETE http://localhost:8080/users/8c9f690d-75c1-4323-b466-0e000cdcb11e/delete
 Authorization: Bearer userlein-mrpToken

@@ -1,0 +1,14 @@
+services:
+  postgresdb:
+    image: postgres:18.0
+    environment:
+      POSTGRES_PASSWORD: mrp-pw
+      POSTGRES_USER: mrpUser
+      POSTGRES_DB: mrp
+    ports:
+      - 5432:5432
+    volumes:
+      - mrpv:/var/lib/postgresql/
+
+volumes:
+  mrpv:

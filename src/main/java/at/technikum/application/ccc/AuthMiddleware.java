@@ -5,12 +5,13 @@ import at.technikum.application.exception.EntityNotFoundException;
 import at.technikum.application.exception.NotAuthorizedException;
 import at.technikum.application.model.User;
 import at.technikum.application.repository.MemoryUserRepository;
+import at.technikum.application.repository.UserRepository;
 
 public class AuthMiddleware {
-    private final MemoryUserRepository userRepository;
+    private final UserRepository userRepository;
     private String[] path;
 
-    public AuthMiddleware(MemoryUserRepository userRepository) {
+    public AuthMiddleware(UserRepository userRepository) {
         this.userRepository = userRepository;
 
     }

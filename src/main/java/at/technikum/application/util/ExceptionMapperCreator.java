@@ -17,6 +17,9 @@ public class ExceptionMapperCreator {
         exceptionMapper.register(UnprocessableEntityException.class, Status.BAD_REQUEST);
         exceptionMapper.register(NotAuthorizedException.class, Status.UNAUTHORIZED);
         exceptionMapper.register(IncompatiblePayloadTypeException.class, Status.BAD_REQUEST);
+        exceptionMapper.register(SQLToUserException.class, Status.INTERNAL_SERVER_ERROR);
+        exceptionMapper.register(DatabaseConnectionException.class, Status.INTERNAL_SERVER_ERROR);
+        exceptionMapper.register(UniqueViolationException.class, Status.BAD_REQUEST);
         return exceptionMapper;
     }
 }

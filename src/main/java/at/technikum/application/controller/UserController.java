@@ -39,8 +39,6 @@ public class UserController extends Controller {
         String[] path = requestDto.getPath();
         Method method = requestDto.getMethod();
 
-        // request to user?
-
         if (path.length==2) {
             Response response = new Response();
             response.setStatus(Status.OK);

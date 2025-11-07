@@ -2,6 +2,7 @@ package at.technikum.application;
 
 import at.technikum.application.ccc.AuthMiddleware;
 import at.technikum.application.common.Application;
+import at.technikum.application.common.ConnectionPool;
 import at.technikum.application.common.Controller;
 import at.technikum.application.common.Router;
 import at.technikum.application.dto.authmiddleware.RequestDto;
@@ -26,7 +27,7 @@ public class MrpApplication implements Application {
         ExceptionMapperCreator exceptionMapperCreator = new ExceptionMapperCreator();
         this.router = routerCreator.getRouter();
         this.exceptionMapper = exceptionMapperCreator.getExceptionMapper();
-        this.authMiddleware = new AuthMiddleware(routerCreator.getMemoryUserRepository());
+        this.authMiddleware = new AuthMiddleware(routerCreator.getUserRepository());
     }
 
     @Override

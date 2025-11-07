@@ -1,5 +1,6 @@
 package at.technikum.application.repository;
 
+import at.technikum.application.dto.auth.UserLoggedInDto;
 import at.technikum.application.dto.auth.UserLoginDto;
 import at.technikum.application.dto.users.UserUpdateDto;
 import at.technikum.application.dto.users.UserUpdatedDto;
@@ -20,5 +21,5 @@ public interface UserRepository {
     UserUpdatedDto update(UserUpdateDto update);
     String delete(String id);
     User save(User user);
-    UserLoginDto login(UserLoginDto userLoginDto);
+    UserLoggedInDto login(UserLoginDto userLoginDto);
 }

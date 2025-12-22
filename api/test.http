@@ -6,11 +6,11 @@ GET http://localhost:8080/
 GET http://localhost:8080/users
 
 ### Get user profile
-GET http://localhost:8080/users/5908acb0-3896-4a63-8451-740fd0b4de12/profile
+GET http://localhost:8080/users/02970a61-2fc7-4785-a35e-657513779c40/profile
 Authorization: Bearer userlein-mrpToken
 
 ### Get user ratings
-GET http://localhost:8080/users/5908acb0-3896-4a63-8451-740fd0b4de12/ratings
+GET http://localhost:8080/users/5e9a74a8-4fae-4dc8-9743-cc7779765ff2/ratings
 Authorization: Bearer userlein-mrpToken
 
 ### Post auth register
@@ -35,17 +35,17 @@ Content-Type: application/json
 }
 
 ### Put users profile
-PUT http://localhost:8080/users/b87258a2-4377-4984-ae00-aabd9e54120a/profile
+PUT http://localhost:8080/users/717a6f04-d460-4551-b2d4-abd2e44c95ea/profile
 Content-Type: application/json
 Authorization: Bearer userlein-mrpToken
 
 {
-  "username": "userlein",
+  "username": "userleini",
   "passwordOld": "124",
   "passwordNew1": "127",
   "passwordNew2": "127"
 }
 
 ### Delete user
-DELETE http://localhost:8080/users/b87258a2-4377-4984-ae00-aabd9e54120a/delete
-Authorization: Bearer userlein-mrpToken
+DELETE http://localhost:8080/users/717a6f04-d460-4551-b2d4-abd2e44c95ea/delete
+Authorization: Bearer userleini-mrpToken

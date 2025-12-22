@@ -81,7 +81,7 @@ public class UserCreateDto {
     public UserType getUserType() {
         if (userType.equals("Admin")) {
             return UserType.Admin;
-        } else if (userType.equals( "User")) {
+        } else if (userType.equals("User")) {
             return UserType.User;
         }
         return null;

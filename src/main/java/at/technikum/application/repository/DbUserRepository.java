@@ -4,7 +4,6 @@ import at.technikum.application.common.ConnectionPool;
 import at.technikum.application.dto.auth.UserLoggedInDto;
 import at.technikum.application.dto.auth.UserLoginDto;
 import at.technikum.application.dto.users.UserUpdateDto;
-import at.technikum.application.dto.users.UserUpdatedDto;
 import at.technikum.application.enums.UserType;
 import at.technikum.application.exception.DatabaseConnectionException;
 import at.technikum.application.exception.SQLToUserException;
@@ -19,6 +18,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 public class DbUserRepository implements UserRepository {
 
@@ -50,19 +51,19 @@ public class DbUserRepository implements UserRepository {
     }
 
     @Override
-    public User findByID(String id) {
+    public Optional<User> findByID(UUID id) {
         try (
                 Connection conn = connectionPool.getConnection();
-                PreparedStatement prestmt = conn.prepareStatement(SELECT_BY_ID);
+                PreparedStatement prestmt = conn.prepareStatement(SELECT_BY_ID)
         ) {
-            prestmt.setObject(1,java.util.UUID.fromString(id));
+            prestmt.setObject(1,id);
 
             try (ResultSet rs = prestmt.executeQuery()) {
                 if (!rs.next()) {
-                    return null;
+                    return Optional.empty();
                 }
 
-                return setUser(rs);
+                return Optional.of(setUser(rs));
             }
         } catch (SQLException e) {
             throw new DatabaseConnectionException("Could not find user");
@@ -70,19 +71,19 @@ public class DbUserRepository implements UserRepository {
     }
 
     @Override
-    public User findByUsername(String username) {
+    public Optional<User> findByUsername(String username) {
         try (
                 Connection conn = connectionPool.getConnection();
-                PreparedStatement prestmt = conn.prepareStatement(SELECT_BY_USERNAME);
+                PreparedStatement prestmt = conn.prepareStatement(SELECT_BY_USERNAME)
         ) {
             prestmt.setString(1,username);
 
             try (ResultSet rs = prestmt.executeQuery()) {
                 if (!rs.next()) {
-                    return null;
+                    return Optional.empty();
                 }
 
-                return setUser(rs);
+                return Optional.of(setUser(rs));
             }
         } catch (SQLException e) {
             throw new DatabaseConnectionException("Could not find user");
@@ -90,19 +91,19 @@ public class DbUserRepository implements UserRepository {
     }
 
     @Override
-    public User findByEmail(String email) {
+    public Optional<User> findByEmail(String email) {
         try (
                 Connection conn = connectionPool.getConnection();
-                PreparedStatement prestmt = conn.prepareStatement(SELECT_BY_EMAIL);
+                PreparedStatement prestmt = conn.prepareStatement(SELECT_BY_EMAIL)
         ) {
             prestmt.setString(1,email);
 
             try (ResultSet rs = prestmt.executeQuery()) {
                 if (!rs.next()) {
-                    return null;
+                    return Optional.empty();
                 }
 
-                return setUser(rs);
+                return Optional.of(setUser(rs));
             }
         } catch (SQLException e) {
             throw new DatabaseConnectionException("Could not find user");
@@ -113,11 +114,11 @@ public class DbUserRepository implements UserRepository {
     public List<User> userList() {
         try (
                 Connection conn = connectionPool.getConnection();
-                PreparedStatement prestmt = conn.prepareStatement(SELECT_ALL_USERS);
+                PreparedStatement prestmt = conn.prepareStatement(SELECT_ALL_USERS)
         ) {
             try (ResultSet rs = prestmt.executeQuery()) {
                 if (!rs.next()) {
-                    return null;
+                    return List.of();
                 }
 
                 List<User> userList = new ArrayList<>();
@@ -134,56 +135,52 @@ public class DbUserRepository implements UserRepository {
     }
 
     @Override
-    public List<Rating> ratings(String id) {
+    public List<Rating> ratings(UUID id) {
         Rating rating = new Rating();
         return rating.createMockRatings();
     }
 
     @Override
-    public List<Media> favorites(String id) {
+    public List<Media> favorites(UUID id) {
         Media media = new Media();
         return media.createMockMedia();
     }
 
     @Override
-    public UserUpdatedDto update(UserUpdateDto update) {
-        User user = findByID(update.getId());
+    public Optional<UserLoggedInDto> update(UserUpdateDto update) {
         try (
                 Connection conn = connectionPool.getConnection();
-                PreparedStatement prestmt = conn.prepareStatement(UPDATE_USER);
+                PreparedStatement prestmt = conn.prepareStatement(UPDATE_USER)
         ) {
-            if (user.getPassword().equals(update.getPasswordOld())) {
-                String newPsw = checkPassword(update);
-                prestmt.setString(1,update.getUsername());
-                prestmt.setString(2,newPsw);
-                prestmt.setObject(3,java.util.UUID.fromString(update.getId()));
-                prestmt.executeUpdate();
-                user.setUsername(update.getUsername());
-                user.setPassword(newPsw);
-                return updateToUpdated(update, user);
-            }
+
+            String newPsw = checkPassword(update);
+            prestmt.setString(1,update.getUsername());
+            prestmt.setString(2,newPsw);
+            prestmt.setObject(3,update.getId());
+            prestmt.executeUpdate();
+            return Optional.of(updateToLoggedIn(update));
+
         } catch (SQLException e) {
             if (e.getSQLState().equals("23505")) {
                 throw new UniqueViolationException("Username or email already exists");
             }
             throw new DatabaseConnectionException("Could not update user");
         }
-        return null;
     }
 
     @Override
-    public String delete(String id) {
+    public Optional<String> delete(User user) {
        try (
                Connection conn = connectionPool.getConnection();
-               PreparedStatement prestmt = conn.prepareStatement(DELETE);
+               PreparedStatement prestmt = conn.prepareStatement(DELETE)
            ) {
-           prestmt.setObject(1,java.util.UUID.fromString(id));
+           prestmt.setObject(1,user.getId());
 
            try (ResultSet rs = prestmt.executeQuery()){
                if (!rs.next()) {
-                   return null;
+                   return Optional.empty();
                }
-               return rs.getString("username");
+               return Optional.of(rs.getString("username"));
            }
        } catch (SQLException e) {
            throw new DatabaseConnectionException("Could not delete user");
@@ -191,19 +188,19 @@ public class DbUserRepository implements UserRepository {
     }
 
     @Override
-    public User save(User user) {
+    public Optional<User> save(User user) {
         try (
             Connection conn = connectionPool.getConnection();
-            PreparedStatement prestmt = conn.prepareStatement(SAVE);
+            PreparedStatement prestmt = conn.prepareStatement(SAVE)
         ) {
-            prestmt.setObject(1, java.util.UUID.fromString(user.getId()));
+            prestmt.setObject(1, user.getId());
             prestmt.setString(2, user.getUsername());
             prestmt.setString(3, user.getPassword());
             prestmt.setString(4, user.getEmail());
-            prestmt.setString(5,user.getUserType().getType());
+            prestmt.setString(5, user.getUserType().getType());
             prestmt.executeUpdate();
 
-            return user;
+            return Optional.of(user);
         } catch (SQLException e) {
             if (e.getSQLState().equals("23505")) {
                 throw new UniqueViolationException("Username or email already exists");
@@ -213,15 +210,16 @@ public class DbUserRepository implements UserRepository {
     }
 
     @Override
-    public UserLoggedInDto login(UserLoginDto userLogin) {
-        User checkUser = findByUsername(userLogin.getUsername());
-        if (checkUser == null) {
-            return null;
+    public Optional<UserLoggedInDto> login(UserLoginDto userLogin) {
+        Optional<User> checkUser = findByUsername(userLogin.getUsername());
+        if (checkUser.isEmpty()) {
+            return Optional.empty();
         }
-        if (checkUser.getPassword().equals(userLogin.getPassword())) {
-            return new UserLoggedInDto(checkUser.getUsername(),checkUser.getId());
+        User foundUser = checkUser.get();
+        if (foundUser.getPassword().equals(userLogin.getPassword())) {
+            return Optional.of(new UserLoggedInDto(foundUser.getUsername(),foundUser.getId()));
         }
-        return null;
+        return Optional.empty();
     }
 
     private String checkPassword(UserUpdateDto update) {
@@ -231,25 +229,24 @@ public class DbUserRepository implements UserRepository {
         return update.getPasswordOld();
     }
 
-    private UserUpdatedDto updateToUpdated(UserUpdateDto update, User user) {
-        UserUpdatedDto userUpdated = new UserUpdatedDto();
+    private UserLoggedInDto updateToLoggedIn(UserUpdateDto update) {
+        UserLoggedInDto userUpdated = new UserLoggedInDto();
         userUpdated.setUsername(update.getUsername());
-        userUpdated.setEmail(user.getEmail());
-        userUpdated.setId(user.getId());
+        userUpdated.setId(update.getId());
         return userUpdated;
     }
 
     private User setUser(ResultSet rs) throws SQLException {
         try {
             User user = new User();
-            user.setId(rs.getString("uid"));
+            user.setId(rs.getObject("uid", UUID.class));
             user.setUsername(rs.getString("username"));
             user.setPassword(rs.getString("password"));
             user.setEmail(rs.getString("email"));
             String ut = rs.getString("usertype");
-            if (ut.equals("user")){
+            if (ut.equals("User")){
                 user.setUserType(UserType.User);
-            } else if (ut.equals("admin")){
+            } else if (ut.equals("Admin")){
                 user.setUserType(UserType.Admin);
             }
             return user;

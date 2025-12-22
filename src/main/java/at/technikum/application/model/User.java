@@ -1,25 +1,24 @@
 package at.technikum.application.model;
 
+import at.technikum.application.dto.auth.UserLoggedInDto;
 import at.technikum.application.enums.UserType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class User {
-    private String id;
+    private UUID id;
     private String username;
     private String password;
     private String email;
     private UserType userType;
-    private List<Rating> ratings;
-    private List <Media> favorites;
-    private List <String> favoriteGenre;
 
     public User() {
 
     }
 
-    public User(String id, String username, String password, String email, UserType userType) {
+    public User(UUID id, String username, String password, String email, UserType userType) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -27,6 +26,7 @@ public class User {
         this.userType = userType;
     }
 
+    /*
     public List<User> createMockUsers() {
         List<User> users = new ArrayList<>();
         users.add(new User("1234","testuser","safepassword","test@example.com",UserType.Admin));
@@ -34,16 +34,18 @@ public class User {
         return users;
     }
 
+     */
+
     @Override
     public String toString() {
         return String.format("{id:%s, username:%s}", id, username);
     }
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -79,27 +81,4 @@ public class User {
         this.userType = userType;
     }
 
-    public void setRatings(List<Rating> ratings) {
-        this.ratings = ratings;
-    }
-
-    public void setFavorites(List<Media> favorites) {
-        this.favorites = favorites;
-    }
-
-    public List<Rating> getRatings() {
-        return ratings;
-    }
-
-    public List<Media> getFavorites() {
-        return favorites;
-    }
-
-    public List<String> getFavoriteGenre() {
-        return favoriteGenre;
-    }
-
-    public void setFavoriteGenre(List<String> favoriteGenre) {
-        this.favoriteGenre = favoriteGenre;
-    }
 }

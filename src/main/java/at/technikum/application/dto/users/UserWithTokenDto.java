@@ -2,15 +2,15 @@ package at.technikum.application.dto.users;
 
 import at.technikum.application.model.User;
 
-public class UserAuthorizedDto {
+public class UserWithTokenDto {
     private User user;
     private String token;
 
-    public UserAuthorizedDto() {
+    public UserWithTokenDto() {
 
     }
 
-    public UserAuthorizedDto(User user, String token) {
+    public UserWithTokenDto(User user, String token) {
         this.user = user;
         this.token = token;
     }

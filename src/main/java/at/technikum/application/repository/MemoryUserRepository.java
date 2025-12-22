@@ -3,12 +3,13 @@ package at.technikum.application.repository;
 import at.technikum.application.dto.auth.UserLoggedInDto;
 import at.technikum.application.dto.auth.UserLoginDto;
 import at.technikum.application.dto.users.UserUpdateDto;
-import at.technikum.application.dto.users.UserUpdatedDto;
-import at.technikum.application.exception.EntityNotFoundException;
 import at.technikum.application.model.Media;
 import at.technikum.application.model.Rating;
 import at.technikum.application.model.User;
+
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 public class MemoryUserRepository implements UserRepository {
 
@@ -16,7 +17,6 @@ public class MemoryUserRepository implements UserRepository {
 
     public MemoryUserRepository() {
         User user = new User();
-        this.users = user.createMockUsers();
     }
 
     @Override
@@ -25,95 +25,96 @@ public class MemoryUserRepository implements UserRepository {
     }
 
     @Override
-    public List<Rating> ratings(String id) {
+    public List<Rating> ratings(UUID id) {
         Rating rating = new Rating();
         return rating.createMockRatings();
     }
 
     @Override
-    public List<Media> favorites(String id) {
+    public List<Media> favorites(UUID id) {
         Media media = new Media();
         return media.createMockMedia();
     }
 
     @Override
-    public UserUpdatedDto update(UserUpdateDto update) {
+    public Optional<UserLoggedInDto> update(UserUpdateDto update) {
         for (User user : users) {
             if (user.getId().equals(update.getId())) {
                 if(user.getPassword().equals(update.getPasswordOld())) {
                     user.setUsername(update.getUsername());
                     user.setPassword(checkPassword(update));
-                    return updateToUpdated(update,user);
+                    return Optional.of(updateToLoggedIn(update,user));
                 }
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     @Override
-    public String delete(String id) {
-        for (User user : users) {
-            if (user.getId().equals(id)) {
+    public Optional<String> delete(User user) {
+        for (User u : users) {
+            if (u.getId().equals(user.getId())) {
                 String username = user.getUsername();
-                users.remove(user);
-                return username;
+                users.remove(u);
+                return Optional.of(username);
             }
         }
-       return null;
+       return Optional.empty();
     }
 
     @Override
-    public User save(User user) {
+    public Optional<User> save(User user) {
         for (User u : users) {
             if (u.getUsername().equals(user.getUsername())
                     || u.getEmail().equals(user.getEmail())) {
-                return null;
+                return Optional.empty();
             }
         }
         this.users.add(user);
-        return user;
+        return Optional.of(user);
     }
 
     @Override
-    public UserLoggedInDto login(UserLoginDto userLogin) {
-        User checkUser = findByUsername(userLogin.getUsername());
-        if(checkUser == null) {
-            return null;
+    public Optional<UserLoggedInDto> login(UserLoginDto userLogin) {
+        Optional<User> checkUser = findByUsername(userLogin.getUsername());
+        if(checkUser.isEmpty()) {
+            return Optional.empty();
         }
-        if (checkUser.getPassword().equals(userLogin.getPassword())) {
-            return new UserLoggedInDto(checkUser.getUsername(),checkUser.getId());
+        User foundUser = checkUser.get();
+        if (foundUser.getPassword().equals(userLogin.getPassword())) {
+            return Optional.of(new UserLoggedInDto(foundUser.getUsername(),foundUser.getId()));
         }
-        return null;
+        return Optional.empty();
     }
 
     @Override
-    public User findByUsername(String username) {
+    public Optional<User> findByUsername(String username) {
         for (User u : users) {
             if (u.getUsername().equals(username)) {
-                return u;
+                return Optional.of(u);
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     @Override
-    public User findByEmail(String email) {
+    public Optional<User> findByEmail(String email) {
         for (User u : users) {
             if (u.getEmail().equals(email)) {
-                return u;
+                return Optional.of(u);
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     @Override
-    public User findByID(String id) {
+    public Optional<User> findByID(UUID id) {
         for (User u : users) {
             if (u.getId().equals(id)) {
-                return u;
+                return Optional.of(u);
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     private String checkPassword(UserUpdateDto update) {
@@ -123,10 +124,9 @@ public class MemoryUserRepository implements UserRepository {
         return update.getPasswordOld();
     }
 
-    private UserUpdatedDto updateToUpdated(UserUpdateDto update, User user) {
-        UserUpdatedDto userUpdated = new UserUpdatedDto();
+    private UserLoggedInDto updateToLoggedIn(UserUpdateDto update, User user) {
+        UserLoggedInDto userUpdated = new UserLoggedInDto();
         userUpdated.setUsername(update.getUsername());
-        userUpdated.setEmail(user.getEmail());
         userUpdated.setId(user.getId());
         return userUpdated;
     }

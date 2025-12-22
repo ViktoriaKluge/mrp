@@ -2,9 +2,11 @@ package at.technikum.application.dto.users;
 
 import at.technikum.application.exception.UnprocessableEntityException;
 
+import java.util.UUID;
+
 public class UserUpdateDto {
 
-    private String id;
+    private UUID id;
     private String username;
     private String passwordOld;
     private String passwordNew1;
@@ -34,13 +36,14 @@ public class UserUpdateDto {
             throw new UnprocessableEntityException("New Passwords do not match");
         }
         return true;
+        // returned immer true oder schmeißt Exception
     }
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

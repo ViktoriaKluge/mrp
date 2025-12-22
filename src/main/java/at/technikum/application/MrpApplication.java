@@ -41,14 +41,12 @@ public class MrpApplication implements Application {
 
         try {
             RequestDto requestDto = request.getRequestDto();
-            requestDto.setId(authMiddleware.authenticate(requestDto));
+            requestDto.setUser(authMiddleware.authenticate(requestDto));
 
             Controller controller = router.findController(request.getPath())
-                    .orElseThrow(RuntimeException::new);
-
+                    .orElseThrow(()-> new RuntimeException("No such controller"));
 
             return controller.handle(requestDto);
-
 
         } catch (Exception ex) {
             return exceptionMapper.toResponse(ex);

@@ -8,6 +8,7 @@ import at.technikum.application.exception.UnprocessableEntityException;
 import at.technikum.application.model.User;
 import at.technikum.application.repository.UserRepository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public class AuthService {
@@ -22,12 +23,12 @@ public class AuthService {
     public User register(UserCreateDto userCreateDto) {
         if (userCreateDto.isUser()) {
             User user = createToUser(userCreateDto);
-            user.setId(UUID.randomUUID().toString());
-            User registeredUser = userRepository.save(user);
-            if (registeredUser == null) {
+            user.setId(UUID.randomUUID());
+            Optional<User> registeredUser = userRepository.save(user);
+            if (registeredUser.isEmpty()) {
                 throw new UnprocessableEntityException("User already exists");
             }
-            return registeredUser;
+            return registeredUser.get();
         }
         throw new EntityNotFoundException("Not enough parameters");
     }
@@ -43,18 +44,12 @@ public class AuthService {
 
     public UserLoggedInDto createToken(UserLoginDto userLoginDto) {
         if (userLoginDto.bothHere()) {
-            UserLoggedInDto userLoggedInDto = this.userRepository.login(userLoginDto);
-            if(userLoggedInDto == null) {
+            Optional<UserLoggedInDto> userLoggedInDto = this.userRepository.login(userLoginDto);
+            if(userLoggedInDto.isEmpty()) {
                 throw new EntityNotFoundException("Username and password dont match");
             }
-            return newToken(userLoggedInDto);
+            return userLoggedInDto.get().newToken();
         }
         throw new EntityNotFoundException("Not enough parameters");
-    }
-
-    private UserLoggedInDto newToken(UserLoggedInDto userLoggedInDto) {
-        String username = userLoggedInDto.getUsername();
-        userLoggedInDto.setToken(username+"-mrpToken");
-        return userLoggedInDto;
     }
 }

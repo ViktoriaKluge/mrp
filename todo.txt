@@ -7,8 +7,6 @@ for final hand-in:
     Alle Dtos gebraucht?
 
 next steps:
-    wo brauch ich token, wie gebe ich ihn zurück (user update!)
-
     Recommendations überlegen
     von requestDto vllt to user - media - rating?
     memorymedia update, rating, favs
@@ -21,3 +19,5 @@ errors:
 
 little things:
     DbUserRepository try catch Blöcke wiederholen sich
+    User löschen nur mit psw?
+    User findByEmail behalten?

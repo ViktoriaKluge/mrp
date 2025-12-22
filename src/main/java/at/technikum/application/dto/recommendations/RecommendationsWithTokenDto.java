@@ -4,15 +4,15 @@ import at.technikum.application.model.Media;
 
 import java.util.List;
 
-public class RecommendationsAuthorizedDto {
+public class RecommendationsWithTokenDto {
     private List<Media> recommendations;
     private String token;
 
-    public RecommendationsAuthorizedDto(){
+    public RecommendationsWithTokenDto(){
 
     }
 
-    public RecommendationsAuthorizedDto(List<Media> recommendations, String token){
+    public RecommendationsWithTokenDto(List<Media> recommendations, String token){
 
         this.recommendations = recommendations;
         this.token = token;

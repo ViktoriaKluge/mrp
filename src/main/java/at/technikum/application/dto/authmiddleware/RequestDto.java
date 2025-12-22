@@ -2,12 +2,14 @@ package at.technikum.application.dto.authmiddleware;
 
 import at.technikum.application.model.Media;
 import at.technikum.application.model.Rating;
+import at.technikum.application.model.User;
 import at.technikum.server.http.ContentType;
 import at.technikum.server.http.Method;
 
 import java.util.List;
 
 public class RequestDto {
+    private User user;
     private String id;
     private String username;
     private String password;
@@ -155,5 +157,13 @@ public class RequestDto {
 
     public void setContentType(ContentType contentType) {
         this.contentType = contentType;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

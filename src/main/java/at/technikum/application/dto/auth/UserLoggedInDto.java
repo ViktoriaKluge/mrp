@@ -1,15 +1,17 @@
 package at.technikum.application.dto.auth;
 
+import java.util.UUID;
+
 public class UserLoggedInDto {
     private String username;
     private String token;
-    private String id;
+    private UUID id;
 
     public UserLoggedInDto() {
 
     }
 
-    public UserLoggedInDto(String username, String id) {
+    public UserLoggedInDto(String username, UUID id) {
         this.username = username;
         this.id = id;
     }
@@ -30,11 +32,16 @@ public class UserLoggedInDto {
         this.token = token;
     }
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
+    }
+
+    public UserLoggedInDto newToken() {
+        this.setToken(username+"-mrpToken");
+        return this;
     }
 }

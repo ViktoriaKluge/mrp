@@ -5,9 +5,9 @@ import at.technikum.application.dto.auth.UserCreateDto;
 import at.technikum.application.dto.auth.UserLoggedInDto;
 import at.technikum.application.dto.auth.UserLoginDto;
 import at.technikum.application.dto.authmiddleware.RequestDto;
-import at.technikum.application.dto.media.MediaListAuthorizedDto;
-import at.technikum.application.dto.rating.RatingListAuthorizedDto;
-import at.technikum.application.dto.recommendations.RecommendationsAuthorizedDto;
+import at.technikum.application.dto.media.MediaListWithTokenDto;
+import at.technikum.application.dto.rating.RatingListWithTokenDto;
+import at.technikum.application.dto.recommendations.RecommendationsWithTokenDto;
 import at.technikum.application.dto.users.*;
 import at.technikum.application.exception.EntityNotFoundException;
 import at.technikum.application.model.Rating;
@@ -60,77 +60,77 @@ public class UserController extends Controller {
             }
         } else {
 
-            String id = requestDto.getId();
+            User user = requestDto.getUser();
             String token = requestDto.getToken();
             if (method.equals(Method.GET)) {
 
                 if (path[3].equals("profile")) {
-                    return profile(id,token);
+                    return profile(user,token);
                 }
 
                 if (path[3].equals("ratings")) {
-                    return ratings(id,token);
+                    return ratings(user,token);
                 }
 
                 if (path[3].endsWith("favorites")) {
-                    return favorites(id,token);
+                    return favorites(user,token);
                 }
 
                 if (path[3].endsWith("recommendations")) {
                     ContentType type = requestDto.getContentType();
-                    return recommendations(id,type,token);
+                    return recommendations(user,type,token);
                 }
             }
 
             if (method.equals(Method.PUT)){
                 if (path[3].equals("profile")) {
                     UserUpdateDto userUpdateDto = toOtherObject(requestDto, UserUpdateDto.class);
-                    return update(userUpdateDto,token);
+                    userUpdateDto.setId(user.getId());
+                    return update(user,userUpdateDto,token);
                 }
             }
 
             if (method.equals(Method.DELETE)) {
-                return delete(id);
+                return delete(user);
             }
         }
 
         throw new EntityNotFoundException("Path not found");
     }
 
-    private Response recommendations(String id, ContentType contentType, String token) {
+    private Response recommendations(User user, ContentType contentType, String token) {
         List<Media> recommendations = this.recommendationService.getRecommendations(
-                id,contentType
+                user,contentType
         );
-        RecommendationsAuthorizedDto recomAuth = new RecommendationsAuthorizedDto(recommendations,token);
-        return json(recomAuth,Status.OK);
+        RecommendationsWithTokenDto recomWToken = new RecommendationsWithTokenDto(recommendations,token);
+        return json(recomWToken,Status.OK);
     }
 
-    private Response profile(String id,String token) {
-        User user = this.userService.getUser(id);
-        UserAuthorizedDto userAuthorized = new UserAuthorizedDto(user,token);
-        return json(userAuthorized,Status.OK);
+    private Response profile(User user,String token) {
+        UserWithTokenDto userWToken = new UserWithTokenDto(user,token);
+        return json(userWToken,Status.OK);
     }
 
-    private Response ratings(String id,String token) {
-        List<Rating> ratings = this.userService.ratings(id);
-        RatingListAuthorizedDto ratingsAuth = new RatingListAuthorizedDto(token,ratings);
-        return json(ratingsAuth, Status.OK);
+    private Response ratings(User user,String token) {
+        List<Rating> ratings = this.userService.ratings(user.getId());
+        RatingListWithTokenDto ratingsWToken = new RatingListWithTokenDto(token,ratings);
+        return json(ratingsWToken, Status.OK);
     }
 
-    private Response favorites(String id, String token) {
-        List<Media> favorites = this.userService.favorites(id);
-        MediaListAuthorizedDto favsAuth = new MediaListAuthorizedDto(token,favorites);
-        return json(favsAuth, Status.OK);
+    private Response favorites(User user, String token) {
+        List<Media> favorites = this.userService.favorites(user.getId());
+        MediaListWithTokenDto favsWToken = new MediaListWithTokenDto(token,favorites);
+        return json(favsWToken, Status.OK);
     }
 
-    private Response update(UserUpdateDto userUpdateDto,String token) {
-        UserUpdatedDto userUpdated = this.userService.update(userUpdateDto);
-        UserUpdatedAuthorizedDto updatedAuth = new UserUpdatedAuthorizedDto(token, userUpdated);
-        return json(updatedAuth,Status.OK);
+    private Response update(User user, UserUpdateDto userUpdateDto,String token) {
+        UserLoggedInDto userUpdated = this.userService.update(user, userUpdateDto);
+        // UserUpdatedWithTokenDto updatedWToken = new UserUpdatedWithTokenDto(token, userUpdated);
+        return json(userUpdated,Status.OK);
     }
 
-    private Response delete(String id) {
-        String username = this.userService.delete(id);
+    private Response delete(User user) {
+        String username = this.userService.delete(user);
         return text(username+" deleted",Status.OK);
     }
 
@@ -143,6 +143,4 @@ public class UserController extends Controller {
         User user = this.authService.register(userCreateDto);
         return json(user, Status.CREATED);
     }
-
-
 }

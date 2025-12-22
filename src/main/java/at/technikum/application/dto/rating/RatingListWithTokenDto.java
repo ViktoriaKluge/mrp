@@ -4,15 +4,15 @@ import at.technikum.application.model.Rating;
 
 import java.util.List;
 
-public class RatingListAuthorizedDto {
+public class RatingListWithTokenDto {
     private String token;
     private List<Rating>  ratingList;
 
-    public RatingListAuthorizedDto() {
+    public RatingListWithTokenDto() {
 
     }
 
-    public RatingListAuthorizedDto(String token, List<Rating> ratingList) {
+    public RatingListWithTokenDto(String token, List<Rating> ratingList) {
         this.token = token;
         this.ratingList = ratingList;
     }

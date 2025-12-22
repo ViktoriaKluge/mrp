@@ -4,15 +4,15 @@ import at.technikum.application.model.User;
 
 import java.util.List;
 
-public class UserListAuthorizedDto {
+public class UserListWithTokenDto {
     private String token;
     private List<User>  userList;
 
-    public UserListAuthorizedDto() {
+    public UserListWithTokenDto() {
 
     }
 
-    public UserListAuthorizedDto(String token, List<User> userList) {
+    public UserListWithTokenDto(String token, List<User> userList) {
         this.token = token;
         this.userList = userList;
     }

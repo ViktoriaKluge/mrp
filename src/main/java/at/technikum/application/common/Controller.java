@@ -46,7 +46,7 @@ public abstract class Controller {
         return response;
     }
 
-    private static final ObjectMapper MAPPER = new ObjectMapper()
+    protected static final ObjectMapper MAPPER = new ObjectMapper()
             .findAndRegisterModules()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 

@@ -4,8 +4,10 @@ import at.technikum.application.dto.authmiddleware.RequestDto;
 import at.technikum.application.exception.EntityNotFoundException;
 import at.technikum.application.exception.NotAuthorizedException;
 import at.technikum.application.model.User;
-import at.technikum.application.repository.MemoryUserRepository;
 import at.technikum.application.repository.UserRepository;
+
+import java.util.Optional;
+import java.util.UUID;
 
 public class AuthMiddleware {
     private final UserRepository userRepository;
@@ -16,22 +18,22 @@ public class AuthMiddleware {
 
     }
 
-    public String authenticate (RequestDto requestDto) {
+    public User authenticate (RequestDto requestDto) {
         this.path= requestDto.getPath();
         if (noNeed()){
-           return "none";
+           return null;
         } else {
-            String id = getUserId(requestDto);
-            User user = this.userRepository.findByID(id);
-            if (user == null) {
-                throw new EntityNotFoundException("User not found");
-            }
+            // first check token
             String token = requestDto.getToken();
-            final String suffix = "-mrpToken";
-            if (token == null || token.isEmpty() || !token.equals(user.getUsername()+suffix)) {
-                throw new NotAuthorizedException("Not authorized (Token)");
+
+            if (!token.isEmpty())
+            {
+                return getUserByToken(token);
             }
-            return id;
+            else {
+            // if no token, then check ID
+                return getUserById(requestDto);
+            }
         }
     }
 
@@ -48,16 +50,38 @@ public class AuthMiddleware {
         }
     }
 
-    private String getUserId(RequestDto requestDto) {
+    private User getUserById(RequestDto requestDto) {
+        String id ="";
         if (path[1].equals("users")) {
-            return path[2];
+            id = path[2];
         } else {
-            String id = requestDto.getId();
+            id = requestDto.getId();
             if (id == null || id.isEmpty()) {
                 throw new NotAuthorizedException("No user id found");
-            } else {
-                return id;
             }
         }
+        UUID uid = UUID.fromString(id);
+        Optional<User> checkUser = this.userRepository.findByID(uid);
+        if (checkUser.isEmpty()) {
+            throw new EntityNotFoundException("Not authorized (User not found)");
+        }
+
+        return checkUser.get();
+    }
+
+    private User getUserByToken(String token)
+    {
+        final String suffix = "-mrpToken";
+        if (!token.endsWith(suffix))
+        {
+            throw new NotAuthorizedException("Not authorized (Token)");
+        }
+        String usernameFromToken = token.substring(0, token.length() - suffix.length());
+        Optional<User> checkUser = this.userRepository.findByUsername(usernameFromToken);
+
+        if (checkUser.isEmpty()) {
+            throw new NotAuthorizedException("Not authorized (Token - Username)");
+        }
+        return checkUser.get();
     }
 }

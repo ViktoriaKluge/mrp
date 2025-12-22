@@ -2,7 +2,6 @@ package at.technikum.application;
 
 import at.technikum.application.ccc.AuthMiddleware;
 import at.technikum.application.common.Application;
-import at.technikum.application.common.ConnectionPool;
 import at.technikum.application.common.Controller;
 import at.technikum.application.common.Router;
 import at.technikum.application.dto.authmiddleware.RequestDto;
@@ -13,8 +12,6 @@ import at.technikum.server.http.ContentType;
 import at.technikum.server.http.Request;
 import at.technikum.server.http.Response;
 import at.technikum.server.http.Status;
-
-import java.util.Arrays;
 
 public class MrpApplication implements Application {
 
@@ -43,14 +40,6 @@ public class MrpApplication implements Application {
         }
 
         try {
-            /*
-            response.setStatus(Status.OK);
-            response.setContentType(ContentType.TEXT_PLAIN);
-
-            response.setBody(Arrays.toString(requestDto.getPath()));
-            return response;
-
-             */
             RequestDto requestDto = request.getRequestDto();
             requestDto.setId(authMiddleware.authenticate(requestDto));
 

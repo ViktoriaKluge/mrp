@@ -1,10 +1,3 @@
-# bei users/ und bei auth/ gibt es mock user:
-# (id, username, password, email, usertype)
-# ("1234","testuser","safepassword","test[at]example.com",UserType.Admin));
-# ("9632","userlein","securepassword","example[at]test.com",UserType.User));
-# Nach Registrierung -> neue User auch über auth/ aufrufbar
-# Profil Update: geht nur mit mock usern - id muss stimmen, username und password
-# können geändert werden
 
 ### Get home
 GET http://localhost:8080/
@@ -13,19 +6,19 @@ GET http://localhost:8080/
 GET http://localhost:8080/users
 
 ### Get user profile
-GET http://localhost:8080/users/f4dfe7f0-66b0-48a2-b823-b6d3d1b90f9a/profile
-Authorization: Bearer userleini-mrpToken
+GET http://localhost:8080/users/5908acb0-3896-4a63-8451-740fd0b4de12/profile
+Authorization: Bearer userlein-mrpToken
 
 ### Get user ratings
-GET http://localhost:8080/users/d05e40bc-3a56-40f5-aaac-37fd98335a07/ratings
-Authorization: Bearer testuser1-mrpToken
+GET http://localhost:8080/users/5908acb0-3896-4a63-8451-740fd0b4de12/ratings
+Authorization: Bearer userlein-mrpToken
 
 ### Post auth register
 POST http://localhost:8080/users/register
 Content-Type: application/json
 
 {
-    "username": "userleini",
+    "username": "userlein",
     "password1": "124",
     "password2": "124",
     "email": "example@test1.com",
@@ -37,22 +30,22 @@ POST http://localhost:8080/users/login
 Content-Type: application/json
 
 {
-    "username": "userleini",
-    "password": "127"
+    "username": "userlein",
+    "password": "124"
 }
 
 ### Put users profile
-PUT http://localhost:8080/users/2252699f-8a32-44d1-be85-1b7a643332f7/profile
+PUT http://localhost:8080/users/b87258a2-4377-4984-ae00-aabd9e54120a/profile
 Content-Type: application/json
-Authorization: Bearer username-mrpToken
+Authorization: Bearer userlein-mrpToken
 
 {
-  "username": "userleini",
+  "username": "userlein",
   "passwordOld": "124",
   "passwordNew1": "127",
   "passwordNew2": "127"
 }
 
 ### Delete user
-DELETE http://localhost:8080/users/8c9f690d-75c1-4323-b466-0e000cdcb11e/delete
+DELETE http://localhost:8080/users/b87258a2-4377-4984-ae00-aabd9e54120a/delete
 Authorization: Bearer userlein-mrpToken

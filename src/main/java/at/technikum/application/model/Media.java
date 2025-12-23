@@ -4,29 +4,35 @@ import at.technikum.application.enums.MediaType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class Media {
-    String id;
-    String title;
-    String description;
-    List<String> genre;
-    MediaType mediaType;
-    Integer releaseYear;
-    Integer ageRestriction;
+    private UUID id;
+    private String title;
+    private String description;
+    private List<String> genre;
+    private MediaType mediaType;
+    private Integer releaseYear;
+    private Integer ageRestriction;
+    private User creator;
 
     public Media() {
 
     }
 
-    public Media(String id, String title, String description, List<String> genre, Integer releaseYear, Integer ageRestriction) {
+    public Media(UUID id, String title, String description, List<String> genre, MediaType mediaType,
+                 Integer releaseYear, Integer ageRestriction, User creator) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.genre = genre;
+        this.mediaType = mediaType;
         this.releaseYear = releaseYear;
         this.ageRestriction = ageRestriction;
+        this.creator = creator;
     }
 
+    /*
     public List<Media> createMockMedia() {
         List<Media> media = new ArrayList<>();
         media.add(new Media("123","Super movie","a super movie", List.of("Horror","Supermovie"),2025,16));
@@ -35,7 +41,9 @@ public class Media {
 
     }
 
-    public String getId() {
+     */
+
+    public UUID getId() {
         return id;
     }
 
@@ -44,7 +52,7 @@ public class Media {
         return String.format("media id:%s, title:%s\n", id, title);
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -94,5 +102,13 @@ public class Media {
 
     public void setAgeRestriction(Integer ageRestriction) {
         this.ageRestriction = ageRestriction;
+    }
+
+    public User getCreator() {
+        return creator;
+    }
+
+    public void setCreator(User creator) {
+        this.creator = creator;
     }
 }

@@ -7,6 +7,8 @@ for final hand-in:
     Alle Dtos gebraucht?
 
 next steps:
+    RequestDto mit allen Feldern für favs, rats, media, likes
+
     Recommendations überlegen
     von requestDto vllt to user - media - rating?
     memorymedia update, rating, favs

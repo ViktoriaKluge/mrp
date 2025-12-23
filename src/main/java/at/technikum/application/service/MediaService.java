@@ -6,6 +6,7 @@ import at.technikum.application.repository.MediaRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public class MediaService {
 
@@ -19,7 +20,7 @@ public class MediaService {
         return mediaRepository.mediaList();
     }
 
-    public Media findById(String id) {
+    public Media findById(UUID id) {
         Media media = mediaRepository.findById(id);
         if (media == null) {
             throw new EntityNotFoundException("Media not found");

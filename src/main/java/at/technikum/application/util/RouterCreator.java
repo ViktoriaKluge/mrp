@@ -27,7 +27,7 @@ public class RouterCreator {
         this.router.addRoute("/users", new UserController(new UserService(this.userRepository),
                 new AuthService(this.userRepository),new RecommendationService(this.userRepository)));
         this.router.addRoute("/media", new MediaController( new MediaService(this.memoryMediaRepository),
-                new FavoritesService(this.memoryMediaRepository)));
+                new FavoritesService(this.memoryMediaRepository), new RatingService(new MemoryRatingRepository())));
         this.router.addRoute("/rating", new RatingController( new RatingService(new MemoryRatingRepository())));
         this.router.addRoute("/leaderboard", new LeaderboardController(new LeaderboardService(this.userRepository)));
     }

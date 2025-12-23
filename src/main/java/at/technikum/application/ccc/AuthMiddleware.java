@@ -5,6 +5,7 @@ import at.technikum.application.exception.EntityNotFoundException;
 import at.technikum.application.exception.NotAuthorizedException;
 import at.technikum.application.model.User;
 import at.technikum.application.repository.UserRepository;
+import at.technikum.server.http.Method;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -12,6 +13,7 @@ import java.util.UUID;
 public class AuthMiddleware {
     private final UserRepository userRepository;
     private String[] path;
+    private Method method;
 
     public AuthMiddleware(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -20,6 +22,7 @@ public class AuthMiddleware {
 
     public User authenticate (RequestDto requestDto) {
         this.path= requestDto.getPath();
+        this.method = requestDto.getMethod();
         if (noNeed()){
            return null;
         } else {
@@ -44,7 +47,7 @@ public class AuthMiddleware {
         else if (path[1].equals("users") && path.length==3) {
             return (path[2].equals("login") || path[2].equals("register"));
         } else if (path[1].equals("media")) {
-            return (path[2] == null || path[2].isEmpty());
+           return method.equals(Method.GET);
         } else {
             return path[2].equals("leaderboard");
         }

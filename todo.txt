@@ -7,7 +7,11 @@ for final hand-in:
     Alle Dtos gebraucht?
 
 next steps:
+    Token irgendwo außer ccc?
+    Token und id check?
     RequestDto mit allen Feldern für favs, rats, media, likes
+
+    sql tables ändern, hilfstabellen nur mit combination key
 
     Recommendations überlegen
     von requestDto vllt to user - media - rating?
@@ -23,3 +27,7 @@ little things:
     DbUserRepository try catch Blöcke wiederholen sich
     User löschen nur mit psw?
     User findByEmail behalten?
+    Wann Status.Ok und wann .Created? auch .Deleted?
+    (zB) userCreateDto.isUser() -> brauch ich das überhaupt
+        wird das schon vorher gecheckt?
+

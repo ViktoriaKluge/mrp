@@ -8,7 +8,8 @@ import at.technikum.application.service.*;
 
 public class RouterCreator {
     private UserRepository userRepository;
-    private MemoryMediaRepository memoryMediaRepository;
+    private MediaRepository mediaRepository;
+    private RatingRepository ratingRepository;
     private Router router;
     private final ConnectionPool connectionPool;
 
@@ -23,12 +24,13 @@ public class RouterCreator {
                 "mrp"
         );
         this.userRepository= new DbUserRepository(connectionPool);
-        this.memoryMediaRepository = new MemoryMediaRepository();
+        this.mediaRepository = new DbMediaRespository(connectionPool);
+        this.ratingRepository = new DbRatingRepository(connectionPool);
         this.router.addRoute("/users", new UserController(new UserService(this.userRepository),
                 new AuthService(this.userRepository),new RecommendationService(this.userRepository)));
-        this.router.addRoute("/media", new MediaController( new MediaService(this.memoryMediaRepository),
-                new FavoritesService(this.memoryMediaRepository), new RatingService(new MemoryRatingRepository())));
-        this.router.addRoute("/rating", new RatingController( new RatingService(new MemoryRatingRepository())));
+        this.router.addRoute("/media", new MediaController( new MediaService(this.mediaRepository),
+                new FavoritesService(this.mediaRepository), new RatingService(this.ratingRepository)));
+        this.router.addRoute("/rating", new RatingController( new RatingService(this.ratingRepository)));
         this.router.addRoute("/leaderboard", new LeaderboardController(new LeaderboardService(this.userRepository)));
     }
 

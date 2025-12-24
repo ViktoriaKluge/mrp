@@ -2,7 +2,6 @@ package at.technikum.application.service;
 
 import at.technikum.application.exception.EntityNotFoundException;
 import at.technikum.application.model.User;
-import at.technikum.application.repository.MemoryUserRepository;
 import at.technikum.application.repository.UserRepository;
 
 import java.util.List;

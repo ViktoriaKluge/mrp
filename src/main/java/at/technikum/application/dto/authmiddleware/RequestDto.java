@@ -1,5 +1,6 @@
 package at.technikum.application.dto.authmiddleware;
 
+import at.technikum.application.enums.MediaType;
 import at.technikum.application.model.Media;
 import at.technikum.application.model.Rating;
 import at.technikum.application.model.User;
@@ -26,6 +27,7 @@ public class RequestDto {
     private String[] path;
     private Method method;
     private ContentType contentType;
+    private MediaType mediaType;
 
     public RequestDto() {
 
@@ -165,5 +167,13 @@ public class RequestDto {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public MediaType getMediaType() {
+        return mediaType;
+    }
+
+    public void setMediaType(MediaType mediaType) {
+        this.mediaType = mediaType;
     }
 }

@@ -1,19 +1,20 @@
 package at.technikum.application.repository;
 
+import at.technikum.application.model.Favorites;
 import at.technikum.application.model.Media;
+import at.technikum.application.model.User;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public interface MediaRepository {
 
-    Media findById(String id);
+    Optional<Media> findById(UUID id);
     List<Media> mediaList();
-    Media save(Media media);
-    String delete(String id);
-    Media update(Media media);
-    Media addRating(String id);
-    Media removeRating(String id);
-    Media addFavorite(String id);
-    Media removeFavorite(String id);
+    Optional<Media> save(Media media);
+    Optional<String> delete(Media media);
+    Optional<Media> update(Media media);
+    Optional<Favorites> addFavorite(Favorites favorite);
+    Optional<String> deleteFavorite(Favorites favorite);
 }

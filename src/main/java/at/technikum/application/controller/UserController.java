@@ -9,6 +9,7 @@ import at.technikum.application.dto.media.MediaListWithTokenDto;
 import at.technikum.application.dto.rating.RatingListWithTokenDto;
 import at.technikum.application.dto.recommendations.RecommendationsWithTokenDto;
 import at.technikum.application.dto.users.*;
+import at.technikum.application.enums.MediaType;
 import at.technikum.application.exception.EntityNotFoundException;
 import at.technikum.application.model.Rating;
 import at.technikum.application.model.User;
@@ -61,24 +62,23 @@ public class UserController extends Controller {
         } else {
 
             User user = requestDto.getUser();
-            String token = requestDto.getToken();
             if (method.equals(Method.GET)) {
 
                 if (path[3].equals("profile")) {
-                    return profile(user,token);
+                    return profile(user);
                 }
 
                 if (path[3].equals("ratings")) {
-                    return ratings(user,token);
+                    return ratings(user);
                 }
 
                 if (path[3].endsWith("favorites")) {
-                    return favorites(user,token);
+                    return favorites(user);
                 }
 
                 if (path[3].endsWith("recommendations")) {
-                    ContentType type = requestDto.getContentType();
-                    return recommendations(user,type,token);
+                    MediaType type = requestDto.getMediaType();
+                    return recommendations(user,type);
                 }
             }
 
@@ -86,7 +86,7 @@ public class UserController extends Controller {
                 if (path[3].equals("profile")) {
                     UserUpdateDto userUpdateDto = toOtherObject(requestDto, UserUpdateDto.class);
                     userUpdateDto.setId(user.getId());
-                    return update(user,userUpdateDto,token);
+                    return update(user,userUpdateDto);
                 }
             }
 
@@ -98,34 +98,29 @@ public class UserController extends Controller {
         throw new EntityNotFoundException("Path not found");
     }
 
-    private Response recommendations(User user, ContentType contentType, String token) {
+    private Response recommendations(User user, MediaType mediaType) {
         List<Media> recommendations = this.recommendationService.getRecommendations(
-                user,contentType
+                user,mediaType
         );
-        RecommendationsWithTokenDto recomWToken = new RecommendationsWithTokenDto(recommendations,token);
-        return json(recomWToken,Status.OK);
+        return json(recommendations,Status.OK);
     }
 
-    private Response profile(User user,String token) {
-        UserWithTokenDto userWToken = new UserWithTokenDto(user,token);
-        return json(userWToken,Status.OK);
+    private Response profile(User user) {
+        return json(user,Status.OK);
     }
 
-    private Response ratings(User user,String token) {
-        List<Rating> ratings = this.userService.ratings(user.getId());
-        RatingListWithTokenDto ratingsWToken = new RatingListWithTokenDto(token,ratings);
-        return json(ratingsWToken, Status.OK);
+    private Response ratings(User user) {
+        List<Rating> ratings = this.userService.ratings(user);
+        return json(ratings, Status.OK);
     }
 
-    private Response favorites(User user, String token) {
-        List<Media> favorites = this.userService.favorites(user.getId());
-        MediaListWithTokenDto favsWToken = new MediaListWithTokenDto(token,favorites);
-        return json(favsWToken, Status.OK);
+    private Response favorites(User user) {
+        List<Media> favorites = this.userService.favorites(user);
+        return json(favorites, Status.OK);
     }
 
-    private Response update(User user, UserUpdateDto userUpdateDto,String token) {
+    private Response update(User user, UserUpdateDto userUpdateDto) {
         UserLoggedInDto userUpdated = this.userService.update(user, userUpdateDto);
-        // UserUpdatedWithTokenDto updatedWToken = new UserUpdatedWithTokenDto(token, userUpdated);
         return json(userUpdated,Status.OK);
     }
 

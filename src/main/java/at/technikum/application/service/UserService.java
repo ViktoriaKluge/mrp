@@ -20,39 +20,12 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    /*
-    public User getUser(String id) {
-        User user = this.userRepository.findByID(id);
-        if (user == null) {
-            throw new EntityNotFoundException("User not found");
-        }
-        return user;
+    public List<Rating> ratings(User user) {
+        return this.userRepository.ratings(user);
     }
 
-     */
-
-    public List<Rating> ratings(UUID id) {
-        List<Rating> ratings = this.userRepository.ratings(id);
-        /*
-        wenn die Liste leer ist, muss das kein Fehler sein
-        if (ratings.isEmpty()) {
-            throw new EntityNotFoundException("Ratings not found");
-        }
-
-         */
-        return ratings;
-    }
-
-    public List<Media> favorites(UUID id) {
-        List<Media> favorites = this.userRepository.favorites(id);
-        /*
-        wenn die Liste leer ist, muss das kein Fehler sein
-         if (favorites.isEmpty()) {
-            throw new EntityNotFoundException("Favorites not found");
-        }
-         */
-
-        return favorites;
+    public List<Media> favorites(User user) {
+        return  this.userRepository.favorites(user);
     }
 
     public UserLoggedInDto update(User user, UserUpdateDto update) {

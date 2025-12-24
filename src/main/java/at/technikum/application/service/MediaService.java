@@ -1,6 +1,7 @@
 package at.technikum.application.service;
 
 import at.technikum.application.exception.EntityNotFoundException;
+import at.technikum.application.exception.UnprocessableEntityException;
 import at.technikum.application.model.Media;
 import at.technikum.application.repository.MediaRepository;
 
@@ -21,22 +22,38 @@ public class MediaService {
     }
 
     public Media findById(UUID id) {
-        Media media = mediaRepository.findById(id);
-        if (media == null) {
-            throw new EntityNotFoundException("Media not found");
+        Optional<Media> media = mediaRepository.findById(id);
+        if (media.isEmpty()) {
+            notFound();
         }
-        return media;
+        return media.get();
     }
 
-    public void create(Media media) {
-        mediaRepository.save(media);
+    public Media create(Media media) {
+        Optional<Media> createdMedia = mediaRepository.save(media);
+        if (createdMedia.isEmpty()) {
+            throw new UnprocessableEntityException("Media already exists");
+        }
+        return createdMedia.get();
     }
 
-    public void update(Media media) {
-        mediaRepository.save(media);
+    public Media update(Media newMedia) {
+        Optional <Media> updated = mediaRepository.update(newMedia);
+        if (updated.isEmpty()) {
+            notFound();
+        }
+        return updated.get();
     }
 
-    public void delete(String id) {
-        mediaRepository.delete(id);
+    public String delete(Media media) {
+        Optional<String> deleted = mediaRepository.delete(media);
+        if (deleted.isEmpty()) {
+            notFound();
+        }
+        return deleted.get();
+    }
+
+    private void notFound(){
+        throw new EntityNotFoundException("Media not found");
     }
 }

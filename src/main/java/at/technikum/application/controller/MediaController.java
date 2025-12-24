@@ -41,7 +41,8 @@ public class MediaController extends Controller {
             } else if (method.equals(Method.POST)) {
                 Media media = toOtherObject(requestDto, Media.class);
                 media.setId(UUID.randomUUID());
-                return createMedia(media, requestDto.getToken());
+                media.setCreator(requestDto.getUser());
+                return createMedia(media);
             }
         } else {
             UUID mid = UUID.fromString(path[2]);
@@ -52,7 +53,6 @@ public class MediaController extends Controller {
             }
 
             User user = requestDto.getUser();
-            String token = requestDto.getToken();
 
             if (method.equals(Method.POST)) {
                 if (path[3].equals("rate")) {
@@ -60,13 +60,14 @@ public class MediaController extends Controller {
                     rating.setId(UUID.randomUUID());
                     rating.setRatedMedia(media);
                     rating.setCreator(user);
-                    return createRating(rating, token);
+                    return createRating(rating);
                 }
                 if (path[3].equals("favorite")) {
-                    Favorites favorites = toOtherObject(requestDto, Favorites.class);
+                    Favorites favorites = new Favorites();
                     favorites.setId(UUID.randomUUID());
                     favorites.setMedia(media);
-                    return addFavorite(favorites, token);
+                    favorites.setUser(user);
+                    return addFavorite(favorites);
                 }
             }
 
@@ -75,17 +76,18 @@ public class MediaController extends Controller {
                     Favorites favorites = new Favorites();
                     favorites.setUser(user);
                     favorites.setMedia(media);
-                    return deleteFavorite(favorites, token);
+                    return deleteFavorite(favorites);
                 }
             }
 
             if (authorized(user.getId(), media.getCreator().getId())) {
                 if (method.equals(Method.PUT)) {
                     Media mediaNew = toOtherObject(requestDto, Media.class);
-                    return update(media, mediaNew, token);
+                    mediaNew.setId(media.getId());
+                    return update(mediaNew);
                 }
                 if (method.equals(Method.DELETE)) {
-                    return delete(media, token);
+                    return deleteMedia(media);
                 }
             }
         }
@@ -93,45 +95,39 @@ public class MediaController extends Controller {
         throw new EntityNotFoundException("Path not found");
     }
 
-    private Response deleteFavorite(Favorites favorites, String token) {
-        Response response = new Response();
-        String deletedMedia = this.favoritesService.delete(favorites);
-        return response;
+    private Response deleteFavorite(Favorites favorites) {
+        String deletedFav = this.favoritesService.delete(favorites);
+        return text("Deleted "+ deletedFav +" as favorite", Status.OK);
     }
 
-    private Response addFavorite(Favorites favorites, String token) {
-        Media media = this.favoritesService.add(favorites);
-
-        return json(media,Status.OK);
+    private Response addFavorite(Favorites favorites) {
+        Favorites addedFav = this.favoritesService.add(favorites);
+        return json(addedFav, Status.CREATED);
     }
 
     private Response allMedia() {
         List<Media> mediaList = this.mediaService.findAll();
-
         return json(mediaList,Status.OK);
     }
 
-    private Response createMedia(Media media, String token) {
-        Response response = new Response();
-
-        return response;
+    private Response createMedia(Media media) {
+        media = this.mediaService.create(media);
+        return json(media,Status.CREATED);
     }
 
-    private Response createRating(Rating rating, String token) {
-        Response response = new Response();
-        return response;
+    private Response createRating(Rating rating) {
+        Rating rated = this.ratingService.create(rating);
+        return json(rating, Status.CREATED);
     }
 
-    private Response update(Media oldMedia, Media update, String token) {
-        Response response = new Response();
-
-        return response;
+    private Response update(Media update) {
+        update = this.mediaService.update(update);
+        return json(update, Status.OK);
     }
 
-    private Response delete(Media media, String token) {
-        Response response = new Response();
-
-        return response;
+    private Response deleteMedia(Media media) {
+        String deletedMedia = this.mediaService.delete(media);
+        return text("Deleted "+deletedMedia, Status.OK);
     }
 
     private boolean authorized (UUID loggedInUID, UUID objectUID) {

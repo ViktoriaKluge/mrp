@@ -4,6 +4,7 @@ import at.technikum.application.common.ConnectionPool;
 import at.technikum.application.dto.auth.UserLoggedInDto;
 import at.technikum.application.dto.auth.UserLoginDto;
 import at.technikum.application.dto.users.UserUpdateDto;
+import at.technikum.application.enums.MediaType;
 import at.technikum.application.enums.UserType;
 import at.technikum.application.exception.DatabaseConnectionException;
 import at.technikum.application.exception.SQLToUserException;
@@ -135,15 +136,15 @@ public class DbUserRepository implements UserRepository {
     }
 
     @Override
-    public List<Rating> ratings(UUID id) {
-        Rating rating = new Rating();
-        return rating.createMockRatings();
+    public List<Rating> ratings(User user) {
+        List<Rating> ratings = new ArrayList<>();
+        return ratings;
     }
 
     @Override
-    public List<Media> favorites(UUID id) {
-        Media media = new Media();
-        return media.createMockMedia();
+    public List<Media> favorites(User user) {
+        List<Media> media = new  ArrayList<>();
+        return media;
     }
 
     @Override
@@ -253,5 +254,15 @@ public class DbUserRepository implements UserRepository {
         } catch (SQLException e) {
             throw new SQLToUserException("Can not set up user");
         }
+    }
+
+    @Override
+    public List<Media> recommendations(User user, MediaType mediaType) {
+        return List.of();
+    }
+
+    @Override
+    public List<User> leaderboard() {
+        return List.of();
     }
 }

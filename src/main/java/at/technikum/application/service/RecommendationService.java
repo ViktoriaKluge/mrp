@@ -1,9 +1,9 @@
 package at.technikum.application.service;
 
+import at.technikum.application.enums.MediaType;
 import at.technikum.application.model.Media;
 import at.technikum.application.model.User;
 import at.technikum.application.repository.UserRepository;
-import at.technikum.server.http.ContentType;
 
 import java.util.List;
 
@@ -14,8 +14,8 @@ public class RecommendationService {
         this.userRepository = userRepository;
     }
 
-    public List<Media> getRecommendations(User user, ContentType contentType) {
-        Media media = new Media();
-        return media.createMockMedia();
+    public List<Media> getRecommendations(User user, MediaType contentType) {
+
+        return this.userRepository.recommendations(user, contentType);
     }
 }

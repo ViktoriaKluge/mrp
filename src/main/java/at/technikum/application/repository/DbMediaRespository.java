@@ -1,7 +1,7 @@
 package at.technikum.application.repository;
 
 import at.technikum.application.common.ConnectionPool;
-import at.technikum.application.model.Favorites;
+import at.technikum.application.model.Favorite;
 import at.technikum.application.model.Media;
 
 import java.util.List;
@@ -41,12 +41,12 @@ public class DbMediaRespository implements MediaRepository {
     }
 
     @Override
-    public Optional<Favorites> addFavorite(Favorites favorite) {
+    public Optional<Favorite> addFavorite(Favorite favorite) {
         return Optional.empty();
     }
 
     @Override
-    public Optional<String> deleteFavorite(Favorites favorite) {
+    public Optional<String> deleteFavorite(Favorite favorite) {
         return Optional.empty();
     }
 }

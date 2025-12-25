@@ -1,6 +1,7 @@
 package at.technikum.application.service;
 
 import at.technikum.application.exception.EntityNotFoundException;
+import at.technikum.application.model.Like;
 import at.technikum.application.model.Rating;
 import at.technikum.application.model.User;
 import at.technikum.application.repository.RatingRepository;
@@ -21,6 +22,14 @@ public class RatingService {
         return ratingRepository.findAll();
     }
 
+    public Rating findById(UUID id){
+        Optional<Rating> rating = this.ratingRepository.findByID(id);
+        if (rating.isEmpty()) {
+            notFound();
+        }
+        return rating.get();
+    }
+
     public Rating create(Rating rating) {
         Optional<Rating> created = ratingRepository.save(rating);
         if(created.isEmpty()){
@@ -37,28 +46,12 @@ public class RatingService {
         return updated.get();
     }
 
-    public Rating like(Rating rating) {
-        Optional<Rating> liked = ratingRepository.like(rating);
+    public Like like(Rating rating, User user) {
+        Optional<Like> liked = ratingRepository.like(rating, user);
         if(liked.isEmpty()){
             notFound();
         }
         return liked.get();
-    }
-
-    public Rating dislike(Rating rating) {
-        Optional<Rating> disliked = ratingRepository.dislike(rating);
-        if(disliked.isEmpty()){
-            notFound();
-        }
-        return disliked.get();
-    }
-
-    public Rating unlike(Rating rating) {
-        Optional<Rating> unliked = ratingRepository.unlike(rating);
-        if(unliked.isEmpty()){
-            notFound();
-        }
-        return unliked.get();
     }
 
     public Rating confirm(Rating rating) {

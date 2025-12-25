@@ -2,16 +2,16 @@ package at.technikum.application.model;
 
 import java.util.UUID;
 
-public class Favorites {
+public class Favorite {
     private UUID id;
     private User user;
     private Media media;
 
-    public Favorites() {
+    public Favorite() {
 
     }
 
-    public Favorites(UUID id, User user, Media media) {
+    public Favorite(UUID id, User user, Media media) {
         this.id = id;
         this.user = user;
         this.media = media;

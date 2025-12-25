@@ -1,6 +1,7 @@
 package at.technikum.application.service;
 
 import at.technikum.application.exception.EntityNotFoundException;
+import at.technikum.application.model.LeaderboardEntry;
 import at.technikum.application.model.User;
 import at.technikum.application.repository.UserRepository;
 
@@ -14,7 +15,7 @@ public class LeaderboardService {
         this.userRepository = userRepository;
     }
 
-    public List<User> showLeaderboard() {
+    public List<LeaderboardEntry> showLeaderboard() {
         return List.of();
     }
 

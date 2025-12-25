@@ -2,6 +2,7 @@ package at.technikum.application.model;
 
 import at.technikum.application.dto.auth.UserLoggedInDto;
 import at.technikum.application.enums.UserType;
+import at.technikum.application.exception.NotAuthorizedException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,4 +82,10 @@ public class User {
         this.userType = userType;
     }
 
+    public boolean isAdmin() {
+        if (userType == UserType.Admin){
+            return true;
+        }
+        throw new NotAuthorizedException("You need to be an admin to do this");
+    }
 }

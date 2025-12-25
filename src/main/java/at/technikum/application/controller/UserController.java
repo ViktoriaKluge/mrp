@@ -72,11 +72,11 @@ public class UserController extends Controller {
                     return ratings(user);
                 }
 
-                if (path[3].endsWith("favorites")) {
+                if (path[3].equals("favorites")) {
                     return favorites(user);
                 }
 
-                if (path[3].endsWith("recommendations")) {
+                if (path[3].equals("recommendations")) {
                     MediaType type = requestDto.getMediaType();
                     return recommendations(user,type);
                 }
@@ -119,9 +119,13 @@ public class UserController extends Controller {
         return json(favorites, Status.OK);
     }
 
-    private Response update(User user, UserUpdateDto userUpdateDto) {
-        UserLoggedInDto userUpdated = this.userService.update(user, userUpdateDto);
-        return json(userUpdated,Status.OK);
+    private Response update(User user, UserUpdateDto userUpdate) {
+        if (user.getPassword().equals(userUpdate.getPasswordOld())) {
+            UserLoggedInDto userUpdated = this.userService.update(userUpdate);
+            return json(userUpdated,Status.OK);
+        } else {
+            return text("Passwords do not match", Status.UNAUTHORIZED);
+        }
     }
 
     private Response delete(User user) {

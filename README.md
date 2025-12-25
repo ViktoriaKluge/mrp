@@ -79,7 +79,7 @@ Users (Überblick)
 
 GET /users → Übersicht.
 GET /users/{id}/profile → Profil.
-GET /users/{id}/ratings, /favorites → Listen.
+GET /users/{id}/ratings, /favorite → Listen.
 PUT /users/{id}/profile → Update (inkl. Passwort-Validierung).
 DELETE /users/{id} → Löschen.
 

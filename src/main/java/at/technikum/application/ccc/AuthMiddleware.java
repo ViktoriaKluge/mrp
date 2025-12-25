@@ -66,7 +66,7 @@ public class AuthMiddleware {
         UUID uid = UUID.fromString(id);
         Optional<User> checkUser = this.userRepository.findByID(uid);
         if (checkUser.isEmpty()) {
-            throw new EntityNotFoundException("Not authorized (User not found)");
+            throw new EntityNotFoundException("Not authenticated (User not found)");
         }
 
         return checkUser.get();
@@ -83,7 +83,7 @@ public class AuthMiddleware {
         Optional<User> checkUser = this.userRepository.findByUsername(usernameFromToken);
 
         if (checkUser.isEmpty()) {
-            throw new NotAuthorizedException("Not authorized (Token - Username)");
+            throw new NotAuthorizedException("Not authenticated (Token - Username)");
         }
         return checkUser.get();
     }

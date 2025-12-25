@@ -28,9 +28,7 @@ public class UserUpdateDto {
     }
 
     private boolean testUpdatePassword() {
-        if (passwordOld == null || passwordOld.isEmpty()) {
-            throw new UnprocessableEntityException("Old Password cannot be empty");
-        } else if(passwordNew1 == null || passwordNew1.isEmpty()) {
+        if(passwordNew1 == null || passwordNew1.isEmpty()) {
             return true;
         } else if(!passwordNew1.equals(passwordNew2)) {
             throw new UnprocessableEntityException("New Passwords do not match");

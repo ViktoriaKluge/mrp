@@ -1,6 +1,7 @@
 package at.technikum.application.repository;
 
 import at.technikum.application.common.ConnectionPool;
+import at.technikum.application.model.Like;
 import at.technikum.application.model.Rating;
 import at.technikum.application.model.User;
 
@@ -31,17 +32,7 @@ public class DbRatingRepository implements RatingRepository{
     }
 
     @Override
-    public Optional<Rating> like(Rating rating) {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<Rating> dislike(Rating rating) {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<Rating> unlike(Rating rating) {
+    public Optional<Like> like(Rating rating, User user) {
         return Optional.empty();
     }
 
@@ -53,5 +44,10 @@ public class DbRatingRepository implements RatingRepository{
     @Override
     public List<Rating> findAll() {
         return List.of();
+    }
+
+    @Override
+    public Optional<Rating> findByID(UUID id) {
+        return Optional.empty();
     }
 }

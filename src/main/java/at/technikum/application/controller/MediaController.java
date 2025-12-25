@@ -3,16 +3,15 @@ package at.technikum.application.controller;
 import at.technikum.application.common.Controller;
 import at.technikum.application.dto.authmiddleware.RequestDto;
 import at.technikum.application.exception.EntityNotFoundException;
-import at.technikum.application.model.Favorites;
+import at.technikum.application.exception.NotAuthorizedException;
+import at.technikum.application.model.Favorite;
 import at.technikum.application.model.Media;
 import at.technikum.application.model.Rating;
 import at.technikum.application.model.User;
 import at.technikum.application.service.FavoritesService;
 import at.technikum.application.service.MediaService;
 import at.technikum.application.service.RatingService;
-import at.technikum.application.service.UserService;
 import at.technikum.server.http.*;
-import jakarta.mail.internet.HeaderTokenizer;
 
 import java.util.List;
 import java.util.UUID;
@@ -63,24 +62,24 @@ public class MediaController extends Controller {
                     return createRating(rating);
                 }
                 if (path[3].equals("favorite")) {
-                    Favorites favorites = new Favorites();
-                    favorites.setId(UUID.randomUUID());
-                    favorites.setMedia(media);
-                    favorites.setUser(user);
-                    return addFavorite(favorites);
+                    Favorite favorite = new Favorite();
+                    favorite.setId(UUID.randomUUID());
+                    favorite.setMedia(media);
+                    favorite.setUser(user);
+                    return addFavorite(favorite);
                 }
             }
 
             if (method.equals(Method.DELETE)) {
                 if (path[3].equals("favorite")) {
-                    Favorites favorites = new Favorites();
-                    favorites.setUser(user);
-                    favorites.setMedia(media);
-                    return deleteFavorite(favorites);
+                    Favorite favorite = new Favorite();
+                    favorite.setUser(user);
+                    favorite.setMedia(media);
+                    return deleteFavorite(favorite);
                 }
             }
 
-            if (authorized(user.getId(), media.getCreator().getId())) {
+            if (authorized(user, media.getCreator())) {
                 if (method.equals(Method.PUT)) {
                     Media mediaNew = toOtherObject(requestDto, Media.class);
                     mediaNew.setId(media.getId());
@@ -95,13 +94,13 @@ public class MediaController extends Controller {
         throw new EntityNotFoundException("Path not found");
     }
 
-    private Response deleteFavorite(Favorites favorites) {
-        String deletedFav = this.favoritesService.delete(favorites);
+    private Response deleteFavorite(Favorite favorite) {
+        String deletedFav = this.favoritesService.delete(favorite);
         return text("Deleted "+ deletedFav +" as favorite", Status.OK);
     }
 
-    private Response addFavorite(Favorites favorites) {
-        Favorites addedFav = this.favoritesService.add(favorites);
+    private Response addFavorite(Favorite favorite) {
+        Favorite addedFav = this.favoritesService.add(favorite);
         return json(addedFav, Status.CREATED);
     }
 
@@ -116,7 +115,7 @@ public class MediaController extends Controller {
     }
 
     private Response createRating(Rating rating) {
-        Rating rated = this.ratingService.create(rating);
+        rating = this.ratingService.create(rating);
         return json(rating, Status.CREATED);
     }
 
@@ -130,7 +129,10 @@ public class MediaController extends Controller {
         return text("Deleted "+deletedMedia, Status.OK);
     }
 
-    private boolean authorized (UUID loggedInUID, UUID objectUID) {
-        return loggedInUID == objectUID;
+    private boolean authorized (User user, User creator) {
+        if (user.getId() == creator.getId()) {
+            return true;
+        }
+        throw new NotAuthorizedException("Only the creator can modify their media");
     }
 }

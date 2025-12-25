@@ -28,7 +28,7 @@ CREATE TABLE ratings (
                          CONSTRAINT uq_ratings_user_media UNIQUE (user_id, media_id)
 );
 
-CREATE TABLE favorites (
+CREATE TABLE favorite (
                            fid        UUID       PRIMARY KEY,
                            user_id    UUID       NOT NULL REFERENCES users(uid) ON DELETE CASCADE,
                            media_id   UUID       NOT NULL REFERENCES media(mid) ON DELETE CASCADE,

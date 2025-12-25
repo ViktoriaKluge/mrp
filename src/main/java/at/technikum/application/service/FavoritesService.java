@@ -1,15 +1,10 @@
 package at.technikum.application.service;
 
 import at.technikum.application.exception.EntityNotFoundException;
-import at.technikum.application.model.Favorites;
-import at.technikum.application.model.Media;
-import at.technikum.application.model.User;
+import at.technikum.application.model.Favorite;
 import at.technikum.application.repository.MediaRepository;
-import at.technikum.application.repository.UserRepository;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 public class FavoritesService {
 
@@ -19,15 +14,15 @@ public class FavoritesService {
         this.mediaRepository = mediaRepository;
     }
 
-    public Favorites add(Favorites favorite) {
-        Optional<Favorites> created = mediaRepository.addFavorite(favorite);
+    public Favorite add(Favorite favorite) {
+        Optional<Favorite> created = mediaRepository.addFavorite(favorite);
         if(created.isEmpty()){
             throw new EntityNotFoundException("Favorite already exists");
         }
         return created.get();
     }
 
-    public String delete(Favorites favorite) {
+    public String delete(Favorite favorite) {
         Optional<String> deleted = mediaRepository.deleteFavorite(favorite);
         if(deleted.isEmpty()){
             notFound();

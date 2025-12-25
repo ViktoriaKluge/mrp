@@ -28,8 +28,8 @@ public class UserService {
         return  this.userRepository.favorites(user);
     }
 
-    public UserLoggedInDto update(User user, UserUpdateDto update) {
-        if (update.isUpdate() && user.getPassword().equals(update.getPasswordOld())) {
+    public UserLoggedInDto update(UserUpdateDto update) {
+        if (update.isUpdate()){
             Optional<UserLoggedInDto> userUpdatedOpt = this.userRepository.update(update);
             UserLoggedInDto updatedUser = userUpdatedOpt.get();
             updatedUser.newToken();

@@ -10,8 +10,10 @@ import at.technikum.server.http.Method;
 import java.util.List;
 
 public class RequestDto {
+    // user
+   // private User user;
     private User user;
-    private String id;
+    private String uid;
     private String username;
     private String password;
     private String password1;
@@ -22,23 +24,45 @@ public class RequestDto {
     private String email;
     private String userType;
     private String token;
-    private List<Media> mediaList;
+    // media
+    private String mid;
+    private String title;
+    private String description;
+    private List<String> genre;
+    private MediaType mediaType;
+    private Integer releaseYear;
+    private Integer ageRestriction;
+    // ? private List<Media> mediaList;
+    // rating
+    private String rid;
+    private String comment;
+    private String stars;
     private List<Rating>  ratingList;
+    // Request
     private String[] path;
     private Method method;
     private ContentType contentType;
-    private MediaType mediaType;
+
 
     public RequestDto() {
 
     }
 
-    public String getId() {
-        return id;
+    // user
+    public User getUser() {
+        return user;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
     public String getUsername() {
@@ -121,12 +145,88 @@ public class RequestDto {
         this.token = token;
     }
 
-    public List<Media> getMediaList() {
-        return mediaList;
+    // media
+
+    public String getMid() {
+        return mid;
     }
 
-    public void setMediaList(List<Media> mediaList) {
-        this.mediaList = mediaList;
+    public void setMid(String mid) {
+        this.mid = mid;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public List<String> getGenre() {
+        return genre;
+    }
+
+    public void setGenre(List<String> genre) {
+        this.genre = genre;
+    }
+
+    public MediaType getMediaType() {
+        return mediaType;
+    }
+
+    public void setMediaType(MediaType mediaType) {
+        this.mediaType = mediaType;
+    }
+
+    public Integer getReleaseYear() {
+        return releaseYear;
+    }
+
+    public void setReleaseYear(Integer releaseYear) {
+        this.releaseYear = releaseYear;
+    }
+
+    public Integer getAgeRestriction() {
+        return ageRestriction;
+    }
+
+    public void setAgeRestriction(Integer ageRestriction) {
+        this.ageRestriction = ageRestriction;
+    }
+
+    // rating
+
+    public String getRid() {
+        return rid;
+    }
+
+    public void setRid(String rid) {
+        this.rid = rid;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public String getStars() {
+        return stars;
+    }
+
+    public void setStars(String stars) {
+        this.stars = stars;
     }
 
     public List<Rating> getRatingList() {
@@ -136,6 +236,8 @@ public class RequestDto {
     public void setRatingList(List<Rating> ratingList) {
         this.ratingList = ratingList;
     }
+
+    // request
 
     public String[] getPath() {
         return path;
@@ -159,21 +261,5 @@ public class RequestDto {
 
     public void setContentType(ContentType contentType) {
         this.contentType = contentType;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public MediaType getMediaType() {
-        return mediaType;
-    }
-
-    public void setMediaType(MediaType mediaType) {
-        this.mediaType = mediaType;
     }
 }

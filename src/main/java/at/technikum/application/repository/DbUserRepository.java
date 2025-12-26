@@ -7,8 +7,10 @@ import at.technikum.application.dto.users.UserUpdateDto;
 import at.technikum.application.enums.MediaType;
 import at.technikum.application.enums.UserType;
 import at.technikum.application.exception.DatabaseConnectionException;
+import at.technikum.application.exception.ObjectToSQLException;
 import at.technikum.application.exception.SQLToUserException;
 import at.technikum.application.exception.UniqueViolationException;
+import at.technikum.application.model.LeaderboardEntry;
 import at.technikum.application.model.Media;
 import at.technikum.application.model.Rating;
 import at.technikum.application.model.User;
@@ -39,7 +41,7 @@ public class DbUserRepository implements UserRepository {
             = "SELECT * FROM users WHERE email = ?";
 
     private static final String UPDATE_USER
-            = "UPDATE users SET username = ?, password = ? WHERE uid = ? ";
+            = "UPDATE users SET username = ?, password = ?, email = ? WHERE uid = ? ";
 
     private static final String SAVE
             = "INSERT INTO users (uid,username,password,email,usertype) VALUES (?,?,?,?,?)";
@@ -63,7 +65,6 @@ public class DbUserRepository implements UserRepository {
                 if (!rs.next()) {
                     return Optional.empty();
                 }
-
                 return Optional.of(setUser(rs));
             }
         } catch (SQLException e) {
@@ -157,7 +158,8 @@ public class DbUserRepository implements UserRepository {
             String newPsw = checkPassword(update);
             prestmt.setString(1,update.getUsername());
             prestmt.setString(2,newPsw);
-            prestmt.setObject(3,update.getId());
+            prestmt.setString(3,update.getEmail());
+            prestmt.setObject(4,update.getId());
             prestmt.executeUpdate();
             return Optional.of(updateToLoggedIn(update));
 
@@ -206,7 +208,7 @@ public class DbUserRepository implements UserRepository {
             if (e.getSQLState().equals("23505")) {
                 throw new UniqueViolationException("Username or email already exists");
             }
-            throw new SQLToUserException("Could not save user");
+            throw new ObjectToSQLException("Could not save user");
         }
     }
 
@@ -262,7 +264,7 @@ public class DbUserRepository implements UserRepository {
     }
 
     @Override
-    public List<User> leaderboard() {
+    public List<LeaderboardEntry> leaderboard() {
         return List.of();
     }
 }

@@ -15,7 +15,7 @@ public class FavoritesService {
     }
 
     public Favorite add(Favorite favorite) {
-        Optional<Favorite> created = mediaRepository.addFavorite(favorite);
+        Optional<Favorite> created = this.mediaRepository.addFavorite(favorite);
         if(created.isEmpty()){
             throw new EntityNotFoundException("Favorite already exists");
         }
@@ -23,15 +23,10 @@ public class FavoritesService {
     }
 
     public String delete(Favorite favorite) {
-        Optional<String> deleted = mediaRepository.deleteFavorite(favorite);
+        Optional<String> deleted = this.mediaRepository.deleteFavorite(favorite);
         if(deleted.isEmpty()){
-            notFound();
+            throw new EntityNotFoundException("Favorite not found");
         }
         return deleted.get();
     }
-
-    private void notFound(){
-        throw new EntityNotFoundException("Favorite not found");
-    }
-
 }

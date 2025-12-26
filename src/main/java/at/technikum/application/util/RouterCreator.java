@@ -24,8 +24,8 @@ public class RouterCreator {
                 "mrp"
         );
         this.userRepository= new DbUserRepository(connectionPool);
-        this.mediaRepository = new DbMediaRespository(connectionPool);
-        this.ratingRepository = new DbRatingRepository(connectionPool);
+        this.mediaRepository = new DbMediaRespository(connectionPool, userRepository);
+        this.ratingRepository = new DbRatingRepository(connectionPool, userRepository, mediaRepository);
         this.router.addRoute("/users", new UserController(new UserService(this.userRepository),
                 new AuthService(this.userRepository),new RecommendationService(this.userRepository)));
         this.router.addRoute("/media", new MediaController( new MediaService(this.mediaRepository),

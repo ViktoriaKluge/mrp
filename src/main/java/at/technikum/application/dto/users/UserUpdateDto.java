@@ -1,6 +1,8 @@
 package at.technikum.application.dto.users;
 
 import at.technikum.application.exception.UnprocessableEntityException;
+import jakarta.mail.internet.AddressException;
+import jakarta.mail.internet.InternetAddress;
 
 import java.util.UUID;
 
@@ -11,13 +13,27 @@ public class UserUpdateDto {
     private String passwordOld;
     private String passwordNew1;
     private String passwordNew2;
+    private String email;
 
     public UserUpdateDto() {
 
     }
 
     public boolean isUpdate() {
-        return testUsername() && testUpdatePassword();
+        return testUsername() && testUpdatePassword() && testEmail();
+    }
+
+    private boolean testEmail() {
+        if (email == null || email.isEmpty()) {
+            return true;
+        }
+        try {
+            InternetAddress address = new InternetAddress(email);
+            address.validate();
+            return true;
+        } catch (AddressException e) {
+            return false;
+        }
     }
 
     private boolean testUsername() {
@@ -75,5 +91,13 @@ public class UserUpdateDto {
 
     public void setPasswordNew2(String passwordNew2) {
         this.passwordNew2 = passwordNew2;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

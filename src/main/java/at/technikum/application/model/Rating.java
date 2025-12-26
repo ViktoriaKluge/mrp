@@ -1,15 +1,13 @@
 package at.technikum.application.model;
 
-import java.security.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.Instant;
 import java.util.UUID;
 
 public class Rating {
     private UUID id;
     private String comment;
     private Integer stars;
-    private Timestamp timestamp;
+    private Instant timestamp;
     private boolean visibility;
     private User creator;
     private Media ratedMedia;
@@ -18,33 +16,16 @@ public class Rating {
 
     }
 
-    public Rating(UUID id, String comment, Integer stars,  Timestamp timestamp,
+    public Rating(UUID id, String comment, Integer stars,
                   User creator, Media ratedMedia) {
        this.id = id;
        this.comment = comment;
        this.stars = stars;
-       this.timestamp = timestamp;
+       this.timestamp = Instant.now();
        this.visibility = false;
        this.creator = creator;
        this.ratedMedia = ratedMedia;
 
-    }
-
-    /*
-    public List<Rating> createMockRatings(){
-        List<Rating> ratingMock = new ArrayList<>();
-        ratingMock.add(new Rating("147",1));
-        ratingMock.add(new Rating("369",4));
-        ratingMock.add(new Rating("9761",3));
-        ratingMock.add(new Rating("369",2));
-        return ratingMock;
-    }
-
-     */
-
-    @Override
-    public String toString() {
-        return String.format("{media id:%s, rating:%s}", this.comment, this.stars);
     }
 
     public UUID getId() {
@@ -71,11 +52,11 @@ public class Rating {
         this.stars = stars;
     }
 
-    public Timestamp getTimestamp() {
+    public Instant getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Timestamp timestamp) {
+    public void setTimestamp(Instant timestamp) {
         this.timestamp = timestamp;
     }
 

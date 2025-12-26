@@ -18,11 +18,11 @@ public class MediaService {
     }
 
     public List<Media> findAll() {
-        return mediaRepository.mediaList();
+        return this.mediaRepository.mediaList();
     }
 
     public Media findById(UUID id) {
-        Optional<Media> media = mediaRepository.findById(id);
+        Optional<Media> media = this.mediaRepository.findById(id);
         if (media.isEmpty()) {
             notFound();
         }
@@ -30,7 +30,7 @@ public class MediaService {
     }
 
     public Media create(Media media) {
-        Optional<Media> createdMedia = mediaRepository.save(media);
+        Optional<Media> createdMedia = this.mediaRepository.save(media);
         if (createdMedia.isEmpty()) {
             throw new UnprocessableEntityException("Media already exists");
         }
@@ -38,7 +38,7 @@ public class MediaService {
     }
 
     public Media update(Media newMedia) {
-        Optional <Media> updated = mediaRepository.update(newMedia);
+        Optional <Media> updated = this.mediaRepository.update(newMedia);
         if (updated.isEmpty()) {
             notFound();
         }
@@ -46,7 +46,7 @@ public class MediaService {
     }
 
     public String delete(Media media) {
-        Optional<String> deleted = mediaRepository.delete(media);
+        Optional<String> deleted = this.mediaRepository.delete(media);
         if (deleted.isEmpty()) {
             notFound();
         }

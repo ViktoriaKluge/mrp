@@ -75,7 +75,8 @@ public class RatingController extends Controller {
     }
 
     private Response like(Rating rating, User user) {
-        Like liked = this.ratingService.like(rating, user);
+        Like like = new Like(rating,user);
+        Like liked = this.ratingService.like(like);
         return json(liked, Status.OK);
     }
 

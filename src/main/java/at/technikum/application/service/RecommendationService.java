@@ -14,8 +14,7 @@ public class RecommendationService {
         this.userRepository = userRepository;
     }
 
-    public List<Media> getRecommendations(User user, MediaType contentType) {
-
-        return this.userRepository.recommendations(user, contentType);
+    public List<Media> getRecommendations(User user, MediaType mediaType) {
+        return this.userRepository.recommendations(user, mediaType);
     }
 }

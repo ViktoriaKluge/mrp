@@ -31,7 +31,7 @@ public class RatingService {
     }
 
     public Rating create(Rating rating) {
-        Optional<Rating> created = ratingRepository.save(rating);
+        Optional<Rating> created = this.ratingRepository.save(rating);
         if(created.isEmpty()){
             throw new EntityNotFoundException("Rating already exists");
         }
@@ -39,15 +39,15 @@ public class RatingService {
     }
 
     public Rating update(Rating rating) {
-        Optional<Rating> updated = ratingRepository.update(rating);
+        Optional<Rating> updated = this.ratingRepository.update(rating);
         if(updated.isEmpty()){
             notFound();
         }
         return updated.get();
     }
 
-    public Like like(Rating rating, User user) {
-        Optional<Like> liked = ratingRepository.like(rating, user);
+    public Like like(Like like) {
+        Optional<Like> liked = this.ratingRepository.like(like);
         if(liked.isEmpty()){
             notFound();
         }
@@ -55,7 +55,7 @@ public class RatingService {
     }
 
     public Rating confirm(Rating rating) {
-        Optional<Rating> confirmed = ratingRepository.confirm(rating);
+        Optional<Rating> confirmed = this.ratingRepository.confirm(rating);
         if(confirmed.isEmpty()){
             notFound();
         }
@@ -63,7 +63,7 @@ public class RatingService {
     }
 
     public String delete(Rating rating) {
-        Optional<String> deleted = ratingRepository.delete(rating);
+        Optional<String> deleted = this.ratingRepository.delete(rating);
         if(deleted.isEmpty()){
             notFound();
         }

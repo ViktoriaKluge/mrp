@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS media (
                        genres          TEXT[]     NOT NULL DEFAULT '{}'
 );
 
-CREATE TABLE ratings (
+CREATE TABLE IF NOT EXISTS ratings (
                          rid        UUID        PRIMARY KEY,
                          user_id    UUID        NOT NULL REFERENCES users(uid),
                          media_id   UUID        NOT NULL REFERENCES media(mid) ON DELETE CASCADE,
@@ -28,16 +28,17 @@ CREATE TABLE ratings (
                          CONSTRAINT uq_ratings_user_media UNIQUE (user_id, media_id)
 );
 
-CREATE TABLE favorite (
-                           fid        UUID       PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS favorite (
                            user_id    UUID       NOT NULL REFERENCES users(uid) ON DELETE CASCADE,
                            media_id   UUID       NOT NULL REFERENCES media(mid) ON DELETE CASCADE,
-                           CONSTRAINT uq_favorites_user_media UNIQUE (user_id, media_id)
+                           PRIMARY KEY (user_id, media_id)
 );
 
-CREATE TABLE rating_likes (
-                              lid        UUID       PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS rating_likes (
                               user_id    UUID       NOT NULL REFERENCES users(uid),
                               rating_id  UUID       NOT NULL REFERENCES ratings(rid) ON DELETE CASCADE,
-                              CONSTRAINT uq_rating_likes_user_rating UNIQUE (user_id, rating_id)
+                              PRIMARY KEY (user_id, rating_id)
 );
+
+CREATE INDEX idx_favorite_media ON favorite(media_id);
+CREATE INDEX idx_rating_likes_rating ON rating_likes(rating_id);

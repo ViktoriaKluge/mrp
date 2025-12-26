@@ -20,11 +20,11 @@ public class AuthService {
         this.userRepository = userRepository;
     }
 
-    public User register(UserCreateDto userCreateDto) {
-        if (userCreateDto.isUser()) {
-            User user = createToUser(userCreateDto);
+    public User register(UserCreateDto userCreate) {
+        if (userCreate.isUser()) {
+            User user = createToUser(userCreate);
             user.setId(UUID.randomUUID());
-            Optional<User> registeredUser = userRepository.save(user);
+            Optional<User> registeredUser = this.userRepository.save(user);
             if (registeredUser.isEmpty()) {
                 throw new UnprocessableEntityException("User already exists");
             }
@@ -33,22 +33,22 @@ public class AuthService {
         throw new EntityNotFoundException("Not enough parameters");
     }
 
-    private User createToUser(UserCreateDto userCreateDto) {
+    private User createToUser(UserCreateDto userCreate) {
         User user = new User();
-        user.setUsername(userCreateDto.getUsername());
-        user.setEmail(userCreateDto.getEmail());
-        user.setUserType(userCreateDto.getUserType());
-        user.setPassword(userCreateDto.getPassword1());
+        user.setUsername(userCreate.getUsername());
+        user.setEmail(userCreate.getEmail());
+        user.setUserType(userCreate.getUserType());
+        user.setPassword(userCreate.getPassword1());
         return user;
     }
 
-    public UserLoggedInDto createToken(UserLoginDto userLoginDto) {
-        if (userLoginDto.bothHere()) {
-            Optional<UserLoggedInDto> userLoggedInDto = this.userRepository.login(userLoginDto);
-            if(userLoggedInDto.isEmpty()) {
+    public UserLoggedInDto createToken(UserLoginDto userLogin) {
+        if (userLogin.bothHere()) {
+            Optional<UserLoggedInDto> userLoggedIn = this.userRepository.login(userLogin);
+            if(userLoggedIn.isEmpty()) {
                 throw new EntityNotFoundException("Username and password dont match");
             }
-            return userLoggedInDto.get().newToken();
+            return userLoggedIn.get().newToken();
         }
         throw new EntityNotFoundException("Not enough parameters");
     }

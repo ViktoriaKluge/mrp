@@ -16,7 +16,6 @@ public class UserCreateDto {
     }
 
     public boolean isUser() {
-
         return testUsername() && testUserType() && testPassword() && testEmail();
     }
 

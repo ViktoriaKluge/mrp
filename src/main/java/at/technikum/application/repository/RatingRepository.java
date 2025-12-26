@@ -11,11 +11,12 @@ import java.util.UUID;
 public interface RatingRepository {
 
 
-    Optional<String> delete(Rating rating);
+    Optional<Rating> findByID(UUID id);
     Optional<Rating> save(Rating rating);
     Optional<Rating> update(Rating rating);
-    Optional<Like> like(Rating rating, User user);
+    Optional<Like> like(Like like);
     Optional<Rating> confirm(Rating rating);
+    Optional<String> delete(Rating rating);
     List<Rating> findAll();
-    Optional<Rating> findByID(UUID id);
+
 }

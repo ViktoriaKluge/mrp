@@ -4,6 +4,7 @@ import at.technikum.application.dto.auth.UserLoggedInDto;
 import at.technikum.application.dto.auth.UserLoginDto;
 import at.technikum.application.dto.users.UserUpdateDto;
 import at.technikum.application.enums.MediaType;
+import at.technikum.application.model.LeaderboardEntry;
 import at.technikum.application.model.Media;
 import at.technikum.application.model.Rating;
 import at.technikum.application.model.User;
@@ -25,5 +26,5 @@ public interface UserRepository {
     Optional<User> save(User user);
     Optional<UserLoggedInDto> login(UserLoginDto userLoginDto);
     List<Media> recommendations(User user, MediaType mediaType);
-    List<User> leaderboard();
+    List<LeaderboardEntry> leaderboard();
 }

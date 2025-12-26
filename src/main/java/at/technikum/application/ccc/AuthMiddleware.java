@@ -58,7 +58,7 @@ public class AuthMiddleware {
         if (path[1].equals("users")) {
             id = path[2];
         } else {
-            id = requestDto.getId();
+            id = requestDto.getUid();
             if (id == null || id.isEmpty()) {
                 throw new NotAuthorizedException("No user id found");
             }

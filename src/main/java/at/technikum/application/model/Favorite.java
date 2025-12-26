@@ -1,9 +1,6 @@
 package at.technikum.application.model;
 
-import java.util.UUID;
-
 public class Favorite {
-    private UUID id;
     private User user;
     private Media media;
 
@@ -11,18 +8,9 @@ public class Favorite {
 
     }
 
-    public Favorite(UUID id, User user, Media media) {
-        this.id = id;
+    public Favorite(User user, Media media) {
         this.user = user;
         this.media = media;
-    }
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
     }
 
     public User getUser() {

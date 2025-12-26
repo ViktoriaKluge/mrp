@@ -63,7 +63,6 @@ public class MediaController extends Controller {
                 }
                 if (path[3].equals("favorite")) {
                     Favorite favorite = new Favorite();
-                    favorite.setId(UUID.randomUUID());
                     favorite.setMedia(media);
                     favorite.setUser(user);
                     return addFavorite(favorite);

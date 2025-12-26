@@ -2,27 +2,20 @@
 ### Get home
 GET http://localhost:8080/
 
+
 ### Get users home
 GET http://localhost:8080/users
-
-### Get user profile
-GET http://localhost:8080/users/02970a61-2fc7-4785-a35e-657513779c40/profile
-Authorization: Bearer userlein-mrpToken
-
-### Get user ratings
-GET http://localhost:8080/users/5e9a74a8-4fae-4dc8-9743-cc7779765ff2/ratings
-Authorization: Bearer userlein-mrpToken
 
 ### Post auth register
 POST http://localhost:8080/users/register
 Content-Type: application/json
 
 {
-    "username": "userlein",
-    "password1": "124",
-    "password2": "124",
-    "email": "example@test1.com",
-    "userType": "User"
+  "username": "userlein",
+  "password1": "124",
+  "password2": "124",
+  "email": "example@test1.com",
+  "userType": "User"
 }
 
 ### Post auth login
@@ -30,12 +23,16 @@ POST http://localhost:8080/users/login
 Content-Type: application/json
 
 {
-    "username": "userlein",
-    "password": "124"
+  "username": "userlein",
+  "password": "124"
 }
 
+### Get user profile
+GET http://localhost:8080/users/1d171300-465a-4017-83a3-fef1eaf21a68/profile
+Authorization: Bearer userlein-mrpToken
+
 ### Put users profile
-PUT http://localhost:8080/users/717a6f04-d460-4551-b2d4-abd2e44c95ea/profile
+PUT http://localhost:8080/users/1d171300-465a-4017-83a3-fef1eaf21a68/profile
 Content-Type: application/json
 Authorization: Bearer userlein-mrpToken
 
@@ -46,6 +43,24 @@ Authorization: Bearer userlein-mrpToken
   "passwordNew2": "127"
 }
 
+### Get user ratings
+GET http://localhost:8080/users/1d171300-465b-4017-83a3-fef1eaf21a68/ratings
+Authorization: Bearer userleini-mrpToken
+
 ### Delete user
 DELETE http://localhost:8080/users/717a6f04-d460-4551-b2d4-abd2e44c95ea/delete
+Authorization: Bearer userlein-mrpToken
+
+### Create media
+POST http://localhost:8080/media
+Content-Type: application/json
 Authorization: Bearer userleini-mrpToken
+
+{
+  "title": "Best movie",
+  "description": "best movie ever made",
+  "genre":["Action", "Drama", "Sci-Fi"],
+  "mediaType": "MOVIE",
+  "releaseYear": 2020,
+  "ageRestriction": 9
+}

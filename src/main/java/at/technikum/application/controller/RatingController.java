@@ -38,7 +38,7 @@ public class RatingController extends Controller {
                 }
 
                 if (path[3].equals("confirm")) {
-                    if (user.isAdmin()){
+                    if (isAdmin(user)){
                         return confirm(rating);
                     }
                 }
@@ -47,8 +47,7 @@ public class RatingController extends Controller {
             if (authorized(user, creator)){
                 if (method.equals(Method.PUT)) {
                     Rating update = toOtherObject(requestDto, Rating.class);
-                    update.setId(rating.getId());
-                    return updateRating(update);
+                    return updateRating(rating, update);
                 }
 
                 if (method.equals(Method.DELETE)) {
@@ -64,8 +63,8 @@ public class RatingController extends Controller {
         return text("Deleted rating for "+ deleted, Status.OK);
     }
 
-    private Response updateRating(Rating update) {
-        update = this.ratingService.update(update);
+    private Response updateRating(Rating old, Rating update) {
+        update = this.ratingService.update(old,update);
         return json(update, Status.OK);
     }
 
@@ -85,5 +84,12 @@ public class RatingController extends Controller {
             return true;
         }
         throw new NotAuthorizedException("Only the creator can modify their ratings");
+    }
+
+    public boolean isAdmin(User user) {
+        if (user.getUserType() == UserType.Admin){
+            return true;
+        }
+        throw new NotAuthorizedException("You need to be an admin to do this");
     }
 }

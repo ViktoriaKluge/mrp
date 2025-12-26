@@ -1,5 +1,6 @@
 package at.technikum.application.repository;
 
+import at.technikum.application.dto.sql.SQLFavoriteDto;
 import at.technikum.application.model.Favorite;
 import at.technikum.application.model.Media;
 
@@ -14,6 +15,6 @@ public interface MediaRepository {
     Optional<Media> save(Media media);
     Optional<String> delete(Media media);
     Optional<Media> update(Media media);
-    Optional<Favorite> addFavorite(Favorite favorite);
+    Optional<SQLFavoriteDto> addFavorite(Favorite favorite);
     Optional<String> deleteFavorite(Favorite favorite);
 }

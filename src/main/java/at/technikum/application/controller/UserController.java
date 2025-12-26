@@ -5,6 +5,9 @@ import at.technikum.application.dto.auth.UserCreateDto;
 import at.technikum.application.dto.auth.UserLoggedInDto;
 import at.technikum.application.dto.auth.UserLoginDto;
 import at.technikum.application.dto.authmiddleware.RequestDto;
+import at.technikum.application.dto.sql.SQLFavoriteDto;
+import at.technikum.application.dto.sql.SQLMediaDto;
+import at.technikum.application.dto.sql.SQLRatingDto;
 import at.technikum.application.dto.users.*;
 import at.technikum.application.enums.MediaType;
 import at.technikum.application.exception.EntityNotFoundException;
@@ -82,7 +85,6 @@ public class UserController extends Controller {
             if (method.equals(Method.PUT)){
                 if (path[3].equals("profile")) {
                     UserUpdateDto userUpdateDto = toOtherObject(requestDto, UserUpdateDto.class);
-                    userUpdateDto.setId(user.getId());
                     return update(user,userUpdateDto);
                 }
             }
@@ -96,7 +98,7 @@ public class UserController extends Controller {
     }
 
     private Response recommendations(User user, MediaType mediaType) {
-        List<Media> recommendations = this.recommendationService.getRecommendations(
+        List<SQLMediaDto> recommendations = this.recommendationService.getRecommendations(
                 user,mediaType
         );
         return json(recommendations,Status.OK);
@@ -107,18 +109,18 @@ public class UserController extends Controller {
     }
 
     private Response ratings(User user) {
-        List<Rating> ratings = this.userService.ratings(user);
+        List<SQLRatingDto> ratings = this.userService.ratings(user);
         return json(ratings, Status.OK);
     }
 
     private Response favorites(User user) {
-        List<Media> favorites = this.userService.favorites(user);
+        List<SQLFavoriteDto> favorites = this.userService.favorites(user);
         return json(favorites, Status.OK);
     }
 
     private Response update(User user, UserUpdateDto userUpdate) {
         if (user.getPassword().equals(userUpdate.getPasswordOld())) {
-            UserLoggedInDto userUpdated = this.userService.update(userUpdate);
+            UserLoggedInDto userUpdated = this.userService.update(user,userUpdate);
             return json(userUpdated,Status.OK);
         } else {
             return text("Passwords do not match", Status.UNAUTHORIZED);

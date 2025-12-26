@@ -37,8 +37,9 @@ public class MediaService {
         return createdMedia.get();
     }
 
-    public Media update(Media newMedia) {
-        Optional <Media> updated = this.mediaRepository.update(newMedia);
+    public Media update(Media old, Media mediaUpdate) {
+        mediaUpdate = setUpdate(old,mediaUpdate);
+        Optional <Media> updated = this.mediaRepository.update(mediaUpdate);
         if (updated.isEmpty()) {
             notFound();
         }
@@ -55,5 +56,28 @@ public class MediaService {
 
     private void notFound(){
         throw new EntityNotFoundException("Media not found");
+    }
+
+    private Media setUpdate(Media old, Media mediaUpdate) {
+        mediaUpdate.setId(old.getId());
+        if  (mediaUpdate.getTitle() == null || mediaUpdate.getTitle().isEmpty()) {
+            mediaUpdate.setTitle(old.getTitle());
+        }
+        if  (mediaUpdate.getDescription() == null || mediaUpdate.getDescription().isEmpty()) {
+            mediaUpdate.setDescription(old.getDescription());
+        }
+        if (mediaUpdate.getMediaType() == null) {
+            mediaUpdate.setMediaType(old.getMediaType());
+        }
+        if (mediaUpdate.getReleaseYear() == null) {
+            mediaUpdate.setReleaseYear(old.getReleaseYear());
+        }
+        if (mediaUpdate.getAgeRestriction() == null) {
+            mediaUpdate.setAgeRestriction(old.getAgeRestriction());
+        }
+        if (mediaUpdate.getGenre() == null) {
+            mediaUpdate.setGenre(old.getGenre());
+        }
+        return mediaUpdate;
     }
 }

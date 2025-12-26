@@ -1,11 +1,6 @@
 package at.technikum.application.model;
 
-import at.technikum.application.dto.auth.UserLoggedInDto;
 import at.technikum.application.enums.UserType;
-import at.technikum.application.exception.NotAuthorizedException;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 public class User {
@@ -25,21 +20,6 @@ public class User {
         this.password = password;
         this.email = email;
         this.userType = userType;
-    }
-
-    /*
-    public List<User> createMockUsers() {
-        List<User> users = new ArrayList<>();
-        users.add(new User("1234","testuser","safepassword","test@example.com",UserType.Admin));
-        users.add(new User("9632","userlein","securepassword","example@test.com",UserType.User));
-        return users;
-    }
-
-     */
-
-    @Override
-    public String toString() {
-        return String.format("{id:%s, username:%s}", id, username);
     }
 
     public UUID getId() {
@@ -80,12 +60,5 @@ public class User {
 
     public void setUserType(UserType userType) {
         this.userType = userType;
-    }
-
-    public boolean isAdmin() {
-        if (userType == UserType.Admin){
-            return true;
-        }
-        throw new NotAuthorizedException("You need to be an admin to do this");
     }
 }

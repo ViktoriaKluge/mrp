@@ -1,6 +1,7 @@
 package at.technikum.application.repository;
 
 import at.technikum.application.common.ConnectionPool;
+import at.technikum.application.dto.sql.SQLFavoriteDto;
 import at.technikum.application.enums.MediaType;
 import at.technikum.application.exception.DatabaseConnectionException;
 import at.technikum.application.exception.ObjectToSQLException;
@@ -27,19 +28,21 @@ public class DbMediaRespository implements MediaRepository {
             = "SELECT * FROM media";
 
     private static final String SAVE
-            = "INSERT INTO media (mid, owner_id, title, description, media_type, release_year, age_restriction, genres) VALUES (?,?,?,?,?,?,?,?)";
+            = "INSERT INTO media (mid, owner_id, title, description, media_type, release_year, age_restriction, genres)"
+                    +" VALUES (?,?,?,?,?,?,?,?) RETURNING *";
 
     private static final String DELETE_MEDIA
-            = "DELETE FROM media WHERE mid = ? RETURNING title";
+            = "DELETE FROM media WHERE mid = ? RETURNING *";
 
     private static final String UPDATE_MEDIA
-            = "UPDATE media SET title = ?, description = ?, media_type = ?, release_year = ?, age_restriction = ?, genres = ? WHERE mid = ? ";
+            = "UPDATE media SET title = ?, description = ?, media_type = ?, release_year = ?, age_restriction = ?, "
+                    +"genres = ? WHERE mid = ? RETURNING *";
 
     private static final String ADD_FAVORITE
-            = "INSERT INTO favorite (user_id, media_id) VALUES (?, ?)";
+            = "INSERT INTO favorite (user_id, media_id) VALUES (?, ?) RETURNING *";
 
     private static final String DELETE_FAVORITE
-            = "DELETE FROM favorite WHERE user_id = ? AND media_id = ?";
+            = "DELETE FROM favorite WHERE user_id = ? AND media_id = ? RETURNING *";
 
     public DbMediaRespository(ConnectionPool connectionPool, UserRepository userRepository) {
         this.connectionPool = connectionPool;
@@ -105,9 +108,15 @@ public class DbMediaRespository implements MediaRepository {
             List<String> genres = media.getGenre();
             Array genresArray = conn.createArrayOf("text", genres.toArray());
             prestmt.setArray(8, genresArray);
-            prestmt.executeUpdate();
 
-            return Optional.of(media);
+            try (ResultSet rs = prestmt.executeQuery()) {
+                if (!rs.next()) {
+                    return Optional.empty();
+                }
+                return Optional.of(setMedia(rs));
+            }
+
+
         } catch (SQLException e) {
             throw new ObjectToSQLException("Could not save media");
         }
@@ -148,9 +157,13 @@ public class DbMediaRespository implements MediaRepository {
             Array genresArray = conn.createArrayOf("text", genres.toArray());
             prestmt.setArray(6, genresArray);
             prestmt.setObject(7, media.getId());
-            prestmt.executeUpdate();
 
-            return Optional.of(media);
+            try (ResultSet rs = prestmt.executeQuery()) {
+                if (!rs.next()) {
+                    return Optional.empty();
+                }
+                return Optional.of(setMedia(rs));
+            }
         } catch (SQLException e) {
             throw new SQLToUserException("Could not update media");
         }
@@ -158,7 +171,7 @@ public class DbMediaRespository implements MediaRepository {
     }
 
     @Override
-    public Optional<Favorite> addFavorite(Favorite favorite) {
+    public Optional<SQLFavoriteDto> addFavorite(Favorite favorite) {
         try (
                 Connection conn = connectionPool.getConnection();
                 PreparedStatement prestmt = conn.prepareStatement(ADD_FAVORITE)
@@ -167,9 +180,12 @@ public class DbMediaRespository implements MediaRepository {
             UUID mid = favorite.getMedia().getId();
             prestmt.setObject(1, uid);
             prestmt.setObject(2, mid);
-            prestmt.executeUpdate();
-
-            return Optional.of(favorite);
+            try (ResultSet rs = prestmt.executeQuery()) {
+                if (!rs.next()) {
+                    return Optional.empty();
+                }
+                return Optional.of(setFavorite(rs));
+            }
         }catch (SQLException e) {
             throw new SQLToUserException("Could not add favorite");
         }
@@ -185,9 +201,13 @@ public class DbMediaRespository implements MediaRepository {
             UUID mid = favorite.getMedia().getId();
             prestmt.setObject(1, uid);
             prestmt.setObject(2, mid);
-            prestmt.executeUpdate();
-            String mediaTitle = favorite.getMedia().getTitle();
-            return Optional.of(mediaTitle);
+            try (ResultSet rs = prestmt.executeQuery()) {
+                if (!rs.next()) {
+                    return Optional.empty();
+                }
+                String mediaTitle = favorite.getMedia().getTitle();
+                return Optional.of(mediaTitle);
+            }
         }catch (SQLException e) {
             throw new SQLToUserException("Could not delete favorite");
         }
@@ -212,4 +232,14 @@ public class DbMediaRespository implements MediaRepository {
         }
     }
 
+    private SQLFavoriteDto setFavorite(ResultSet rs) throws SQLException {
+        try {
+            SQLFavoriteDto sqlFav = new SQLFavoriteDto();
+            sqlFav.setUserId(rs.getObject("user_id", UUID.class));
+            sqlFav.setMediaId(rs.getObject("media_id", UUID.class));
+            return sqlFav;
+        } catch (SQLException e) {
+            throw new SQLToUserException("Can not set up favorite");
+        }
+    }
 }

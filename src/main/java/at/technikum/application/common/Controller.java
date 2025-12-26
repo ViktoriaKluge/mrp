@@ -54,7 +54,12 @@ public abstract class Controller {
         try {
             return MAPPER.convertValue(requestDto, target);
         } catch (Exception ex) {
-            throw new IncompatiblePayloadTypeException("Incompatible type for dto");
+            // throw new IncompatiblePayloadTypeException("Incompatible type for dto");
+            throw new IncompatiblePayloadTypeException(
+                    "Incompatible type for dto -> " + target.getSimpleName() + ": " + ex.getClass().getSimpleName()
+                            + " - " + ex.getMessage(),
+                    ex
+            );
         }
     }
 

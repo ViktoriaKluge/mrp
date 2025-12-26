@@ -3,6 +3,9 @@ package at.technikum.application.repository;
 import at.technikum.application.common.ConnectionPool;
 import at.technikum.application.dto.auth.UserLoggedInDto;
 import at.technikum.application.dto.auth.UserLoginDto;
+import at.technikum.application.dto.sql.SQLFavoriteDto;
+import at.technikum.application.dto.sql.SQLMediaDto;
+import at.technikum.application.dto.sql.SQLRatingDto;
 import at.technikum.application.dto.users.UserUpdateDto;
 import at.technikum.application.enums.MediaType;
 import at.technikum.application.enums.UserType;
@@ -41,13 +44,13 @@ public class DbUserRepository implements UserRepository {
             = "SELECT * FROM users WHERE email = ?";
 
     private static final String UPDATE_USER
-            = "UPDATE users SET username = ?, password = ?, email = ? WHERE uid = ? ";
+            = "UPDATE users SET username = ?, password = ?, email = ? WHERE uid = ? RETURNING *";
 
     private static final String SAVE
-            = "INSERT INTO users (uid,username,password,email,usertype) VALUES (?,?,?,?,?)";
+            = "INSERT INTO users (uid,username,password,email,usertype) VALUES (?,?,?,?,?) RETURNING *";
 
     private static final String DELETE
-            = "DELETE FROM users WHERE uid = ? RETURNING username";
+            = "DELETE FROM users WHERE uid = ? RETURNING *";
 
     public DbUserRepository(ConnectionPool connectionPool) {
         this.connectionPool = connectionPool;
@@ -137,14 +140,14 @@ public class DbUserRepository implements UserRepository {
     }
 
     @Override
-    public List<Rating> ratings(User user) {
-        List<Rating> ratings = new ArrayList<>();
+    public List<SQLRatingDto> ratings(User user) {
+        List<SQLRatingDto> ratings = new ArrayList<>();
         return ratings;
     }
 
     @Override
-    public List<Media> favorites(User user) {
-        List<Media> media = new  ArrayList<>();
+    public List<SQLFavoriteDto> favorites(User user) {
+        List<SQLFavoriteDto> media = new  ArrayList<>();
         return media;
     }
 
@@ -155,14 +158,17 @@ public class DbUserRepository implements UserRepository {
                 PreparedStatement prestmt = conn.prepareStatement(UPDATE_USER)
         ) {
 
-            String newPsw = checkPassword(update);
             prestmt.setString(1,update.getUsername());
-            prestmt.setString(2,newPsw);
+            prestmt.setString(2,update.getPasswordNew1());
             prestmt.setString(3,update.getEmail());
             prestmt.setObject(4,update.getId());
-            prestmt.executeUpdate();
-            return Optional.of(updateToLoggedIn(update));
 
+            try ( ResultSet rs = prestmt.executeQuery()) {
+                if (!rs.next()) {
+                    return Optional.empty();
+                }
+                return Optional.of(rsToLoggedIn(rs));
+            }
         } catch (SQLException e) {
             if (e.getSQLState().equals("23505")) {
                 throw new UniqueViolationException("Username or email already exists");
@@ -201,9 +207,13 @@ public class DbUserRepository implements UserRepository {
             prestmt.setString(3, user.getPassword());
             prestmt.setString(4, user.getEmail());
             prestmt.setString(5, user.getUserType().getType());
-            prestmt.executeUpdate();
 
-            return Optional.of(user);
+            try (ResultSet rs = prestmt.executeQuery()) {
+                if (!rs.next()) {
+                    return Optional.empty();
+                }
+                return Optional.of(setUser(rs));
+            }
         } catch (SQLException e) {
             if (e.getSQLState().equals("23505")) {
                 throw new UniqueViolationException("Username or email already exists");
@@ -225,18 +235,15 @@ public class DbUserRepository implements UserRepository {
         return Optional.empty();
     }
 
-    private String checkPassword(UserUpdateDto update) {
-        if (update.getPasswordNew1()!=null && !update.getPasswordNew1().isEmpty()) {
-            return update.getPasswordNew1();
+    private UserLoggedInDto rsToLoggedIn(ResultSet rs) throws SQLException {
+        try {
+            UserLoggedInDto userUpdated = new UserLoggedInDto();
+            userUpdated.setUsername(rs.getString("username"));
+            userUpdated.setId(rs.getObject("uid", UUID.class));
+            return userUpdated;
+        } catch (SQLException e) {
+            throw new SQLToUserException("Can not set up logged in user");
         }
-        return update.getPasswordOld();
-    }
-
-    private UserLoggedInDto updateToLoggedIn(UserUpdateDto update) {
-        UserLoggedInDto userUpdated = new UserLoggedInDto();
-        userUpdated.setUsername(update.getUsername());
-        userUpdated.setId(update.getId());
-        return userUpdated;
     }
 
     private User setUser(ResultSet rs) throws SQLException {
@@ -259,7 +266,7 @@ public class DbUserRepository implements UserRepository {
     }
 
     @Override
-    public List<Media> recommendations(User user, MediaType mediaType) {
+    public List<SQLMediaDto> recommendations(User user, MediaType mediaType) {
         return List.of();
     }
 

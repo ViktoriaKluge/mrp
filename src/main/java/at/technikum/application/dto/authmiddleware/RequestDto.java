@@ -1,12 +1,12 @@
 package at.technikum.application.dto.authmiddleware;
 
 import at.technikum.application.enums.MediaType;
-import at.technikum.application.model.Media;
 import at.technikum.application.model.Rating;
 import at.technikum.application.model.User;
 import at.technikum.server.http.ContentType;
 import at.technikum.server.http.Method;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 
 public class RequestDto {
@@ -49,6 +49,7 @@ public class RequestDto {
     }
 
     // user
+    @JsonIgnore
     public User getUser() {
         return user;
     }

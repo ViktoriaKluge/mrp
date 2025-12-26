@@ -1,6 +1,9 @@
 package at.technikum.application.service;
 
 import at.technikum.application.dto.auth.UserLoggedInDto;
+import at.technikum.application.dto.sql.SQLFavoriteDto;
+import at.technikum.application.dto.sql.SQLMediaDto;
+import at.technikum.application.dto.sql.SQLRatingDto;
 import at.technikum.application.dto.users.*;
 import at.technikum.application.exception.EntityNotFoundException;
 import at.technikum.application.exception.UnprocessableEntityException;
@@ -20,16 +23,17 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public List<Rating> ratings(User user) {
+    public List<SQLRatingDto> ratings(User user) {
         return this.userRepository.ratings(user);
     }
 
-    public List<Media> favorites(User user) {
+    public List<SQLFavoriteDto> favorites(User user) {
         return  this.userRepository.favorites(user);
     }
 
-    public UserLoggedInDto update(UserUpdateDto update) {
+    public UserLoggedInDto update(User user, UserUpdateDto update) {
         if (update.isUpdate()){
+            update = setUpdate(user,update);
             Optional<UserLoggedInDto> userUpdatedOpt = this.userRepository.update(update);
             UserLoggedInDto updatedUser = userUpdatedOpt.get();
             updatedUser.newToken();
@@ -44,5 +48,23 @@ public class UserService {
             throw new EntityNotFoundException("User not found");
         }
         return deleted.get();
+    }
+
+    private UserUpdateDto setUpdate(User user, UserUpdateDto update) {
+        update.setId(user.getId());
+        String psw = checkPassword(update);
+        update.setPasswordNew1(psw);
+        if (update.getEmail() == null || update.getEmail().isEmpty()) {
+            update.setEmail(user.getEmail());
+        }
+        return update;
+    }
+
+
+    private String checkPassword(UserUpdateDto update) {
+        if (update.getPasswordNew1()!=null && !update.getPasswordNew1().isEmpty()) {
+            return update.getPasswordNew1();
+        }
+        return update.getPasswordOld();
     }
 }

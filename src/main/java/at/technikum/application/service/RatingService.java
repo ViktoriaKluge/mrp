@@ -38,8 +38,9 @@ public class RatingService {
         return created.get();
     }
 
-    public Rating update(Rating rating) {
-        Optional<Rating> updated = this.ratingRepository.update(rating);
+    public Rating update(Rating old, Rating update) {
+        update = setUpdate(old,update);
+        Optional<Rating> updated = this.ratingRepository.update(update);
         if(updated.isEmpty()){
             notFound();
         }
@@ -72,5 +73,16 @@ public class RatingService {
 
     private void notFound(){
         throw new EntityNotFoundException("Rating not found");
+    }
+
+    private Rating setUpdate(Rating old, Rating update) {
+        update.setId(old.getId());
+        if (update.getStars() == null) {
+            update.setStars(old.getStars());
+        }
+        if (update.getComment() == null || update.getComment().isEmpty()) {
+            update.setComment(old.getComment());
+        }
+        return update;
     }
 }

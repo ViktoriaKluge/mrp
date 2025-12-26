@@ -2,6 +2,7 @@ package at.technikum.application.controller;
 
 import at.technikum.application.common.Controller;
 import at.technikum.application.dto.authmiddleware.RequestDto;
+import at.technikum.application.dto.sql.SQLFavoriteDto;
 import at.technikum.application.exception.EntityNotFoundException;
 import at.technikum.application.exception.NotAuthorizedException;
 import at.technikum.application.model.Favorite;
@@ -80,9 +81,8 @@ public class MediaController extends Controller {
 
             if (authorized(user, media.getCreator())) {
                 if (method.equals(Method.PUT)) {
-                    Media mediaNew = toOtherObject(requestDto, Media.class);
-                    mediaNew.setId(media.getId());
-                    return update(mediaNew);
+                    Media mediaUpdate = toOtherObject(requestDto, Media.class);
+                    return update(media, mediaUpdate);
                 }
                 if (method.equals(Method.DELETE)) {
                     return deleteMedia(media);
@@ -99,7 +99,7 @@ public class MediaController extends Controller {
     }
 
     private Response addFavorite(Favorite favorite) {
-        Favorite addedFav = this.favoritesService.add(favorite);
+        SQLFavoriteDto addedFav = this.favoritesService.add(favorite);
         return json(addedFav, Status.CREATED);
     }
 
@@ -118,8 +118,8 @@ public class MediaController extends Controller {
         return json(rating, Status.CREATED);
     }
 
-    private Response update(Media update) {
-        update = this.mediaService.update(update);
+    private Response update(Media old, Media update) {
+        update = this.mediaService.update(old, update);
         return json(update, Status.OK);
     }
 

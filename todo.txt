@@ -4,15 +4,19 @@ for final hand-in:
     Repos vervollständigen
 
 next steps:
-    was passiert bei toObject, wenn nicht alle variablen
-        vorhanden sind?
+    bei post media etc kommt creator mit psw zurück
+    bei updates ganzes objekt aus db retour
 
+    ratings / favorites in dbUser gehen noch nicht
     Recommendations überlegen
     Leaderboard überlegen
 
     Update docs
 
 errors:
+    register und profile "you need to be an admin to do this" - registriert aber trotzdem
+    ratings - nur leer / keine exception wenn user nicht existiert
+    bei update - immer alle felder verwenden
 
 little things:
     DbRepository try catch Blöcke wiederholen sich
@@ -22,3 +26,4 @@ little things:
     Wann Status.Ok und wann .Created? auch .Deleted?
     Authentification im Controller - exception werfen oder Status.bad?
     error response codes laut spezifikationen
+    rating timestamp umändern zu created_at

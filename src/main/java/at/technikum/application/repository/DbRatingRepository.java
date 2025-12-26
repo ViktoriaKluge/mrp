@@ -4,7 +4,6 @@ import at.technikum.application.common.ConnectionPool;
 import at.technikum.application.exception.DatabaseConnectionException;
 import at.technikum.application.exception.ObjectToSQLException;
 import at.technikum.application.exception.SQLToRatingException;
-import at.technikum.application.exception.SQLToUserException;
 import at.technikum.application.model.Like;
 import at.technikum.application.model.Media;
 import at.technikum.application.model.Rating;
@@ -29,19 +28,20 @@ public class DbRatingRepository implements RatingRepository{
             = "SELECT * FROM ratings WHERE rid = ?";
 
     private static final String SAVE
-            = "INSERT INTO ratings (rid, user_id, media_id, stars, comment, timestamp, visibility) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            = "INSERT INTO ratings (rid, user_id, media_id, stars, comment, timestamp, visibility) VALUES "
+                    +"(?, ?, ?, ?, ?, ?, ?) RETURNING *";
 
     private static final String UPDATE_RATING
-            ="UPDATE ratings SET stars = ?, comment = ?, timestamp = ?, visibility = ? WHERE rid = ?";
+            ="UPDATE ratings SET stars = ?, comment = ? WHERE rid = ? RETURNING *";
 
     private static final String LIKE
-            = "INSERT INTO rating_likes (user_id, rating_id) VALUES (?, ?)";
+            = "INSERT INTO rating_likes (user_id, rating_id) VALUES (?, ?) RETURNING *";
 
     private static final String CONFIRM
-            = "UPDATE ratings SET visibility = TRUE WHERE rid = ?";
+            = "UPDATE ratings SET visibility = TRUE WHERE rid = ? RETURNING *";
 
     private static final String DELETE_RATING
-            = "DELETE FROM ratings WHERE rid = ?";
+            = "DELETE FROM ratings WHERE rid = ? RETURNING *";
 
     private static final String SELECT_ALL_RATINGS
             = "SELECT * FROM ratings";
@@ -86,9 +86,13 @@ public class DbRatingRepository implements RatingRepository{
             prestmt.setObject(5, rating.getComment());
             prestmt.setObject(6, rating.getTimestamp());
             prestmt.setBoolean(7, rating.isVisibility());
-            prestmt.executeUpdate();
 
-            return Optional.of(rating);
+            try (ResultSet rs = prestmt.executeQuery()) {
+                if (!rs.next()) {
+                    return Optional.empty();
+                }
+                return Optional.of(setRating(rs));
+            }
         } catch (SQLException e) {
             throw new ObjectToSQLException("Could not save rating");
         }
@@ -102,9 +106,7 @@ public class DbRatingRepository implements RatingRepository{
         ) {
             prestmt.setObject(1, rating.getStars());
             prestmt.setObject(2, rating.getComment());
-            prestmt.setObject(3, rating.getTimestamp());
-            prestmt.setBoolean(4, rating.isVisibility());
-            prestmt.setObject(5, rating.getId());
+            prestmt.setObject(3, rating.getId());
             prestmt.executeUpdate();
 
             return Optional.of(rating);

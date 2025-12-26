@@ -2,6 +2,9 @@ package at.technikum.application.repository;
 
 import at.technikum.application.dto.auth.UserLoggedInDto;
 import at.technikum.application.dto.auth.UserLoginDto;
+import at.technikum.application.dto.sql.SQLFavoriteDto;
+import at.technikum.application.dto.sql.SQLMediaDto;
+import at.technikum.application.dto.sql.SQLRatingDto;
 import at.technikum.application.dto.users.UserUpdateDto;
 import at.technikum.application.enums.MediaType;
 import at.technikum.application.model.LeaderboardEntry;
@@ -19,12 +22,12 @@ public interface UserRepository {
     Optional<User> findByEmail(String email);
     Optional<User> findByID(UUID id);
     List<User> userList();
-    List<Rating> ratings(User user);
-    List<Media> favorites(User user);
+    List<SQLRatingDto> ratings(User user);
+    List<SQLFavoriteDto> favorites(User user);
     Optional<UserLoggedInDto> update(UserUpdateDto update);
     Optional<String> delete(User user);
     Optional<User> save(User user);
     Optional<UserLoggedInDto> login(UserLoginDto userLoginDto);
-    List<Media> recommendations(User user, MediaType mediaType);
+    List<SQLMediaDto> recommendations(User user, MediaType mediaType);
     List<LeaderboardEntry> leaderboard();
 }

@@ -1,7 +1,7 @@
 package at.technikum.application.service;
 
+import at.technikum.application.dto.sql.SQLMediaDto;
 import at.technikum.application.enums.MediaType;
-import at.technikum.application.model.Media;
 import at.technikum.application.model.User;
 import at.technikum.application.repository.UserRepository;
 
@@ -14,7 +14,7 @@ public class RecommendationService {
         this.userRepository = userRepository;
     }
 
-    public List<Media> getRecommendations(User user, MediaType mediaType) {
+    public List<SQLMediaDto> getRecommendations(User user, MediaType mediaType) {
         return this.userRepository.recommendations(user, mediaType);
     }
 }

@@ -2,7 +2,6 @@ package at.technikum.server.util;
 
 import at.technikum.server.http.Method;
 import at.technikum.server.http.Request;
-import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 
 import java.io.IOException;

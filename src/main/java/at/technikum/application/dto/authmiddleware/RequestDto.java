@@ -6,7 +6,6 @@ import at.technikum.application.model.User;
 import at.technikum.server.http.ContentType;
 import at.technikum.server.http.Method;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 
 public class RequestDto {
@@ -32,7 +31,6 @@ public class RequestDto {
     private MediaType mediaType;
     private Integer releaseYear;
     private Integer ageRestriction;
-    // ? private List<Media> mediaList;
     // rating
     private String rid;
     private String comment;
@@ -49,7 +47,7 @@ public class RequestDto {
     }
 
     // user
-    @JsonIgnore
+
     public User getUser() {
         return user;
     }

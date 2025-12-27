@@ -3,6 +3,8 @@ package at.technikum.application.controller;
 import at.technikum.application.common.Controller;
 import at.technikum.application.dto.authmiddleware.RequestDto;
 import at.technikum.application.dto.sql.SQLFavoriteDto;
+import at.technikum.application.dto.sql.SQLMediaDto;
+import at.technikum.application.dto.sql.SQLRatingDto;
 import at.technikum.application.exception.EntityNotFoundException;
 import at.technikum.application.exception.NotAuthorizedException;
 import at.technikum.application.model.Favorite;
@@ -70,15 +72,6 @@ public class MediaController extends Controller {
                 }
             }
 
-            if (method.equals(Method.DELETE)) {
-                if (path[3].equals("favorite")) {
-                    Favorite favorite = new Favorite();
-                    favorite.setUser(user);
-                    favorite.setMedia(media);
-                    return deleteFavorite(favorite);
-                }
-            }
-
             if (authorized(user, media.getCreator())) {
                 if (method.equals(Method.PUT)) {
                     Media mediaUpdate = toOtherObject(requestDto, Media.class);
@@ -86,6 +79,15 @@ public class MediaController extends Controller {
                 }
                 if (method.equals(Method.DELETE)) {
                     return deleteMedia(media);
+                }
+            }
+
+            if (method.equals(Method.DELETE)) {
+                if (path[3].equals("favorite")) {
+                    Favorite favorite = new Favorite();
+                    favorite.setUser(user);
+                    favorite.setMedia(media);
+                    return deleteFavorite(favorite);
                 }
             }
         }
@@ -104,23 +106,23 @@ public class MediaController extends Controller {
     }
 
     private Response allMedia() {
-        List<Media> mediaList = this.mediaService.findAll();
+        List<SQLMediaDto> mediaList = this.mediaService.findAll();
         return json(mediaList,Status.OK);
     }
 
     private Response createMedia(Media media) {
-        media = this.mediaService.create(media);
-        return json(media,Status.CREATED);
+        SQLMediaDto created = this.mediaService.create(media);
+        return json(created,Status.CREATED);
     }
 
     private Response createRating(Rating rating) {
-        rating = this.ratingService.create(rating);
-        return json(rating, Status.CREATED);
+        SQLRatingDto created = this.ratingService.create(rating);
+        return json(created, Status.CREATED);
     }
 
     private Response update(Media old, Media update) {
-        update = this.mediaService.update(old, update);
-        return json(update, Status.OK);
+        SQLMediaDto updated = this.mediaService.update(old, update);
+        return json(updated, Status.OK);
     }
 
     private Response deleteMedia(Media media) {
@@ -129,7 +131,7 @@ public class MediaController extends Controller {
     }
 
     private boolean authorized (User user, User creator) {
-        if (user.getId() == creator.getId()) {
+        if (user.getId().equals(creator.getId())) {
             return true;
         }
         throw new NotAuthorizedException("Only the creator can modify their media");

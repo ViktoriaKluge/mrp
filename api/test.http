@@ -1,66 +1,166 @@
+# ==========
+# HOME
+# ==========
 
-### Get home
+### home
 GET http://localhost:8080/
 
+# ==========
+# AUTH
+# ==========
 
-### Get users home
-GET http://localhost:8080/users
-
-### Post auth register
+### Post auth register - register new user
 POST http://localhost:8080/users/register
 Content-Type: application/json
 
 {
-  "username": "userlein",
+  "username": "userleini",
   "password1": "124",
   "password2": "124",
   "email": "example@test1.com",
   "userType": "User"
 }
 
-### Post auth login
+### Post auth login - user login
 POST http://localhost:8080/users/login
 Content-Type: application/json
 
 {
-  "username": "userlein",
-  "password": "124"
+  "username": "userleini",
+  "password": "1274"
 }
 
-### Get user profile
-GET http://localhost:8080/users/1d171300-465a-4017-83a3-fef1eaf21a68/profile
-Authorization: Bearer userlein-mrpToken
+###
+# ==========
+# USER
+# ==========
 
-### Put users profile
-PUT http://localhost:8080/users/1d171300-465a-4017-83a3-fef1eaf21a68/profile
+### Get user profile
+GET http://localhost:8080/users/ef3e67e1-9a5e-49ce-a2a7-95aa2209b295/profile
+Authorization: Bearer userleini-mrpToken
+
+### Put users profile - update user profile
+PUT http://localhost:8080/users/ef3e67e1-9a5e-49ce-a2a7-95aa2209b295/profile
 Content-Type: application/json
-Authorization: Bearer userlein-mrpToken
+Authorization: Bearer userleini-mrpToken
 
 {
   "username": "userleini",
-  "passwordOld": "124",
-  "passwordNew1": "127",
-  "passwordNew2": "127"
+  "passwordOld": "127",
+  "passwordNew1": "1274",
+  "passwordNew2": "1274"
 }
 
 ### Get user ratings
-GET http://localhost:8080/users/1d171300-465b-4017-83a3-fef1eaf21a68/ratings
+GET http://localhost:8080/users/ef3e67e1-9a5e-49ce-a2a7-95aa2209baaa/ratings
+Authorization: Bearer userleini-mrpToken
+
+### Get user favorites
+GET http://localhost:8080/users/ef3e67e1-9a5e-49ce-a2a7-95aa2209baaa/favorites
 Authorization: Bearer userleini-mrpToken
 
 ### Delete user
 DELETE http://localhost:8080/users/717a6f04-d460-4551-b2d4-abd2e44c95ea/delete
 Authorization: Bearer userlein-mrpToken
 
-### Create media
+# ==========
+# MEDIA
+# ==========
+
+### Get media - list media entries
+GET http://localhost:8080/media
+
+### Post media - create cedia entry
 POST http://localhost:8080/media
 Content-Type: application/json
 Authorization: Bearer userleini-mrpToken
 
 {
-  "title": "Best movie",
-  "description": "best movie ever made",
-  "genre":["Action", "Drama", "Sci-Fi"],
-  "mediaType": "MOVIE",
+  "title": "Best game ever3",
+  "description": "just awesome",
+  "genre":["Sci-Fi"],
+  "mediaType": "GAME",
   "releaseYear": 2020,
-  "ageRestriction": 9
+  "ageRestriction": 18
 }
+
+### Get media id
+GET http://localhost:8080/media/20ebc8bb-687f-4c32-b66f-7e4748ffd75c
+
+### Put media id - Update media entry
+PUT http://localhost:8080/media/20ebc8bb-687f-4c32-b66f-7e4748ffd75c
+Content-Type: application/json
+Authorization: Bearer userleini-mrpToken
+
+{
+  "title": "good movie"
+}
+
+### Delete media
+DELETE http://localhost:8080/media/b269a3d5-e2da-4c92-ac33-bccc9f8300c9
+Authorization: Bearer userleini-mrpToken
+
+# ==========
+# RATING
+# ==========
+
+### Get ratings
+GET http://localhost:8080/ratings
+
+### Post media rate - rate media entry
+POST http://localhost:8080/media/06541519-d5e2-480f-9c16-fce4909b80e3/rate
+Content-Type: application/json
+Authorization: Bearer userleini-mrpToken
+
+{
+  "comment": "so lala",
+  "stars": 3
+}
+
+### Post ratings like - like a rating
+POST http://localhost:8080/ratings/e736ac4d-6198-4f77-80a3-8b16c487ba72/like
+Authorization: Bearer userleini-mrpToken
+
+### Put ratings - update a rating
+PUT http://localhost:8080/ratings/e736ac4d-6198-4f77-80a3-8b16c487ba72
+Content-Type: application/json
+Authorization: Bearer userleini-mrpToken
+
+{
+  "stars": 4
+}
+
+### Post ratings confirm - confirm rating comment
+POST http://localhost:8080/ratings/1aeebfba-5922-48f6-9201-e8a563f78222/confirm
+Authorization: Bearer admin-mrpToken
+
+### Delete ratings
+DELETE http://localhost:8080/ratings/1aeebfba-5922-48f6-9201-e8a563f78222
+Authorization: Bearer userleini-mrpToken
+
+# ==========
+# FAVORITES
+# ==========
+
+### Post media favorite - mark as favorite
+POST http://localhost:8080/media/20ebc8bb-687f-4c32-b66f-7e4748ffd75c/favorite
+Authorization: Bearer userleini-mrpToken
+
+### Delete media favorite
+DELETE http://localhost:8080/media/20ebc8bb-687f-4c32-b66f-7e4748ffd75c/favorite
+Authorization: Bearer userleini-mrpToken
+
+# ==========
+# RECOMMENDATION
+# ==========
+
+### Get users recommendations
+GET http://localhost:8080/users/1aeebfba-5922-48f6-9201-e8a563f78222/recommendations
+Authorization: Bearer userleini-mrpToken
+
+# ==========
+# LEADERBOARD
+# ==========
+
+### Get leaderboard
+GET http://localhost:8080/leaderboard

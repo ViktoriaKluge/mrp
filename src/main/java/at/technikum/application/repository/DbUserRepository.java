@@ -9,10 +9,7 @@ import at.technikum.application.dto.sql.SQLRatingDto;
 import at.technikum.application.dto.users.UserUpdateDto;
 import at.technikum.application.enums.MediaType;
 import at.technikum.application.enums.UserType;
-import at.technikum.application.exception.DatabaseConnectionException;
-import at.technikum.application.exception.ObjectToSQLException;
-import at.technikum.application.exception.SQLToUserException;
-import at.technikum.application.exception.UniqueViolationException;
+import at.technikum.application.exception.*;
 import at.technikum.application.model.LeaderboardEntry;
 import at.technikum.application.model.Media;
 import at.technikum.application.model.Rating;
@@ -230,7 +227,8 @@ public class DbUserRepository implements UserRepository {
         }
         User foundUser = checkUser.get();
         if (foundUser.getPassword().equals(userLogin.getPassword())) {
-            return Optional.of(new UserLoggedInDto(foundUser.getUsername(),foundUser.getId()));
+            UserLoggedInDto loggedIn = new UserLoggedInDto(foundUser.getUsername(),foundUser.getId());
+            return Optional.of(loggedIn);
         }
         return Optional.empty();
     }
@@ -242,7 +240,7 @@ public class DbUserRepository implements UserRepository {
             userUpdated.setId(rs.getObject("uid", UUID.class));
             return userUpdated;
         } catch (SQLException e) {
-            throw new SQLToUserException("Can not set up logged in user");
+            throw new SQLToObjectException("Can not set up logged in user");
         }
     }
 
@@ -261,7 +259,7 @@ public class DbUserRepository implements UserRepository {
             }
             return user;
         } catch (SQLException e) {
-            throw new SQLToUserException("Can not set up user");
+            throw new SQLToObjectException("Can not set up user");
         }
     }
 

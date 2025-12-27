@@ -14,7 +14,8 @@ CREATE TABLE IF NOT EXISTS media (
                        media_type      TEXT       NOT NULL,
                        release_year    SMALLINT,
                        age_restriction SMALLINT,
-                       genres          TEXT[]     NOT NULL DEFAULT '{}'
+                       genres          TEXT[]     NOT NULL DEFAULT '{}',
+                        CONSTRAINT uq_media_title_media_type UNIQUE (title, media_type)
 );
 
 CREATE TABLE IF NOT EXISTS ratings (

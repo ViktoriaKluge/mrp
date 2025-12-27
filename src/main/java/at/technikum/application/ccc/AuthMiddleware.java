@@ -48,6 +48,8 @@ public class AuthMiddleware {
             return (path[2].equals("login") || path[2].equals("register"));
         } else if (path[1].equals("media")) {
            return method.equals(Method.GET);
+        } else if (path[1].equals("ratings")) {
+            return method.equals(Method.GET);
         } else {
             return path[2].equals("leaderboard");
         }

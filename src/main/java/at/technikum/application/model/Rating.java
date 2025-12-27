@@ -13,7 +13,8 @@ public class Rating {
     private Media ratedMedia;
 
     public Rating() {
-
+        this.timestamp = Instant.now();
+        this.visibility = false;
     }
 
     public Rating(UUID id, String comment, Integer stars,

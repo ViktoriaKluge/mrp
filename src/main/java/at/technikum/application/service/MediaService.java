@@ -1,5 +1,6 @@
 package at.technikum.application.service;
 
+import at.technikum.application.dto.sql.SQLMediaDto;
 import at.technikum.application.exception.EntityNotFoundException;
 import at.technikum.application.exception.UnprocessableEntityException;
 import at.technikum.application.model.Media;
@@ -17,29 +18,29 @@ public class MediaService {
         this.mediaRepository = mediaRepository;
     }
 
-    public List<Media> findAll() {
+    public List<SQLMediaDto> findAll() {
         return this.mediaRepository.mediaList();
     }
 
     public Media findById(UUID id) {
-        Optional<Media> media = this.mediaRepository.findById(id);
+        Optional<Media> media = this.mediaRepository.findByIdMedia(id);
         if (media.isEmpty()) {
             notFound();
         }
         return media.get();
     }
 
-    public Media create(Media media) {
-        Optional<Media> createdMedia = this.mediaRepository.save(media);
+    public SQLMediaDto create(Media media) {
+        Optional<SQLMediaDto> createdMedia = this.mediaRepository.save(media);
         if (createdMedia.isEmpty()) {
             throw new UnprocessableEntityException("Media already exists");
         }
         return createdMedia.get();
     }
 
-    public Media update(Media old, Media mediaUpdate) {
+    public SQLMediaDto update(Media old, Media mediaUpdate) {
         mediaUpdate = setUpdate(old,mediaUpdate);
-        Optional <Media> updated = this.mediaRepository.update(mediaUpdate);
+        Optional <SQLMediaDto> updated = this.mediaRepository.update(mediaUpdate);
         if (updated.isEmpty()) {
             notFound();
         }
@@ -80,4 +81,5 @@ public class MediaService {
         }
         return mediaUpdate;
     }
+
 }

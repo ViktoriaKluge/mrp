@@ -1,6 +1,9 @@
 package at.technikum.application.service;
 
+import at.technikum.application.dto.sql.SQLLikeDto;
+import at.technikum.application.dto.sql.SQLRatingDto;
 import at.technikum.application.exception.EntityNotFoundException;
+import at.technikum.application.exception.SQLToObjectException;
 import at.technikum.application.model.Like;
 import at.technikum.application.model.Rating;
 import at.technikum.application.model.User;
@@ -18,45 +21,45 @@ public class RatingService {
         this.ratingRepository = ratingRepository;
     }
 
-    public List<Rating> allRatings(){
+    public List<SQLRatingDto> allRatings(){
         return ratingRepository.findAll();
     }
 
     public Rating findById(UUID id){
-        Optional<Rating> rating = this.ratingRepository.findByID(id);
+        Optional<Rating> rating = this.ratingRepository.findByIDRating(id);
         if (rating.isEmpty()) {
             notFound();
         }
         return rating.get();
     }
 
-    public Rating create(Rating rating) {
-        Optional<Rating> created = this.ratingRepository.save(rating);
+    public SQLRatingDto create(Rating rating) {
+        Optional<SQLRatingDto> created = this.ratingRepository.save(rating);
         if(created.isEmpty()){
             throw new EntityNotFoundException("Rating already exists");
         }
         return created.get();
     }
 
-    public Rating update(Rating old, Rating update) {
+    public SQLRatingDto update(Rating old, Rating update) {
         update = setUpdate(old,update);
-        Optional<Rating> updated = this.ratingRepository.update(update);
+        Optional<SQLRatingDto> updated = this.ratingRepository.update(update);
         if(updated.isEmpty()){
             notFound();
         }
         return updated.get();
     }
 
-    public Like like(Like like) {
-        Optional<Like> liked = this.ratingRepository.like(like);
+    public SQLLikeDto like(Like like) {
+        Optional<SQLLikeDto> liked = this.ratingRepository.like(like);
         if(liked.isEmpty()){
             notFound();
         }
         return liked.get();
     }
 
-    public Rating confirm(Rating rating) {
-        Optional<Rating> confirmed = this.ratingRepository.confirm(rating);
+    public SQLRatingDto confirm(Rating rating) {
+        Optional<SQLRatingDto> confirmed = this.ratingRepository.confirm(rating);
         if(confirmed.isEmpty()){
             notFound();
         }

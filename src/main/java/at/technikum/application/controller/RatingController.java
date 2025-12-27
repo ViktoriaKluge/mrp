@@ -2,6 +2,8 @@ package at.technikum.application.controller;
 
 import at.technikum.application.common.Controller;
 import at.technikum.application.dto.authmiddleware.RequestDto;
+import at.technikum.application.dto.sql.SQLLikeDto;
+import at.technikum.application.dto.sql.SQLRatingDto;
 import at.technikum.application.enums.UserType;
 import at.technikum.application.exception.EntityNotFoundException;
 import at.technikum.application.exception.NotAuthorizedException;
@@ -11,6 +13,7 @@ import at.technikum.application.model.User;
 import at.technikum.application.service.RatingService;
 import at.technikum.server.http.*;
 
+import java.util.List;
 import java.util.UUID;
 
 public class RatingController extends Controller {
@@ -25,6 +28,11 @@ public class RatingController extends Controller {
     public Response handle(RequestDto requestDto) {
         String[] path = requestDto.getPath();
         Method method = requestDto.getMethod();
+
+        if (path.length == 2 && method == Method.GET) {
+            List<SQLRatingDto> allRatings = this.ratingService.allRatings();
+            return json(allRatings,Status.OK);
+        }
 
         if (path.length > 2) {
             UUID id = UUID.fromString(path[2]);
@@ -64,23 +72,23 @@ public class RatingController extends Controller {
     }
 
     private Response updateRating(Rating old, Rating update) {
-        update = this.ratingService.update(old,update);
-        return json(update, Status.OK);
+        SQLRatingDto updated = this.ratingService.update(old,update);
+        return json(updated, Status.OK);
     }
 
     private Response confirm(Rating rating) {
-        rating = this.ratingService.confirm(rating);
-        return json(rating, Status.OK);
+        SQLRatingDto confirmed = this.ratingService.confirm(rating);
+        return json(confirmed, Status.OK);
     }
 
     private Response like(Rating rating, User user) {
         Like like = new Like(rating,user);
-        Like liked = this.ratingService.like(like);
+        SQLLikeDto liked = this.ratingService.like(like);
         return json(liked, Status.OK);
     }
 
     private boolean authorized (User user, User creator) {
-        if (user.getId() == creator.getId()) {
+        if (user.getId().equals(creator.getId())) {
             return true;
         }
         throw new NotAuthorizedException("Only the creator can modify their ratings");

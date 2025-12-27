@@ -4,6 +4,7 @@ import at.technikum.application.dto.authmiddleware.RequestDto;
 import at.technikum.application.exception.EntityNotFoundException;
 import at.technikum.application.exception.NotAuthorizedException;
 import at.technikum.application.exception.NotJsonBodyException;
+import at.technikum.server.util.Json;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.List;
@@ -50,7 +51,7 @@ public class Request {
         if (this.body == null || this.body.isEmpty()) {
             return new RequestDto();
         } else {
-            ObjectMapper objectMapper = new ObjectMapper();
+            ObjectMapper objectMapper = Json.MAPPER;
             try {
                 return objectMapper.readValue(this.body, RequestDto.class);
             } catch (Exception ex) {

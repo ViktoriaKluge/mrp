@@ -2,10 +2,15 @@ mandatory:
 
 for final hand-in:
     Repos vervollständigen
+    filter medias & sort
+
+only additional:
+    leaderboard
+    profile with stats
+
 
 next steps:
     bei post media etc kommt creator mit psw zurück
-    bei updates ganzes objekt aus db retour
 
     ratings / favorites in dbUser gehen noch nicht
     Recommendations überlegen
@@ -14,9 +19,11 @@ next steps:
     Update docs
 
 errors:
-    register und profile "you need to be an admin to do this" - registriert aber trotzdem
-    ratings - nur leer / keine exception wenn user nicht existiert
+    delete favorite löscht media?
+    update ratings - incompatible type for dto - user not marked as ignorable
+    ratings - nur leer / keine exception wenn user nicht existiert / schaut nur auf token, nicht id
     bei update - immer alle felder verwenden
+    get media by id gibt mit creator zurück
 
 little things:
     DbRepository try catch Blöcke wiederholen sich
@@ -27,3 +34,4 @@ little things:
     Authentification im Controller - exception werfen oder Status.bad?
     error response codes laut spezifikationen
     rating timestamp umändern zu created_at
+    rating stars 1-5

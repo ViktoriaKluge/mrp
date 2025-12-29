@@ -22,8 +22,6 @@ public interface UserRepository {
     Optional<User> findByEmail(String email);
     Optional<User> findByID(UUID id);
     List<User> userList();
-    List<SQLRatingDto> ratings(User user);
-    List<SQLFavoriteDto> favorites(User user);
     Optional<UserLoggedInDto> update(UserUpdateDto update);
     Optional<String> delete(User user);
     Optional<User> save(User user);

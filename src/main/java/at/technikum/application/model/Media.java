@@ -2,7 +2,6 @@ package at.technikum.application.model;
 
 import at.technikum.application.enums.MediaType;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,18 +17,6 @@ public class Media {
 
     public Media() {
 
-    }
-
-    public Media(UUID id, String title, String description, List<String> genre, MediaType mediaType,
-                 Integer releaseYear, Integer ageRestriction, User creator) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.genre = genre;
-        this.mediaType = mediaType;
-        this.releaseYear = releaseYear;
-        this.ageRestriction = ageRestriction;
-        this.creator = creator;
     }
 
     public UUID getId() {

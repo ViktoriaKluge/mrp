@@ -49,6 +49,7 @@ public class DbUserRepository implements UserRepository {
     private static final String DELETE
             = "DELETE FROM users WHERE uid = ? RETURNING *";
 
+
     public DbUserRepository(ConnectionPool connectionPool) {
         this.connectionPool = connectionPool;
     }
@@ -119,10 +120,6 @@ public class DbUserRepository implements UserRepository {
                 PreparedStatement prestmt = conn.prepareStatement(SELECT_ALL_USERS)
         ) {
             try (ResultSet rs = prestmt.executeQuery()) {
-                if (!rs.next()) {
-                    return List.of();
-                }
-
                 List<User> userList = new ArrayList<>();
 
                 while (rs.next()) {
@@ -134,18 +131,6 @@ public class DbUserRepository implements UserRepository {
         } catch (SQLException e) {
             throw new DatabaseConnectionException("Can not show userlist");
         }
-    }
-
-    @Override
-    public List<SQLRatingDto> ratings(User user) {
-        List<SQLRatingDto> ratings = new ArrayList<>();
-        return ratings;
-    }
-
-    @Override
-    public List<SQLFavoriteDto> favorites(User user) {
-        List<SQLFavoriteDto> media = new  ArrayList<>();
-        return media;
     }
 
     @Override

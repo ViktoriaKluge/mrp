@@ -4,6 +4,7 @@ import at.technikum.application.dto.sql.SQLFavoriteDto;
 import at.technikum.application.dto.sql.SQLMediaDto;
 import at.technikum.application.model.Favorite;
 import at.technikum.application.model.Media;
+import at.technikum.application.model.User;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,4 +20,5 @@ public interface MediaRepository {
     Optional<SQLMediaDto> update(Media media);
     Optional<SQLFavoriteDto> addFavorite(Favorite favorite);
     Optional<String> deleteFavorite(Favorite favorite);
+    List<SQLFavoriteDto> findFavsByUserId(User user);
 }

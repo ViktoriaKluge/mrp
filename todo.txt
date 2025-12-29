@@ -10,7 +10,12 @@ only additional:
 
 
 next steps:
-    bei post media etc kommt creator mit psw zurück
+   bei user kommt psw zurück
+
+   ratings nur 1-5 stars
+   like only others' ratings
+   media average score
+   profile stats (total ratings, average score, favorite genre)
 
     ratings / favorites in dbUser gehen noch nicht
     Recommendations überlegen
@@ -19,11 +24,6 @@ next steps:
     Update docs
 
 errors:
-    delete favorite löscht media?
-    update ratings - incompatible type for dto - user not marked as ignorable
-    ratings - nur leer / keine exception wenn user nicht existiert / schaut nur auf token, nicht id
-    bei update - immer alle felder verwenden
-    get media by id gibt mit creator zurück
 
 little things:
     DbRepository try catch Blöcke wiederholen sich
@@ -35,3 +35,12 @@ little things:
     error response codes laut spezifikationen
     rating timestamp umändern zu created_at
     rating stars 1-5
+    one rating per user per media (und fav und like) - error handling
+    get all users?
+
+thoughts:
+    Ich habe Media / Rating bei Get(id) schon gleich am Anfang da. Will es aber nicht komplett mit Creator (psw)
+        retour geben. Dann trotzdem den ganzen Weg bis ins Repo und dort umwandeln?
+
+
+fragen:

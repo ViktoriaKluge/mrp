@@ -10,6 +10,8 @@ import at.technikum.application.exception.UnprocessableEntityException;
 import at.technikum.application.model.Media;
 import at.technikum.application.model.Rating;
 import at.technikum.application.model.User;
+import at.technikum.application.repository.MediaRepository;
+import at.technikum.application.repository.RatingRepository;
 import at.technikum.application.repository.UserRepository;
 
 import java.util.List;
@@ -18,17 +20,21 @@ import java.util.UUID;
 
 public class UserService {
     private final UserRepository userRepository;
+    private final RatingRepository ratingRepository;
+    private final MediaRepository mediaRepository;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, RatingRepository ratingRepository, MediaRepository mediaRepository) {
         this.userRepository = userRepository;
+        this.ratingRepository = ratingRepository;
+        this.mediaRepository = mediaRepository;
     }
 
     public List<SQLRatingDto> ratings(User user) {
-        return this.userRepository.ratings(user);
+        return this.ratingRepository.findAllByUserID(user);
     }
 
     public List<SQLFavoriteDto> favorites(User user) {
-        return  this.userRepository.favorites(user);
+        return  this.mediaRepository.findFavsByUserId(user);
     }
 
     public UserLoggedInDto update(User user, UserUpdateDto update) {

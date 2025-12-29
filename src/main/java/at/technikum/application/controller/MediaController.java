@@ -51,7 +51,8 @@ public class MediaController extends Controller {
             Media media = this.mediaService.findById(mid);
 
             if (method.equals(Method.GET)) {
-                return json(media, Status.OK);
+                SQLMediaDto sqlMedia = this.mediaService.convert(media);
+                return json(sqlMedia, Status.OK);
             }
 
             User user = requestDto.getUser();
@@ -77,7 +78,7 @@ public class MediaController extends Controller {
                     Media mediaUpdate = toOtherObject(requestDto, Media.class);
                     return update(media, mediaUpdate);
                 }
-                if (method.equals(Method.DELETE)) {
+                if (method.equals(Method.DELETE) && path.length == 3) {
                     return deleteMedia(media);
                 }
             }

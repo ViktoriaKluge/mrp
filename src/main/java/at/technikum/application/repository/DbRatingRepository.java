@@ -47,6 +47,9 @@ public class DbRatingRepository implements RatingRepository{
     private static final String SELECT_ALL_RATINGS
             = "SELECT * FROM ratings";
 
+    private static final String SELECT_ALL_BY_UID
+            = "SELECT * FROM ratings WHERE user_id = ?";
+
     public DbRatingRepository(ConnectionPool connectionPool, UserRepository userRepository,
                               MediaRepository mediaRepository) {
         this.connectionPool = connectionPool;
@@ -89,6 +92,8 @@ public class DbRatingRepository implements RatingRepository{
             throw new DatabaseConnectionException("Could not find rating");
         }
     }
+
+
 
     @Override
     public Optional<SQLRatingDto> save(Rating rating) {
@@ -210,10 +215,6 @@ public class DbRatingRepository implements RatingRepository{
                 PreparedStatement prestmt = conn.prepareStatement(SELECT_ALL_RATINGS)
         ) {
             try (ResultSet rs = prestmt.executeQuery()) {
-                if (!rs.next()) {
-                    return List.of();
-                }
-
                 List<SQLRatingDto> ratingList = new ArrayList<>();
 
                 while (rs.next()) {
@@ -224,6 +225,27 @@ public class DbRatingRepository implements RatingRepository{
             }
         } catch (SQLException e) {
             throw new DatabaseConnectionException("Can not show ratingList");
+        }
+    }
+
+    @Override
+    public List<SQLRatingDto> findAllByUserID(User user) {
+        try (
+                Connection conn = connectionPool.getConnection();
+                PreparedStatement prestmt = conn.prepareStatement(SELECT_ALL_BY_UID)
+        ) {
+            prestmt.setObject(1, user.getId());
+            try (ResultSet rs = prestmt.executeQuery()) {
+                List<SQLRatingDto> ratingList = new ArrayList<>();
+
+                while (rs.next()) {
+                    ratingList.add(setRatingDto(rs));
+                }
+
+                return ratingList;
+            }
+        } catch (SQLException e) {
+            throw new DatabaseConnectionException("Can not show ratingList for this user");
         }
     }
 

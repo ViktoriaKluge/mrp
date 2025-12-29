@@ -17,18 +17,6 @@ public class Rating {
         this.visibility = false;
     }
 
-    public Rating(UUID id, String comment, Integer stars,
-                  User creator, Media ratedMedia) {
-       this.id = id;
-       this.comment = comment;
-       this.stars = stars;
-       this.timestamp = Instant.now();
-       this.visibility = false;
-       this.creator = creator;
-       this.ratedMedia = ratedMedia;
-
-    }
-
     public UUID getId() {
         return id;
     }

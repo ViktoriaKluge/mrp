@@ -9,6 +9,18 @@ GET http://localhost:8080/
 # AUTH
 # ==========
 
+### Post auth register - register admin
+POST http://localhost:8080/users/register
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password1": "124",
+  "password2": "124",
+  "email": "admin@test1.com",
+  "userType": "Admin"
+}
+
 ### Post auth register - register new user
 POST http://localhost:8080/users/register
 Content-Type: application/json
@@ -52,11 +64,11 @@ Authorization: Bearer userleini-mrpToken
 }
 
 ### Get user ratings
-GET http://localhost:8080/users/ef3e67e1-9a5e-49ce-a2a7-95aa2209baaa/ratings
+GET http://localhost:8080/users/ef3e67e1-9a5e-49ce-a2a7-95aa2209b295/ratings
 Authorization: Bearer userleini-mrpToken
 
 ### Get user favorites
-GET http://localhost:8080/users/ef3e67e1-9a5e-49ce-a2a7-95aa2209baaa/favorites
+GET http://localhost:8080/users/ef3e67e1-9a5e-49ce-a2a7-95aa2209b295/favorites
 Authorization: Bearer userleini-mrpToken
 
 ### Delete user
@@ -76,7 +88,7 @@ Content-Type: application/json
 Authorization: Bearer userleini-mrpToken
 
 {
-  "title": "Best game ever3",
+  "title": "Best game ever",
   "description": "just awesome",
   "genre":["Sci-Fi"],
   "mediaType": "GAME",
@@ -85,10 +97,10 @@ Authorization: Bearer userleini-mrpToken
 }
 
 ### Get media id
-GET http://localhost:8080/media/20ebc8bb-687f-4c32-b66f-7e4748ffd75c
+GET http://localhost:8080/media/06541519-d5e2-480f-9c16-fce4909b80e3
 
 ### Put media id - Update media entry
-PUT http://localhost:8080/media/20ebc8bb-687f-4c32-b66f-7e4748ffd75c
+PUT http://localhost:8080/media/06541519-d5e2-480f-9c16-fce4909b80e3
 Content-Type: application/json
 Authorization: Bearer userleini-mrpToken
 
@@ -108,7 +120,7 @@ Authorization: Bearer userleini-mrpToken
 GET http://localhost:8080/ratings
 
 ### Post media rate - rate media entry
-POST http://localhost:8080/media/06541519-d5e2-480f-9c16-fce4909b80e3/rate
+POST http://localhost:8080/media/c568d248-c3e6-4433-8144-ab6cb411b694/rate
 Content-Type: application/json
 Authorization: Bearer userleini-mrpToken
 
@@ -131,7 +143,7 @@ Authorization: Bearer userleini-mrpToken
 }
 
 ### Post ratings confirm - confirm rating comment
-POST http://localhost:8080/ratings/1aeebfba-5922-48f6-9201-e8a563f78222/confirm
+POST http://localhost:8080/ratings/e736ac4d-6198-4f77-80a3-8b16c487ba72/confirm
 Authorization: Bearer admin-mrpToken
 
 ### Delete ratings
@@ -143,11 +155,11 @@ Authorization: Bearer userleini-mrpToken
 # ==========
 
 ### Post media favorite - mark as favorite
-POST http://localhost:8080/media/20ebc8bb-687f-4c32-b66f-7e4748ffd75c/favorite
+POST http://localhost:8080/media/c568d248-c3e6-4433-8144-ab6cb411b694/favorite
 Authorization: Bearer userleini-mrpToken
 
 ### Delete media favorite
-DELETE http://localhost:8080/media/20ebc8bb-687f-4c32-b66f-7e4748ffd75c/favorite
+DELETE http://localhost:8080/media/c568d248-c3e6-4433-8144-ab6cb411b694/favorite
 Authorization: Bearer userleini-mrpToken
 
 # ==========

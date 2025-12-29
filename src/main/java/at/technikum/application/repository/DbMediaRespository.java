@@ -42,6 +42,9 @@ public class DbMediaRespository implements MediaRepository {
     private static final String DELETE_FAVORITE
             = "DELETE FROM favorite WHERE user_id = ? AND media_id = ? RETURNING *";
 
+    private static final String SELECT_ALL_FAVS_BY_UID
+            = "SELECT * FROM favorite WHERE user_id = ?";
+
     public DbMediaRespository(ConnectionPool connectionPool, UserRepository userRepository) {
         this.connectionPool = connectionPool;
         this.userRepository = userRepository;
@@ -89,10 +92,6 @@ public class DbMediaRespository implements MediaRepository {
                 PreparedStatement prestmt = conn.prepareStatement(SELECT_ALL_MEDIA)
         ) {
             try (ResultSet rs = prestmt.executeQuery()) {
-                if (!rs.next()) {
-                    return List.of();
-                }
-
                 List<SQLMediaDto> mediaList = new ArrayList<>();
 
                 while (rs.next()) {
@@ -226,6 +225,27 @@ public class DbMediaRespository implements MediaRepository {
         }
     }
 
+    @Override
+    public List<SQLFavoriteDto> findFavsByUserId(User user) {
+        try (
+                Connection conn = connectionPool.getConnection();
+                PreparedStatement prestmt = conn.prepareStatement(SELECT_ALL_FAVS_BY_UID)
+        ) {
+            prestmt.setObject(1, user.getId());
+            try (ResultSet rs = prestmt.executeQuery()) {
+                List<SQLFavoriteDto> favsList = new ArrayList<>();
+
+                while (rs.next()) {
+                    favsList.add(setFavorite(rs));
+                }
+
+                return favsList;
+            }
+        } catch (SQLException e) {
+            throw new DatabaseConnectionException("Can not show favorite list by user");
+        }
+    }
+
     private SQLMediaDto setMediaDto(ResultSet rs) throws SQLException {
         try {
             SQLMediaDto media = new SQLMediaDto();
@@ -264,7 +284,7 @@ public class DbMediaRespository implements MediaRepository {
             throw new SQLToObjectException("Can not set up media");
         }
     }
-
+            // favs leer bei users7.../favs
     private SQLFavoriteDto setFavorite(ResultSet rs) throws SQLException {
         try {
             SQLFavoriteDto sqlFav = new SQLFavoriteDto();

@@ -39,8 +39,8 @@ public class MediaService {
     }
 
     public SQLMediaDto update(Media old, Media mediaUpdate) {
-        mediaUpdate = setUpdate(old,mediaUpdate);
-        Optional <SQLMediaDto> updated = this.mediaRepository.update(mediaUpdate);
+        mediaUpdate = setUpdate(old, mediaUpdate);
+        Optional<SQLMediaDto> updated = this.mediaRepository.update(mediaUpdate);
         if (updated.isEmpty()) {
             notFound();
         }
@@ -55,16 +55,31 @@ public class MediaService {
         return deleted.get();
     }
 
-    private void notFound(){
+    public SQLMediaDto convert(Media media) {
+        SQLMediaDto sqlMedia = new SQLMediaDto();
+
+        sqlMedia.setId(media.getId());
+        sqlMedia.setCreatorId(media.getCreator().getId());
+        sqlMedia.setTitle(media.getTitle());
+        sqlMedia.setDescription(media.getDescription());
+        sqlMedia.setMediaType(media.getMediaType());
+        sqlMedia.setReleaseYear(media.getReleaseYear());
+        sqlMedia.setAgeRestriction(media.getAgeRestriction());
+        sqlMedia.setGenres(media.getGenre());
+
+        return sqlMedia;
+    }
+
+    private void notFound() {
         throw new EntityNotFoundException("Media not found");
     }
 
     private Media setUpdate(Media old, Media mediaUpdate) {
         mediaUpdate.setId(old.getId());
-        if  (mediaUpdate.getTitle() == null || mediaUpdate.getTitle().isEmpty()) {
+        if (mediaUpdate.getTitle() == null || mediaUpdate.getTitle().isEmpty()) {
             mediaUpdate.setTitle(old.getTitle());
         }
-        if  (mediaUpdate.getDescription() == null || mediaUpdate.getDescription().isEmpty()) {
+        if (mediaUpdate.getDescription() == null || mediaUpdate.getDescription().isEmpty()) {
             mediaUpdate.setDescription(old.getDescription());
         }
         if (mediaUpdate.getMediaType() == null) {
@@ -81,5 +96,4 @@ public class MediaService {
         }
         return mediaUpdate;
     }
-
 }

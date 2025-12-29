@@ -26,16 +26,24 @@ public class AuthMiddleware {
         if (noNeed()){
            return null;
         } else {
-            // first check token
+            // check token and if there is an uid, compare
             String token = requestDto.getToken();
+            UUID pathUserID = getUserId(requestDto);
 
-            if (!token.isEmpty())
+            if (token.isEmpty())
             {
-                return getUserByToken(token);
-            }
-            else {
-            // if no token, then check ID
-                return getUserById(requestDto);
+                Optional<User> checkUser = this.userRepository.findByID(pathUserID);
+                if (checkUser.isEmpty()) {
+                    throw new NotAuthorizedException("Could not find user (id)");
+                }
+                return checkUser.get();
+            } else {
+                User tokenUser =  getUserByToken(token);
+                if (tokenUser.getId().equals(pathUserID) || pathUserID == null) {
+                    return tokenUser;
+                } else {
+                    throw new NotAuthorizedException("Token does not match user ID");
+                }
             }
         }
     }
@@ -55,23 +63,19 @@ public class AuthMiddleware {
         }
     }
 
-    private User getUserById(RequestDto requestDto) {
+    private UUID getUserId(RequestDto requestDto) {
         String id ="";
-        if (path[1].equals("users")) {
+        if (path[1].equals("users") && !path[2].equals("login") && !path[2].equals("register")) {
             id = path[2];
-        } else {
-            id = requestDto.getUid();
-            if (id == null || id.isEmpty()) {
-                throw new NotAuthorizedException("No user id found");
+
+            try {
+                UUID uid = UUID.fromString(id);
+                return uid;
+            } catch (IllegalArgumentException e) {
+                throw new EntityNotFoundException("ID is not a valid UUID");
             }
         }
-        UUID uid = UUID.fromString(id);
-        Optional<User> checkUser = this.userRepository.findByID(uid);
-        if (checkUser.isEmpty()) {
-            throw new EntityNotFoundException("Not authenticated (User not found)");
-        }
-
-        return checkUser.get();
+        return null;
     }
 
     private User getUserByToken(String token)

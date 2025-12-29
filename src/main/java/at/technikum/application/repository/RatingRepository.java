@@ -21,5 +21,6 @@ public interface RatingRepository {
     Optional<SQLRatingDto> confirm(Rating rating);
     Optional<String> delete(Rating rating);
     List<SQLRatingDto> findAll();
+    List<SQLRatingDto> findAllByUserID(User user);
 
 }

@@ -41,7 +41,7 @@ public class RatingController extends Controller {
             User creator = rating.getCreator();
 
             if (method.equals(Method.POST)) {
-                if (path[3].equals("like")) {
+                if (path[3].equals("like") && authorizedOther(user, creator)) {
                     return like(rating,user);
                 }
 
@@ -52,7 +52,7 @@ public class RatingController extends Controller {
                 }
             }
 
-            if (authorized(user, creator)){
+            if (authorizedSame(user, creator)){
                 if (method.equals(Method.PUT)) {
                     Rating update = toOtherObject(requestDto, Rating.class);
                     return updateRating(rating, update);
@@ -87,11 +87,18 @@ public class RatingController extends Controller {
         return json(liked, Status.OK);
     }
 
-    private boolean authorized (User user, User creator) {
+    private boolean authorizedSame (User user, User creator) {
         if (user.getId().equals(creator.getId())) {
             return true;
         }
         throw new NotAuthorizedException("Only the creator can modify their ratings");
+    }
+
+    private boolean authorizedOther (User user, User creator) {
+        if (!user.getId().equals(creator.getId())) {
+            return true;
+        }
+        throw new NotAuthorizedException("You can only like ratings from other users");
     }
 
     public boolean isAdmin(User user) {

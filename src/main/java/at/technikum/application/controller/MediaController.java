@@ -2,6 +2,7 @@ package at.technikum.application.controller;
 
 import at.technikum.application.common.Controller;
 import at.technikum.application.dto.authmiddleware.RequestDto;
+import at.technikum.application.dto.media.MediaProfile;
 import at.technikum.application.dto.sql.SQLFavoriteDto;
 import at.technikum.application.dto.sql.SQLMediaDto;
 import at.technikum.application.dto.sql.SQLRatingDto;
@@ -51,8 +52,8 @@ public class MediaController extends Controller {
             Media media = this.mediaService.findById(mid);
 
             if (method.equals(Method.GET)) {
-                SQLMediaDto sqlMedia = this.mediaService.convert(media);
-                return json(sqlMedia, Status.OK);
+                MediaProfile profile = this.mediaService.profile(media);
+                return json(profile, Status.OK);
             }
 
             User user = requestDto.getUser();

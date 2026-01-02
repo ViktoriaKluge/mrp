@@ -1,46 +1,27 @@
-mandatory:
-
 for final hand-in:
-    Repos vervollständigen
-    filter medias & sort
-
-only additional:
     leaderboard
-    profile with stats
-
+    recommendations
+    filter medias & sort
+    Update docs
+    check if all exceptions fit purpose
+    check if all status fit purpose
 
 next steps:
-   bei user kommt psw zurück
 
-   ratings nur 1-5 stars
-   like only others' ratings
-   media average score
-   profile stats (total ratings, average score, favorite genre)
-
-    ratings / favorites in dbUser gehen noch nicht
     Recommendations überlegen
-    Leaderboard überlegen
-
-    Update docs
 
 errors:
+    set up rating doesnt work cause of stars
 
 little things:
-    DbRepository try catch Blöcke wiederholen sich
-    SQL exceptions welcher text? / save - welche exception
-    User löschen nur mit psw?
-    User findByEmail behalten?
-    Wann Status.Ok und wann .Created? auch .Deleted?
-    Authentification im Controller - exception werfen oder Status.bad?
-    error response codes laut spezifikationen
-    rating timestamp umändern zu created_at
-    rating stars 1-5
-    one rating per user per media (und fav und like) - error handling
-    get all users?
+    in media table - owner zu user
+
 
 thoughts:
     Ich habe Media / Rating bei Get(id) schon gleich am Anfang da. Will es aber nicht komplett mit Creator (psw)
         retour geben. Dann trotzdem den ganzen Weg bis ins Repo und dort umwandeln?
+    Im Controller sollen wir eher nur positive Ereignisse behandeln. Falls es trotzdem vorkommt, dass etwas Negatives
+        passieren kann - lieber Response als Text oder auch Exceptions okay?
 
 
 fragen:

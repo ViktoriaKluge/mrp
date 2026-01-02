@@ -105,7 +105,8 @@ public class UserController extends Controller {
     }
 
     private Response profile(User user) {
-        return json(user,Status.OK);
+        UserProfile profile = this.userService.profile(user);
+        return json(profile,Status.OK);
     }
 
     private Response ratings(User user) {

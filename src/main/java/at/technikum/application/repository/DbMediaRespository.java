@@ -1,6 +1,7 @@
 package at.technikum.application.repository;
 
 import at.technikum.application.common.ConnectionPool;
+import at.technikum.application.dto.media.MediaProfile;
 import at.technikum.application.dto.sql.SQLFavoriteDto;
 import at.technikum.application.dto.sql.SQLMediaDto;
 import at.technikum.application.enums.MediaType;
@@ -45,6 +46,14 @@ public class DbMediaRespository implements MediaRepository {
     private static final String SELECT_ALL_FAVS_BY_UID
             = "SELECT * FROM favorite WHERE user_id = ?";
 
+    private static final String TOTAL_RATINGS
+            = "SELECT COUNT(*)  AS total_ratings FROM ratings WHERE media_id = ?";
+
+    private static final String AVERAGE_RATINGS
+            = "SELECT ROUND(AVG(stars), 2) AS avg_stars FROM ratings WHERE media_id = ?";
+    private static final String TOTAL_FAVS
+            = "SELECT COUNT(*) AS total_favs FROM favorite where media_id = ?";
+
     public DbMediaRespository(ConnectionPool connectionPool, UserRepository userRepository) {
         this.connectionPool = connectionPool;
         this.userRepository = userRepository;
@@ -64,7 +73,7 @@ public class DbMediaRespository implements MediaRepository {
                 return Optional.of(setMediaDto(rs));
             }
         } catch (SQLException e) {
-            throw new DatabaseConnectionException("Could not find media");
+            throw new DatabaseConnectionException("Could not find media entry by id "+e.getMessage());
         }
     }
 
@@ -81,7 +90,7 @@ public class DbMediaRespository implements MediaRepository {
                 return Optional.of(setMedia(rs));
             }
         } catch (SQLException e) {
-            throw new DatabaseConnectionException("Could not find media");
+            throw new DatabaseConnectionException("Could not find media entry by id "+e.getMessage());
         }
     }
 
@@ -101,7 +110,7 @@ public class DbMediaRespository implements MediaRepository {
                 return mediaList;
             }
         } catch (SQLException e) {
-            throw new DatabaseConnectionException("Can not show medialist");
+            throw new DatabaseConnectionException("Can not show media list "+e.getMessage());
         }
     }
 
@@ -130,7 +139,14 @@ public class DbMediaRespository implements MediaRepository {
                 return Optional.of(setMediaDto(rs));
             }
         } catch (SQLException e) {
-            throw new ObjectToSQLException("Could not save media"+e.getMessage());
+            if (e.getErrorCode() == 23505) {
+                throw new UniqueViolationException("This media entry already exists");
+            } else if (e.getErrorCode() == 23503) {
+                throw new ForeignKeyViolation("This user does not exist");
+            } else {
+                throw new DatabaseConnectionException("Could not save media entry "+e.getMessage());
+            }
+
         }
     }
 
@@ -149,7 +165,7 @@ public class DbMediaRespository implements MediaRepository {
                 return Optional.of(rs.getString("title"));
             }
         } catch (SQLException e) {
-            throw new DatabaseConnectionException("Could not delete media");
+            throw new DatabaseConnectionException("Could not delete media entry "+e.getMessage());
         }
     }
 
@@ -177,7 +193,10 @@ public class DbMediaRespository implements MediaRepository {
                 return Optional.of(setMediaDto(rs));
             }
         } catch (SQLException e) {
-            throw new SQLToObjectException("Could not update media");
+            if (e.getSQLState().equals("23505")) {
+                throw new UniqueViolationException("This media entry already exists");
+            }
+            throw new DatabaseConnectionException("Could not update media entry "+e.getMessage());
         }
 
     }
@@ -199,7 +218,13 @@ public class DbMediaRespository implements MediaRepository {
                 return Optional.of(setFavorite(rs));
             }
         }catch (SQLException e) {
-            throw new SQLToObjectException("Could not add favorite");
+            if (e.getSQLState().equals("23505")) {
+                throw new UniqueViolationException("You can only add a media entry to your favorites once");
+            } else if (e.getSQLState().equals("23503")) {
+                throw new ForeignKeyViolation("This media entry or user does not exist");
+            } else {
+                throw new DatabaseConnectionException("Could not create favorite "+e.getMessage());
+            }
         }
     }
 
@@ -221,7 +246,7 @@ public class DbMediaRespository implements MediaRepository {
                 return Optional.of(mediaTitle);
             }
         }catch (SQLException e) {
-            throw new SQLToObjectException("Could not delete favorite");
+            throw new DatabaseConnectionException("Could not delete favorite "+e.getMessage());
         }
     }
 
@@ -242,7 +267,48 @@ public class DbMediaRespository implements MediaRepository {
                 return favsList;
             }
         } catch (SQLException e) {
-            throw new DatabaseConnectionException("Can not show favorite list by user");
+            throw new DatabaseConnectionException("Can not show favorite list by user "+e.getMessage());
+        }
+    }
+
+    @Override
+    public Optional<MediaProfile> profile(Media media) {
+        try (
+                Connection conn = connectionPool.getConnection();
+                PreparedStatement preTotalRatings = conn.prepareStatement(TOTAL_RATINGS);
+                PreparedStatement preAVGRatings = conn.prepareStatement(AVERAGE_RATINGS);
+                PreparedStatement preTotalFavs = conn.prepareStatement(TOTAL_FAVS)
+        ) {
+            MediaProfile mediaProfile = new MediaProfile();
+            preTotalRatings.setObject(1, media.getId());
+            preAVGRatings.setObject(1, media.getId());
+            preTotalFavs.setObject(1, media.getId());
+
+            // total ratings
+            try (ResultSet rs = preTotalRatings.executeQuery()) {
+                if (rs.next()) {
+                    mediaProfile.setTotalRatings(rs.getInt("total_ratings"));
+                }
+            }
+
+            // avg rating
+            try (ResultSet rs = preAVGRatings.executeQuery()) {
+                if (rs.next()) {
+                    Double stars = rs.getObject("avg_stars", Double.class);
+                    mediaProfile.setAverageRating(stars);
+                }
+            }
+
+            // total favorites
+            try (ResultSet rs = preTotalFavs.executeQuery()) {
+                if (rs.next()) {
+                    mediaProfile.setTotalFavs(rs.getInt("total_favs"));
+                }
+            }
+
+            return Optional.of(mediaProfile);
+        } catch (SQLException e) {
+            throw new DatabaseConnectionException("Can not show media profile "+e.getMessage());
         }
     }
 
@@ -261,7 +327,7 @@ public class DbMediaRespository implements MediaRepository {
             media.setGenres(List.of((String[]) sqlGenres.getArray()));
             return media;
         } catch (SQLException e) {
-            throw new SQLToObjectException("Can not set up mediaDto"+ e.getMessage());
+            throw new SQLToObjectException("Can not set up mediaDto "+ e.getMessage());
         }
     }
 
@@ -272,7 +338,8 @@ public class DbMediaRespository implements MediaRepository {
             media.setTitle(rs.getString("title"));
             media.setDescription(rs.getString("description"));
             UUID creatorId = rs.getObject("owner_id", UUID.class);
-            media.setCreator(this.userRepository.findByID(creatorId).get());
+            Optional<User> creator = this.userRepository.findByID(creatorId);
+            creator.ifPresent(media::setCreator);
             String type = rs.getString("media_type");
             media.setMediaType(setType(type));
             media.setReleaseYear(rs.getObject("release_year", Integer.class));
@@ -281,10 +348,10 @@ public class DbMediaRespository implements MediaRepository {
             media.setGenre(List.of((String[]) sqlGenres.getArray()));
             return media;
         } catch (SQLException e) {
-            throw new SQLToObjectException("Can not set up media");
+            throw new SQLToObjectException("Can not set up media entry "+ e.getMessage());
         }
     }
-            // favs leer bei users7.../favs
+
     private SQLFavoriteDto setFavorite(ResultSet rs) throws SQLException {
         try {
             SQLFavoriteDto sqlFav = new SQLFavoriteDto();
@@ -292,7 +359,7 @@ public class DbMediaRespository implements MediaRepository {
             sqlFav.setMediaId(rs.getObject("media_id", UUID.class));
             return sqlFav;
         } catch (SQLException e) {
-            throw new SQLToObjectException("Can not set up favorite");
+            throw new SQLToObjectException("Can not set up favorite "+e.getMessage());
         }
     }
 

@@ -1,5 +1,6 @@
 package at.technikum.application.service;
 
+import at.technikum.application.dto.media.MediaProfile;
 import at.technikum.application.dto.sql.SQLMediaDto;
 import at.technikum.application.exception.EntityNotFoundException;
 import at.technikum.application.exception.UnprocessableEntityException;
@@ -39,8 +40,8 @@ public class MediaService {
     }
 
     public SQLMediaDto update(Media old, Media mediaUpdate) {
-        mediaUpdate = setUpdate(old, mediaUpdate);
-        Optional<SQLMediaDto> updated = this.mediaRepository.update(mediaUpdate);
+        Media updateSet = setUpdate(old, mediaUpdate);
+        Optional<SQLMediaDto> updated = this.mediaRepository.update(updateSet);
         if (updated.isEmpty()) {
             notFound();
         }
@@ -55,19 +56,23 @@ public class MediaService {
         return deleted.get();
     }
 
-    public SQLMediaDto convert(Media media) {
-        SQLMediaDto sqlMedia = new SQLMediaDto();
+    public MediaProfile profile(Media media) {
+        Optional<MediaProfile> profile = this.mediaRepository.profile(media);
 
-        sqlMedia.setId(media.getId());
-        sqlMedia.setCreatorId(media.getCreator().getId());
-        sqlMedia.setTitle(media.getTitle());
-        sqlMedia.setDescription(media.getDescription());
-        sqlMedia.setMediaType(media.getMediaType());
-        sqlMedia.setReleaseYear(media.getReleaseYear());
-        sqlMedia.setAgeRestriction(media.getAgeRestriction());
-        sqlMedia.setGenres(media.getGenre());
+        if (profile.isEmpty()) {
+            notFound();
+        }
+        MediaProfile finalProfile = profile.get();
+        finalProfile.setId(media.getId());
+        finalProfile.setCreatorId(media.getCreator().getId());
+        finalProfile.setTitle(media.getTitle());
+        finalProfile.setDescription(media.getDescription());
+        finalProfile.setMediaType(media.getMediaType());
+        finalProfile.setReleaseYear(media.getReleaseYear());
+        finalProfile.setAgeRestriction(media.getAgeRestriction());
+        finalProfile.setGenres(media.getGenre());
 
-        return sqlMedia;
+        return finalProfile;
     }
 
     private void notFound() {

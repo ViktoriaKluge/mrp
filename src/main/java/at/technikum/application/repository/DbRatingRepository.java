@@ -3,9 +3,8 @@ package at.technikum.application.repository;
 import at.technikum.application.common.ConnectionPool;
 import at.technikum.application.dto.sql.SQLLikeDto;
 import at.technikum.application.dto.sql.SQLRatingDto;
-import at.technikum.application.exception.DatabaseConnectionException;
-import at.technikum.application.exception.ObjectToSQLException;
-import at.technikum.application.exception.SQLToObjectException;
+import at.technikum.application.enums.Stars;
+import at.technikum.application.exception.*;
 import at.technikum.application.model.Like;
 import at.technikum.application.model.Media;
 import at.technikum.application.model.Rating;
@@ -71,7 +70,7 @@ public class DbRatingRepository implements RatingRepository{
                 return Optional.of(setRatingDto(rs));
             }
         } catch (SQLException e) {
-            throw new DatabaseConnectionException("Could not find rating");
+            throw new DatabaseConnectionException("Could not find rating by ID "+e.getMessage());
         }
     }
 
@@ -89,11 +88,9 @@ public class DbRatingRepository implements RatingRepository{
                 return Optional.of(setRating(rs));
             }
         } catch (SQLException e) {
-            throw new DatabaseConnectionException("Could not find rating");
+            throw new DatabaseConnectionException("Could not find rating by ID "+e.getMessage());
         }
     }
-
-
 
     @Override
     public Optional<SQLRatingDto> save(Rating rating) {
@@ -106,9 +103,9 @@ public class DbRatingRepository implements RatingRepository{
             prestmt.setObject(2, creator.getId());
             Media media = rating.getRatedMedia();
             prestmt.setObject(3, media.getId());
-            prestmt.setObject(4, rating.getStars());
+            prestmt.setObject(4, rating.getStars().getValue());
             prestmt.setString(5, rating.getComment());
-            Instant ts = rating.getTimestamp();
+            Instant ts = rating.getCreatedAt();
             OffsetDateTime odt = ts.atOffset(ZoneOffset.UTC);
             prestmt.setObject(6, odt, Types.TIMESTAMP_WITH_TIMEZONE);
             prestmt.setBoolean(7, rating.isVisibility());
@@ -120,7 +117,13 @@ public class DbRatingRepository implements RatingRepository{
                 return Optional.of(setRatingDto(rs));
             }
         } catch (SQLException e) {
-            throw new ObjectToSQLException("Could not save rating"+e.getMessage());
+            if (e.getErrorCode() == 23505) {
+                throw new UniqueViolationException("This rating already exists");
+            } else if (e.getErrorCode() == 23503) {
+                throw new ForeignKeyViolation("This media entry or user does not exist");
+            } else {
+                throw new DatabaseConnectionException("Could not save rating "+e.getMessage());
+            }
         }
     }
 
@@ -130,7 +133,7 @@ public class DbRatingRepository implements RatingRepository{
                 Connection conn = connectionPool.getConnection();
                 PreparedStatement prestmt = conn.prepareStatement(UPDATE_RATING)
         ) {
-            prestmt.setObject(1, rating.getStars());
+            prestmt.setObject(1, rating.getStars().getValue());
             prestmt.setObject(2, rating.getComment());
             prestmt.setObject(3, rating.getId());
 
@@ -141,7 +144,7 @@ public class DbRatingRepository implements RatingRepository{
                 return Optional.of(setRatingDto(rs));
             }
         } catch (SQLException e) {
-            throw new ObjectToSQLException("Could not update rating");
+            throw new DatabaseConnectionException("Could not update rating "+e.getMessage());
         }
     }
 
@@ -163,7 +166,13 @@ public class DbRatingRepository implements RatingRepository{
                 return Optional.of(setLike(rs));
             }
         }catch (SQLException e) {
-            throw new ObjectToSQLException("Could not add favorite");
+            if (e.getSQLState().equals("23505")) {
+                throw new UniqueViolationException("You can like ratings only once");
+            } else if (e.getSQLState().equals("23503")) {
+                throw new ForeignKeyViolation("This rating or user does not exist");
+            } else {
+                throw new DatabaseConnectionException("Could not like rating "+e.getMessage());
+            }
         }
     }
 
@@ -183,7 +192,7 @@ public class DbRatingRepository implements RatingRepository{
                 return Optional.of(setRatingDto(rs));
             }
         }catch (SQLException e) {
-            throw new ObjectToSQLException("Could not confirm rating");
+            throw new DatabaseConnectionException("Could not confirm rating "+e.getMessage());
         }
     }
 
@@ -204,7 +213,7 @@ public class DbRatingRepository implements RatingRepository{
                 return Optional.of(media.getTitle());
             }
         } catch (SQLException e) {
-            throw new DatabaseConnectionException("Could not delete media");
+            throw new DatabaseConnectionException("Could not delete rating "+e.getMessage());
         }
     }
 
@@ -224,7 +233,7 @@ public class DbRatingRepository implements RatingRepository{
                 return ratingList;
             }
         } catch (SQLException e) {
-            throw new DatabaseConnectionException("Can not show ratingList");
+            throw new DatabaseConnectionException("Can not show ratingList "+e.getMessage());
         }
     }
 
@@ -245,7 +254,7 @@ public class DbRatingRepository implements RatingRepository{
                 return ratingList;
             }
         } catch (SQLException e) {
-            throw new DatabaseConnectionException("Can not show ratingList for this user");
+            throw new DatabaseConnectionException("Can not show ratingList for this user "+e.getMessage());
         }
     }
 
@@ -255,14 +264,15 @@ public class DbRatingRepository implements RatingRepository{
             rating.setId(rs.getObject("rid", UUID.class));
             rating.setUserId(rs.getObject("user_id", UUID.class));
             rating.setMediaId(rs.getObject("media_id", UUID.class));
-            rating.setStars(rs.getInt("stars"));
+            Integer stars = rs.getInt("stars");
+            rating.setStars();
             rating.setComment(rs.getString("comment"));
             OffsetDateTime odt = rs.getObject("timestamp", OffsetDateTime.class);
             rating.setCreatedAt(odt.toInstant());
             rating.setVisibility(rs.getBoolean("visibility"));
             return rating;
         } catch (SQLException e) {
-            throw new SQLToObjectException("Can not set up ratingDto");
+            throw new SQLToObjectException("Can not set up ratingDto "+e.getMessage());
         }
     }
 
@@ -271,17 +281,19 @@ public class DbRatingRepository implements RatingRepository{
             Rating rating = new Rating();
             rating.setId(rs.getObject("rid", UUID.class));
             UUID userId = rs.getObject("user_id", UUID.class);
-            rating.setCreator(this.userRepository.findByID(userId).get());
+            Optional<User> creator = this.userRepository.findByID(userId);
+            creator.ifPresent(rating::setCreator);
             UUID mediaId = rs.getObject("media_id", UUID.class);
-            rating.setRatedMedia(this.mediaRepository.findByIdMedia(mediaId).get());
-            rating.setStars(rs.getInt("stars"));
+            Optional<Media> ratedMedia = this.mediaRepository.findByIdMedia(mediaId);
+            ratedMedia.ifPresent(rating::setRatedMedia);
+            rating.setStars(rs.getObject("stars", Stars.class));
             rating.setComment(rs.getString("comment"));
             OffsetDateTime odt = rs.getObject("timestamp", OffsetDateTime.class);
-            rating.setTimestamp(odt.toInstant());
+            rating.setCreatedAt(odt.toInstant());
             rating.setVisibility(rs.getBoolean("visibility"));
             return rating;
         } catch (SQLException e) {
-            throw new SQLToObjectException("Can not set up rating");
+            throw new SQLToObjectException("Can not set up rating "+e.getMessage());
         }
     }
 
@@ -292,7 +304,7 @@ public class DbRatingRepository implements RatingRepository{
             like.setUserId(rs.getObject("user_id", UUID.class));
             return like;
         } catch (SQLException e) {
-            throw new SQLToObjectException("Can not set up like");
+            throw new SQLToObjectException("Can not set up like "+e.getMessage());
         }
     }
 }

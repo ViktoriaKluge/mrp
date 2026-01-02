@@ -1,19 +1,21 @@
 package at.technikum.application.model;
 
+import at.technikum.application.enums.Stars;
+
 import java.time.Instant;
 import java.util.UUID;
 
 public class Rating {
     private UUID id;
     private String comment;
-    private Integer stars;
-    private Instant timestamp;
+    private Stars stars;
+    private Instant createdAt;
     private boolean visibility;
     private User creator;
     private Media ratedMedia;
 
     public Rating() {
-        this.timestamp = Instant.now();
+        this.createdAt = Instant.now();
         this.visibility = false;
     }
 
@@ -33,20 +35,20 @@ public class Rating {
         this.comment = comment;
     }
 
-    public Integer getStars() {
+    public Stars getStars() {
         return stars;
     }
 
-    public void setStars(Integer stars) {
+    public void setStars(Stars stars) {
         this.stars = stars;
     }
 
-    public Instant getTimestamp() {
-        return timestamp;
+    public Instant getCreatedAt() {
+        return createdAt;
     }
 
-    public void setTimestamp(Instant timestamp) {
-        this.timestamp = timestamp;
+    public void setCreatedAt(Instant timestamp) {
+        this.createdAt = timestamp;
     }
 
     public boolean isVisibility() {

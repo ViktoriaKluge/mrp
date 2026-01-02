@@ -33,15 +33,6 @@ public class AuthService {
         throw new EntityNotFoundException("Not enough parameters");
     }
 
-    private User createToUser(UserCreateDto userCreate) {
-        User user = new User();
-        user.setUsername(userCreate.getUsername());
-        user.setEmail(userCreate.getEmail());
-        user.setUserType(userCreate.getUserType());
-        user.setPassword(userCreate.getPassword1());
-        return user;
-    }
-
     public UserLoggedInDto createToken(UserLoginDto userLogin) {
         if (userLogin.bothHere()) {
             Optional<UserLoggedInDto> userLoggedIn = this.userRepository.login(userLogin);
@@ -51,5 +42,14 @@ public class AuthService {
             return userLoggedIn.get().newToken();
         }
         throw new EntityNotFoundException("Not enough parameters");
+    }
+
+    private User createToUser(UserCreateDto userCreate) {
+        User user = new User();
+        user.setUsername(userCreate.getUsername());
+        user.setEmail(userCreate.getEmail());
+        user.setUserType(userCreate.getUserType());
+        user.setPassword(userCreate.getPassword1());
+        return user;
     }
 }

@@ -58,9 +58,9 @@ Authorization: Bearer userleini-mrpToken
 
 {
   "username": "userleini",
-  "passwordOld": "127",
-  "passwordNew1": "1274",
-  "passwordNew2": "1274"
+  "passwordOld": "1274",
+  "passwordNew1": "127",
+  "passwordNew2": "127"
 }
 
 ### Get user ratings
@@ -82,18 +82,18 @@ Authorization: Bearer userlein-mrpToken
 ### Get media - list media entries
 GET http://localhost:8080/media
 
-### Post media - create cedia entry
+### Post media - create media entry
 POST http://localhost:8080/media
 Content-Type: application/json
 Authorization: Bearer userleini-mrpToken
 
 {
-  "title": "Best game ever",
-  "description": "just awesome",
-  "genre":["Sci-Fi"],
-  "mediaType": "GAME",
-  "releaseYear": 2020,
-  "ageRestriction": 18
+  "title": "That one movie",
+  "description": "where that person did something",
+  "genre":["Drama"],
+  "mediaType": "MOVIE",
+  "releaseYear": 2010,
+  "ageRestriction": 5
 }
 
 ### Get media id
@@ -122,11 +122,11 @@ GET http://localhost:8080/ratings
 ### Post media rate - rate media entry
 POST http://localhost:8080/media/c568d248-c3e6-4433-8144-ab6cb411b694/rate
 Content-Type: application/json
-Authorization: Bearer userleini-mrpToken
+Authorization: Bearer admin-mrpToken
 
 {
-  "comment": "so lala",
-  "stars": 3
+  "comment": "bad from the beginning to the end",
+  "stars": 1
 }
 
 ### Post ratings like - like a rating
@@ -155,7 +155,7 @@ Authorization: Bearer userleini-mrpToken
 # ==========
 
 ### Post media favorite - mark as favorite
-POST http://localhost:8080/media/c568d248-c3e6-4433-8144-ab6cb411b694/favorite
+POST http://localhost:8080/media/eb3f2f43-e7df-4f19-b50e-98cc88283d3c/favorite
 Authorization: Bearer userleini-mrpToken
 
 ### Delete media favorite

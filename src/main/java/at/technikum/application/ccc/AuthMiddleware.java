@@ -2,6 +2,7 @@ package at.technikum.application.ccc;
 
 import at.technikum.application.dto.authmiddleware.RequestDto;
 import at.technikum.application.exception.EntityNotFoundException;
+import at.technikum.application.exception.NotAuthenticatedException;
 import at.technikum.application.exception.NotAuthorizedException;
 import at.technikum.application.model.User;
 import at.technikum.application.repository.UserRepository;
@@ -34,7 +35,7 @@ public class AuthMiddleware {
             {
                 Optional<User> checkUser = this.userRepository.findByID(pathUserID);
                 if (checkUser.isEmpty()) {
-                    throw new NotAuthorizedException("Could not find user (id)");
+                    throw new NotAuthenticatedException("Could not find user (id) ");
                 }
                 return checkUser.get();
             } else {
@@ -42,7 +43,7 @@ public class AuthMiddleware {
                 if (tokenUser.getId().equals(pathUserID) || pathUserID == null) {
                     return tokenUser;
                 } else {
-                    throw new NotAuthorizedException("Token does not match user ID");
+                    throw new NotAuthenticatedException("Token does not match user ID");
                 }
             }
         }
@@ -51,15 +52,16 @@ public class AuthMiddleware {
     private boolean noNeed() {
         if (path[1].equals("users") && path.length==2) {
             return true;
-        }
-        else if (path[1].equals("users") && path.length==3) {
-            return (path[2].equals("login") || path[2].equals("register"));
+        } else if (path[1].equals("leaderboard")) {
+            return true;
         } else if (path[1].equals("media")) {
-           return method.equals(Method.GET);
+            return method.equals(Method.GET);
         } else if (path[1].equals("ratings")) {
             return method.equals(Method.GET);
-        } else {
-            return path[2].equals("leaderboard");
+        } else if (path[1].equals("users") && path.length==3) {
+            return (path[2].equals("login") || path[2].equals("register"));
+        }  else {
+            return false;
         }
     }
 
@@ -83,13 +85,13 @@ public class AuthMiddleware {
         final String suffix = "-mrpToken";
         if (!token.endsWith(suffix))
         {
-            throw new NotAuthorizedException("Not authorized (Token)");
+            throw new NotAuthenticatedException("Not authorized (Token - setup)");
         }
         String usernameFromToken = token.substring(0, token.length() - suffix.length());
         Optional<User> checkUser = this.userRepository.findByUsername(usernameFromToken);
 
         if (checkUser.isEmpty()) {
-            throw new NotAuthorizedException("Not authenticated (Token - Username)");
+            throw new NotAuthenticatedException("Not authenticated (Token - Username)");
         }
         return checkUser.get();
     }

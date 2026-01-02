@@ -3,10 +3,9 @@ package at.technikum.application.service;
 import at.technikum.application.dto.sql.SQLLikeDto;
 import at.technikum.application.dto.sql.SQLRatingDto;
 import at.technikum.application.exception.EntityNotFoundException;
-import at.technikum.application.exception.SQLToObjectException;
+import at.technikum.application.exception.UnprocessableEntityException;
 import at.technikum.application.model.Like;
 import at.technikum.application.model.Rating;
-import at.technikum.application.model.User;
 import at.technikum.application.repository.RatingRepository;
 
 import java.util.List;
@@ -36,14 +35,14 @@ public class RatingService {
     public SQLRatingDto create(Rating rating) {
         Optional<SQLRatingDto> created = this.ratingRepository.save(rating);
         if(created.isEmpty()){
-            throw new EntityNotFoundException("Rating already exists");
+            throw new UnprocessableEntityException("You can only rate media once");
         }
         return created.get();
     }
 
     public SQLRatingDto update(Rating old, Rating update) {
-        update = setUpdate(old,update);
-        Optional<SQLRatingDto> updated = this.ratingRepository.update(update);
+        Rating updateSet = setUpdate(old,update);
+        Optional<SQLRatingDto> updated = this.ratingRepository.update(updateSet);
         if(updated.isEmpty()){
             notFound();
         }

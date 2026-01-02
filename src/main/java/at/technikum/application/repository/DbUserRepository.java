@@ -3,16 +3,13 @@ package at.technikum.application.repository;
 import at.technikum.application.common.ConnectionPool;
 import at.technikum.application.dto.auth.UserLoggedInDto;
 import at.technikum.application.dto.auth.UserLoginDto;
-import at.technikum.application.dto.sql.SQLFavoriteDto;
 import at.technikum.application.dto.sql.SQLMediaDto;
-import at.technikum.application.dto.sql.SQLRatingDto;
+import at.technikum.application.dto.users.UserProfile;
 import at.technikum.application.dto.users.UserUpdateDto;
 import at.technikum.application.enums.MediaType;
 import at.technikum.application.enums.UserType;
 import at.technikum.application.exception.*;
 import at.technikum.application.model.LeaderboardEntry;
-import at.technikum.application.model.Media;
-import at.technikum.application.model.Rating;
 import at.technikum.application.model.User;
 
 import java.sql.Connection;
@@ -49,6 +46,28 @@ public class DbUserRepository implements UserRepository {
     private static final String DELETE
             = "DELETE FROM users WHERE uid = ? RETURNING *";
 
+    private static final String COUNT_CREATED_MEDIA
+            = "SELECT COUNT(*) AS media_count FROM media WHERE owner_id = ?";
+
+    private static final String COUNT_FAVS
+            = "SELECT COUNT(*) AS favs_count FROM favorite WHERE user_id = ?";
+
+    private static final String COUNT_LIKES
+            = "SELECT COUNT(*) AS likes_count FROM rating_likes WHERE user_id = ?";
+
+    private static final String COUNT_RATINGS
+            = "SELECT COUNT(*) AS ratings_count FROM ratings WHERE user_id = ?";
+
+    private static final String FAV_GENRES
+            = "SELECT g.genres, COUNT(*) AS cnt FROM favorite f JOIN media m ON m.mid = f.media_id "
+                + "CROSS JOIN LATERAL unnest(m.genres) AS g(genres) "
+                + "WHERE f.user_id = ? GROUP BY g.genres ORDER BY cnt DESC, g.genres LIMIT 3;";
+
+    private static final String LEADERBOARD
+            = "SELECT u.uid, u.username, COUNT(r.rid) AS ratings_count "
+                + "FROM users u JOIN ratings r ON r.user_id = u.uid "
+                + "GROUP BY u.uid, u.username ORDER BY ratings_count DESC, u.username LIMIT 5;";
+
 
     public DbUserRepository(ConnectionPool connectionPool) {
         this.connectionPool = connectionPool;
@@ -60,7 +79,7 @@ public class DbUserRepository implements UserRepository {
                 Connection conn = connectionPool.getConnection();
                 PreparedStatement prestmt = conn.prepareStatement(SELECT_BY_ID)
         ) {
-            prestmt.setObject(1,id);
+            prestmt.setObject(1, id);
 
             try (ResultSet rs = prestmt.executeQuery()) {
                 if (!rs.next()) {
@@ -69,7 +88,7 @@ public class DbUserRepository implements UserRepository {
                 return Optional.of(setUser(rs));
             }
         } catch (SQLException e) {
-            throw new DatabaseConnectionException("Could not find user");
+            throw new DatabaseConnectionException("Could not find user by ID "+e.getMessage());
         }
     }
 
@@ -89,10 +108,11 @@ public class DbUserRepository implements UserRepository {
                 return Optional.of(setUser(rs));
             }
         } catch (SQLException e) {
-            throw new DatabaseConnectionException("Could not find user");
+            throw new DatabaseConnectionException("Could not find user by username "+e.getMessage());
         }
     }
 
+    // to reset password
     @Override
     public Optional<User> findByEmail(String email) {
         try (
@@ -109,7 +129,7 @@ public class DbUserRepository implements UserRepository {
                 return Optional.of(setUser(rs));
             }
         } catch (SQLException e) {
-            throw new DatabaseConnectionException("Could not find user");
+            throw new DatabaseConnectionException("Could not find user by email "+e.getMessage());
         }
     }
 
@@ -129,7 +149,67 @@ public class DbUserRepository implements UserRepository {
                 return userList;
             }
         } catch (SQLException e) {
-            throw new DatabaseConnectionException("Can not show userlist");
+            throw new DatabaseConnectionException("Can not show userlist "+e.getMessage());
+        }
+    }
+
+    @Override
+    public Optional<UserProfile> profile(User user) {
+        try (
+                Connection conn = connectionPool.getConnection();
+                PreparedStatement preCountMedia = conn.prepareStatement(COUNT_CREATED_MEDIA);
+                PreparedStatement preCountFavs = conn.prepareStatement(COUNT_FAVS);
+                PreparedStatement preCountLikes = conn.prepareStatement(COUNT_LIKES);
+                PreparedStatement preCountRatings = conn.prepareStatement(COUNT_RATINGS);
+                PreparedStatement preFavGenres = conn.prepareStatement(FAV_GENRES)
+        ) {
+            UserProfile userProfile = new UserProfile();
+            preCountMedia.setObject(1, user.getId());
+            preCountFavs.setObject(1, user.getId());
+            preCountLikes.setObject(1, user.getId());
+            preCountRatings.setObject(1, user.getId());
+            preFavGenres.setObject(1, user.getId());
+
+            // created Media
+            try (ResultSet rs = preCountMedia.executeQuery()) {
+                if (rs.next()) {
+                    userProfile.setCountCreatedMedia(rs.getInt("media_count"));
+                }
+            }
+
+            // favs
+            try (ResultSet rs = preCountFavs.executeQuery()) {
+                if (rs.next()) {
+                    userProfile.setCountFavs(rs.getInt("favs_count"));
+                }
+            }
+
+            // likes
+            try (ResultSet rs = preCountLikes.executeQuery()) {
+                if (rs.next()) {
+                    userProfile.setCountLikes(rs.getInt("likes_count"));
+                }
+            }
+
+            // ratings
+            try (ResultSet rs = preCountRatings.executeQuery()) {
+                if (rs.next()) {
+                    userProfile.setCountRatings(rs.getInt("ratings_count"));
+                }
+            }
+
+            // fav genres
+            try (ResultSet rs = preFavGenres.executeQuery()) {
+                List<String> favGenres = new ArrayList<>();
+                while (rs.next()) {
+                    favGenres.add(rs.getString("genres"));
+                }
+                userProfile.setFavGenre(favGenres);
+            }
+
+            return Optional.of(userProfile);
+        } catch (SQLException e) {
+            throw new DatabaseConnectionException("Could not set up profile "+e.getMessage());
         }
     }
 
@@ -155,7 +235,7 @@ public class DbUserRepository implements UserRepository {
             if (e.getSQLState().equals("23505")) {
                 throw new UniqueViolationException("Username or email already exists");
             }
-            throw new DatabaseConnectionException("Could not update user");
+            throw new DatabaseConnectionException("Could not update user "+e.getMessage());
         }
     }
 
@@ -174,7 +254,7 @@ public class DbUserRepository implements UserRepository {
                return Optional.of(rs.getString("username"));
            }
        } catch (SQLException e) {
-           throw new DatabaseConnectionException("Could not delete user");
+           throw new DatabaseConnectionException("Could not delete user "+e.getMessage());
        }
     }
 
@@ -200,7 +280,7 @@ public class DbUserRepository implements UserRepository {
             if (e.getSQLState().equals("23505")) {
                 throw new UniqueViolationException("Username or email already exists");
             }
-            throw new ObjectToSQLException("Could not save user");
+            throw new DatabaseConnectionException("Could not save user "+e.getMessage());
         }
     }
 
@@ -218,6 +298,29 @@ public class DbUserRepository implements UserRepository {
         return Optional.empty();
     }
 
+    @Override
+    public List<SQLMediaDto> recommendations(User user, MediaType mediaType) {
+        return List.of();
+    }
+
+    @Override
+    public List<LeaderboardEntry> leaderboard() {
+        try (
+                Connection conn = connectionPool.getConnection();
+                PreparedStatement prestmt = conn.prepareStatement(LEADERBOARD)
+        ) {
+            try (ResultSet rs = prestmt.executeQuery()) {
+                List<LeaderboardEntry> leaderboard = new ArrayList<>();
+                while (rs.next()) {
+                    leaderboard.add(setEntry(rs));
+                }
+                return leaderboard;
+            }
+        } catch (SQLException e) {
+            throw new DatabaseConnectionException("Could not get leaderboard "+e.getMessage());
+        }
+    }
+
     private UserLoggedInDto rsToLoggedIn(ResultSet rs) throws SQLException {
         try {
             UserLoggedInDto userUpdated = new UserLoggedInDto();
@@ -225,7 +328,7 @@ public class DbUserRepository implements UserRepository {
             userUpdated.setId(rs.getObject("uid", UUID.class));
             return userUpdated;
         } catch (SQLException e) {
-            throw new SQLToObjectException("Can not set up logged in user");
+            throw new SQLToObjectException("Can not set up logged in user "+e.getMessage());
         }
     }
 
@@ -244,17 +347,18 @@ public class DbUserRepository implements UserRepository {
             }
             return user;
         } catch (SQLException e) {
-            throw new SQLToObjectException("Can not set up user");
+            throw new SQLToObjectException("Can not set up user "+e.getMessage());
         }
     }
 
-    @Override
-    public List<SQLMediaDto> recommendations(User user, MediaType mediaType) {
-        return List.of();
-    }
-
-    @Override
-    public List<LeaderboardEntry> leaderboard() {
-        return List.of();
+    private LeaderboardEntry setEntry(ResultSet rs) throws SQLException {
+        try {
+            LeaderboardEntry entry = new LeaderboardEntry();
+            entry.setUsername(rs.getString("username"));
+            entry.setPoints(rs.getInt("ratings_count"));
+            return entry;
+        } catch (SQLException e) {
+            throw new SQLToObjectException("Can not set up leaderboard entry "+e.getMessage());
+        }
     }
 }

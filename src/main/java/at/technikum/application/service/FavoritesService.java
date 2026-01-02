@@ -2,6 +2,7 @@ package at.technikum.application.service;
 
 import at.technikum.application.dto.sql.SQLFavoriteDto;
 import at.technikum.application.exception.EntityNotFoundException;
+import at.technikum.application.exception.UnprocessableEntityException;
 import at.technikum.application.model.Favorite;
 import at.technikum.application.repository.MediaRepository;
 
@@ -18,7 +19,7 @@ public class FavoritesService {
     public SQLFavoriteDto add(Favorite favorite) {
         Optional<SQLFavoriteDto> created = this.mediaRepository.addFavorite(favorite);
         if(created.isEmpty()){
-            throw new EntityNotFoundException("Favorite already exists");
+            throw new UnprocessableEntityException("Favorite already exists");
         }
         return created.get();
     }

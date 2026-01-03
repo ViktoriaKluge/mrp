@@ -130,25 +130,25 @@ Authorization: Bearer admin-mrpToken
 }
 
 ### Post ratings like - like a rating
-POST http://localhost:8080/ratings/e736ac4d-6198-4f77-80a3-8b16c487ba72/like
-Authorization: Bearer userleini-mrpToken
+POST http://localhost:8080/ratings/fde9bae8-5d2f-44da-8c03-d3842a8c1edd/like
+Authorization: Bearer admin-mrpToken
 
 ### Put ratings - update a rating
-PUT http://localhost:8080/ratings/e736ac4d-6198-4f77-80a3-8b16c487ba72
+PUT http://localhost:8080/ratings/6bcf9e14-aa8e-4a9a-98a4-3e70b403a225
 Content-Type: application/json
-Authorization: Bearer userleini-mrpToken
+Authorization: Bearer admin-mrpToken
 
 {
-  "stars": 4
+  "stars": 1
 }
 
 ### Post ratings confirm - confirm rating comment
-POST http://localhost:8080/ratings/e736ac4d-6198-4f77-80a3-8b16c487ba72/confirm
+POST http://localhost:8080/ratings/fde9bae8-5d2f-44da-8c03-d3842a8c1edd/confirm
 Authorization: Bearer admin-mrpToken
 
 ### Delete ratings
-DELETE http://localhost:8080/ratings/1aeebfba-5922-48f6-9201-e8a563f78222
-Authorization: Bearer userleini-mrpToken
+DELETE http://localhost:8080/ratings/fde9bae8-5d2f-44da-8c03-d3842a8c1edd
+Authorization: Bearer admin-mrpToken
 
 # ==========
 # FAVORITES
@@ -167,7 +167,7 @@ Authorization: Bearer userleini-mrpToken
 # ==========
 
 ### Get users recommendations
-GET http://localhost:8080/users/1aeebfba-5922-48f6-9201-e8a563f78222/recommendations
+GET http://localhost:8080/users/ef3e67e1-9a5e-49ce-a2a7-95aa2209b295/recommendations
 Authorization: Bearer userleini-mrpToken
 
 # ==========

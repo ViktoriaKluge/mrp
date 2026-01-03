@@ -8,6 +8,7 @@ import at.technikum.application.dto.authmiddleware.RequestDto;
 import at.technikum.application.dto.sql.SQLFavoriteDto;
 import at.technikum.application.dto.sql.SQLMediaDto;
 import at.technikum.application.dto.sql.SQLRatingDto;
+import at.technikum.application.dto.sql.SQLRecommendationDto;
 import at.technikum.application.dto.users.*;
 import at.technikum.application.enums.MediaType;
 import at.technikum.application.exception.EntityNotFoundException;
@@ -77,8 +78,7 @@ public class UserController extends Controller {
                 }
 
                 if (path[3].equals("recommendations")) {
-                    MediaType type = requestDto.getMediaType();
-                    return recommendations(user,type);
+                    return recommendations(user);
                 }
             }
 
@@ -97,10 +97,8 @@ public class UserController extends Controller {
         throw new EntityNotFoundException("Path not found");
     }
 
-    private Response recommendations(User user, MediaType mediaType) {
-        List<SQLMediaDto> recommendations = this.recommendationService.getRecommendations(
-                user,mediaType
-        );
+    private Response recommendations(User user) {
+        List<SQLRecommendationDto> recommendations = this.recommendationService.getRecommendations(user);
         return json(recommendations,Status.OK);
     }
 

@@ -2,6 +2,7 @@
 <project version="4">
   <component name="DataSourcePerFileMappings">
     <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/39f755d4-9214-4fcd-b521-57c3a215e746/console.sql" value="39f755d4-9214-4fcd-b521-57c3a215e746" />
+    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/39f755d4-9214-4fcd-b521-57c3a215e746/console_1.sql" value="39f755d4-9214-4fcd-b521-57c3a215e746" />
     <file url="file://$PROJECT_DIR$/sql/tables.sql" value="39f755d4-9214-4fcd-b521-57c3a215e746" />
     <file url="file://$PROJECT_DIR$/src/main/java/at/technikum/application/repository/DbUserRepository.java" value="39f755d4-9214-4fcd-b521-57c3a215e746" />
   </component>

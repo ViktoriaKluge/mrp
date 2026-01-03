@@ -44,13 +44,15 @@ public class DbMediaRespository implements MediaRepository {
             = "DELETE FROM favorite WHERE user_id = ? AND media_id = ? RETURNING *";
 
     private static final String SELECT_ALL_FAVS_BY_UID
-            = "SELECT * FROM favorite WHERE user_id = ?";
+            = "SELECT f.user_id, f.media_id, m.title, m.media_type FROM favorite f "
+                    + " JOIN media m ON m.mid = f.media_id WHERE f.user_id = ?";
 
     private static final String TOTAL_RATINGS
             = "SELECT COUNT(*)  AS total_ratings FROM ratings WHERE media_id = ?";
 
     private static final String AVERAGE_RATINGS
             = "SELECT ROUND(AVG(stars), 2) AS avg_stars FROM ratings WHERE media_id = ?";
+
     private static final String TOTAL_FAVS
             = "SELECT COUNT(*) AS total_favs FROM favorite where media_id = ?";
 
@@ -261,7 +263,7 @@ public class DbMediaRespository implements MediaRepository {
                 List<SQLFavoriteDto> favsList = new ArrayList<>();
 
                 while (rs.next()) {
-                    favsList.add(setFavorite(rs));
+                    favsList.add(setFavoriteForList(rs));
                 }
 
                 return favsList;
@@ -357,6 +359,20 @@ public class DbMediaRespository implements MediaRepository {
             SQLFavoriteDto sqlFav = new SQLFavoriteDto();
             sqlFav.setUserId(rs.getObject("user_id", UUID.class));
             sqlFav.setMediaId(rs.getObject("media_id", UUID.class));
+            return sqlFav;
+        } catch (SQLException e) {
+            throw new SQLToObjectException("Can not set up favorite "+e.getMessage());
+        }
+    }
+
+    private SQLFavoriteDto setFavoriteForList(ResultSet rs) throws SQLException {
+        try {
+            SQLFavoriteDto sqlFav = new SQLFavoriteDto();
+            sqlFav.setUserId(rs.getObject("user_id", UUID.class));
+            sqlFav.setMediaId(rs.getObject("media_id", UUID.class));
+            sqlFav.setTitle(rs.getString("title"));
+            String type = rs.getString("media_type");
+            sqlFav.setMediaType(setType(type));
             return sqlFav;
         } catch (SQLException e) {
             throw new SQLToObjectException("Can not set up favorite "+e.getMessage());

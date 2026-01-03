@@ -4,6 +4,7 @@ import at.technikum.application.common.ConnectionPool;
 import at.technikum.application.dto.auth.UserLoggedInDto;
 import at.technikum.application.dto.auth.UserLoginDto;
 import at.technikum.application.dto.sql.SQLMediaDto;
+import at.technikum.application.dto.sql.SQLRecommendationDto;
 import at.technikum.application.dto.users.UserProfile;
 import at.technikum.application.dto.users.UserUpdateDto;
 import at.technikum.application.enums.MediaType;
@@ -12,10 +13,7 @@ import at.technikum.application.exception.*;
 import at.technikum.application.model.LeaderboardEntry;
 import at.technikum.application.model.User;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -67,6 +65,16 @@ public class DbUserRepository implements UserRepository {
             = "SELECT u.uid, u.username, COUNT(r.rid) AS ratings_count "
                 + "FROM users u JOIN ratings r ON r.user_id = u.uid "
                 + "GROUP BY u.uid, u.username ORDER BY ratings_count DESC, u.username LIMIT 5;";
+
+    private static final String RECOMMENDATIONS
+            = "WITH fav AS (SELECT f.media_id FROM favorite f WHERE f.user_id = ?),"
+                + " fav_profile AS (SELECT m.media_type, unnest(m.genres) AS genre FROM favorite f "
+                    + "  JOIN media m ON m.mid = f.media_id WHERE f.user_id = ?) "
+                + " SELECT m.mid, m.title, m.media_type, m.genres, m.age_restriction, COUNT(*) AS match_score "
+                + " FROM media m JOIN fav_profile p ON p.media_type = m.media_type AND p.genre = ANY(m.genres) "
+                + " WHERE m.mid NOT IN (SELECT media_id FROM fav) GROUP BY m.mid, m.title, m.media_type, "
+                    + " m.genres, m.age_restriction "
+                + " ORDER BY match_score DESC, m.title LIMIT 10;";
 
 
     public DbUserRepository(ConnectionPool connectionPool) {
@@ -299,8 +307,24 @@ public class DbUserRepository implements UserRepository {
     }
 
     @Override
-    public List<SQLMediaDto> recommendations(User user, MediaType mediaType) {
-        return List.of();
+    public List<SQLRecommendationDto> recommendations(User user) {
+        try (
+                Connection conn = connectionPool.getConnection();
+                PreparedStatement prestmt = conn.prepareStatement(RECOMMENDATIONS)
+        ) {
+            prestmt.setObject(1, user.getId());
+            prestmt.setObject(2, user.getId());
+
+            try (ResultSet rs = prestmt.executeQuery()) {
+                List<SQLRecommendationDto> recomms = new ArrayList<>();
+                while (rs.next()) {
+                    recomms.add(setRecomm(rs));
+                }
+                return recomms;
+            }
+        } catch (SQLException e) {
+            throw new DatabaseConnectionException("Could not get recommendations "+e.getMessage());
+        }
     }
 
     @Override
@@ -360,5 +384,31 @@ public class DbUserRepository implements UserRepository {
         } catch (SQLException e) {
             throw new SQLToObjectException("Can not set up leaderboard entry "+e.getMessage());
         }
+    }
+
+    private SQLRecommendationDto setRecomm(ResultSet rs) throws SQLException {
+        try {
+            SQLRecommendationDto recomm = new SQLRecommendationDto();
+            recomm.setMediaId(rs.getObject("mid", UUID.class));
+            recomm.setTitle(rs.getString("title"));
+            String type = rs.getString("media_type");
+            recomm.setMediaType(setType(type));
+            recomm.setAgeRestriction(rs.getInt("age_restriction"));
+            Array genreArray = rs.getArray("genres");
+            recomm.setGenres(List.of((String[]) genreArray.getArray()));
+            recomm.setScore(rs.getInt("match_score"));
+            return recomm;
+        } catch (SQLException e) {
+            throw new SQLToObjectException("Can not set up recommendation "+e.getMessage());
+        }
+    }
+
+    private MediaType setType(String type) throws SQLException {
+        return switch (type) {
+            case "movie" -> MediaType.MOVIE;
+            case "series" -> MediaType.SERIES;
+            case "game" -> MediaType.GAME;
+            default -> throw new SQLToObjectException("Can not set up mediaType");
+        };
     }
 }

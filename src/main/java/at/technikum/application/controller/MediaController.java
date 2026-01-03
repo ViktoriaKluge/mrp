@@ -6,6 +6,7 @@ import at.technikum.application.dto.media.MediaProfile;
 import at.technikum.application.dto.sql.SQLFavoriteDto;
 import at.technikum.application.dto.sql.SQLMediaDto;
 import at.technikum.application.dto.sql.SQLRatingDto;
+import at.technikum.application.enums.Stars;
 import at.technikum.application.exception.EntityNotFoundException;
 import at.technikum.application.exception.NotAuthorizedException;
 import at.technikum.application.model.Favorite;
@@ -64,6 +65,7 @@ public class MediaController extends Controller {
                     rating.setId(UUID.randomUUID());
                     rating.setRatedMedia(media);
                     rating.setCreator(user);
+                    rating.setStars(Stars.fromValue(requestDto.getStars())); // mapper mapt ordinal
                     return createRating(rating);
                 }
                 if (path[3].equals("favorite")) {

@@ -1,5 +1,7 @@
 package at.technikum.application.dto.sql;
 
+import at.technikum.application.enums.Stars;
+
 import java.time.Instant;
 import java.util.UUID;
 
@@ -7,7 +9,7 @@ public class SQLRatingDto {
     private UUID id;
     private UUID userId;
     private UUID mediaId;
-    private Integer stars;
+    private Stars stars;
     private String comment;
     private Instant createdAt;
     private boolean visibility;
@@ -39,11 +41,12 @@ public class SQLRatingDto {
         this.mediaId = mediaId;
     }
 
-    public Integer getStars() {
+    public Stars getStars() {
         return stars;
     }
 
-    public void setStars(Integer stars) {
+
+    public void setStars(Stars stars) {
         this.stars = stars;
     }
 

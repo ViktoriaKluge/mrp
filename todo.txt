@@ -1,17 +1,12 @@
 for final hand-in:
-    leaderboard
-    recommendations
-    filter medias & sort
+    filter medias & sort / suche getByTitle?
     Update docs
     check if all exceptions fit purpose
     check if all status fit purpose
 
 next steps:
 
-    Recommendations überlegen
-
 errors:
-    set up rating doesnt work cause of stars
 
 little things:
     in media table - owner zu user

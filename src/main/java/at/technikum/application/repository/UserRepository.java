@@ -5,6 +5,7 @@ import at.technikum.application.dto.auth.UserLoginDto;
 import at.technikum.application.dto.sql.SQLFavoriteDto;
 import at.technikum.application.dto.sql.SQLMediaDto;
 import at.technikum.application.dto.sql.SQLRatingDto;
+import at.technikum.application.dto.sql.SQLRecommendationDto;
 import at.technikum.application.dto.users.UserProfile;
 import at.technikum.application.dto.users.UserUpdateDto;
 import at.technikum.application.enums.MediaType;
@@ -28,6 +29,6 @@ public interface UserRepository {
     Optional<String> delete(User user);
     Optional<User> save(User user);
     Optional<UserLoggedInDto> login(UserLoginDto userLoginDto);
-    List<SQLMediaDto> recommendations(User user, MediaType mediaType);
+    List<SQLRecommendationDto> recommendations(User user);
     List<LeaderboardEntry> leaderboard();
 }

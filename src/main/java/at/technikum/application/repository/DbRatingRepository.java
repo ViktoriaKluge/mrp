@@ -103,7 +103,7 @@ public class DbRatingRepository implements RatingRepository{
             prestmt.setObject(2, creator.getId());
             Media media = rating.getRatedMedia();
             prestmt.setObject(3, media.getId());
-            prestmt.setObject(4, rating.getStars().getValue());
+            prestmt.setInt(4, rating.getStars().getValue());
             prestmt.setString(5, rating.getComment());
             Instant ts = rating.getCreatedAt();
             OffsetDateTime odt = ts.atOffset(ZoneOffset.UTC);
@@ -133,7 +133,7 @@ public class DbRatingRepository implements RatingRepository{
                 Connection conn = connectionPool.getConnection();
                 PreparedStatement prestmt = conn.prepareStatement(UPDATE_RATING)
         ) {
-            prestmt.setObject(1, rating.getStars().getValue());
+            prestmt.setInt(1, rating.getStars().getValue());
             prestmt.setObject(2, rating.getComment());
             prestmt.setObject(3, rating.getId());
 
@@ -264,8 +264,9 @@ public class DbRatingRepository implements RatingRepository{
             rating.setId(rs.getObject("rid", UUID.class));
             rating.setUserId(rs.getObject("user_id", UUID.class));
             rating.setMediaId(rs.getObject("media_id", UUID.class));
-            Integer stars = rs.getInt("stars");
-            rating.setStars();
+            int starsInt = rs.getInt("stars");
+            Stars stars = Stars.fromValue(starsInt);
+            rating.setStars(stars);
             rating.setComment(rs.getString("comment"));
             OffsetDateTime odt = rs.getObject("timestamp", OffsetDateTime.class);
             rating.setCreatedAt(odt.toInstant());
@@ -286,7 +287,9 @@ public class DbRatingRepository implements RatingRepository{
             UUID mediaId = rs.getObject("media_id", UUID.class);
             Optional<Media> ratedMedia = this.mediaRepository.findByIdMedia(mediaId);
             ratedMedia.ifPresent(rating::setRatedMedia);
-            rating.setStars(rs.getObject("stars", Stars.class));
+            int starsInt = rs.getInt("stars");
+            Stars stars = Stars.fromValue(starsInt);
+            rating.setStars(stars);
             rating.setComment(rs.getString("comment"));
             OffsetDateTime odt = rs.getObject("timestamp", OffsetDateTime.class);
             rating.setCreatedAt(odt.toInstant());

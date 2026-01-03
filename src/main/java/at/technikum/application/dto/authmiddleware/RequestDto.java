@@ -1,6 +1,7 @@
 package at.technikum.application.dto.authmiddleware;
 
 import at.technikum.application.enums.MediaType;
+import at.technikum.application.enums.Stars;
 import at.technikum.application.model.Rating;
 import at.technikum.application.model.User;
 import at.technikum.server.http.ContentType;
@@ -34,7 +35,7 @@ public class RequestDto {
     // rating
     private String rid;
     private String comment;
-    private String stars;
+    private Integer stars;
     private List<Rating>  ratingList;
     // Request
     private String[] path;
@@ -220,11 +221,11 @@ public class RequestDto {
         this.comment = comment;
     }
 
-    public String getStars() {
+    public Integer getStars() {
         return stars;
     }
 
-    public void setStars(String stars) {
+    public void setStars(Integer stars) {
         this.stars = stars;
     }
 

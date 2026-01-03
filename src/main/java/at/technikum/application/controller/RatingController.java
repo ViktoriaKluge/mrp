@@ -4,6 +4,7 @@ import at.technikum.application.common.Controller;
 import at.technikum.application.dto.authmiddleware.RequestDto;
 import at.technikum.application.dto.sql.SQLLikeDto;
 import at.technikum.application.dto.sql.SQLRatingDto;
+import at.technikum.application.enums.Stars;
 import at.technikum.application.enums.UserType;
 import at.technikum.application.exception.EntityNotFoundException;
 import at.technikum.application.exception.NotAuthorizedException;
@@ -41,6 +42,7 @@ public class RatingController extends Controller {
             User creator = rating.getCreator();
 
             if (method.equals(Method.POST)) {
+
                 if (path[3].equals("like") && authorizedOther(user, creator)) {
                     return like(rating,user);
                 }
@@ -55,6 +57,7 @@ public class RatingController extends Controller {
             if (authorizedSame(user, creator)){
                 if (method.equals(Method.PUT)) {
                     Rating update = toOtherObject(requestDto, Rating.class);
+                    update.setStars(Stars.fromValue(requestDto.getStars())); // mapper mapt ordinal
                     return updateRating(rating, update);
                 }
 

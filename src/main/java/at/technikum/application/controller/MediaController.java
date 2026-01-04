@@ -76,19 +76,15 @@ public class MediaController extends Controller {
                         return addFavorite(favorite);
                     }
                 }
-            }
-
-            if (authorized(user, media.getCreator())) {
+            } else if (authorized(user, media.getCreator()) && path.length == 3) {
                 if (method.equals(Method.PUT)) {
                     Media mediaUpdate = toOtherObject(requestDto, Media.class);
                     return update(media, mediaUpdate);
                 }
-                if (method.equals(Method.DELETE) && path.length == 3) {
+                if (method.equals(Method.DELETE)) {
                     return deleteMedia(media);
                 }
-            }
-
-            if (method.equals(Method.DELETE)) {
+            } else if (method.equals(Method.DELETE)) {
                 if (path[3].equals("favorite")) {
                     Favorite favorite = new Favorite();
                     favorite.setUser(user);

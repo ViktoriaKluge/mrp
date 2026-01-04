@@ -52,7 +52,7 @@ public class MediaController extends Controller {
             UUID mid = UUID.fromString(path[2]);
             Media media = this.mediaService.findById(mid);
 
-            if (method.equals(Method.GET)) {
+            if (method.equals(Method.GET) && path.length == 3) {
                 MediaProfile profile = this.mediaService.profile(media);
                 return json(profile, Status.OK);
             }

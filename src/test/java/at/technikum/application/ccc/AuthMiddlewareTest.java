@@ -28,8 +28,9 @@ class AuthMiddlewareTest {
     private AuthMiddleware authMiddleware;
 
     // positive
+    // id and token belong user match
     @Test
-    public void givenPathUsersIdWithToken_whenAuthenticate_thenReturnUser(){
+    public void givenIdAndTokenMatch_whenAuthenticate_thenReturnUser(){
         RequestDto requestDto = new RequestDto();
         UUID exptId = UUID.fromString("ef3e67e1-9a5e-49ce-a2a7-95aa2209b295");
         requestDto.setPath(new String[] {"", "users", exptId.toString()});
@@ -48,8 +49,9 @@ class AuthMiddlewareTest {
         verify(userRepository, times(1)).findByUsername("user");
     }
 
+    // id user exists
     @Test
-    public void givenPathUsersIdWithoutToken_whenAuthenticate_thenReturnUser(){
+    public void givenNoTokenIdMatchesUser_whenAuthenticate_thenReturnUser(){
         RequestDto requestDto = new RequestDto();
         UUID exptId = UUID.fromString("ef3e67e1-9a5e-49ce-a2a7-95aa2209b295");
         requestDto.setPath(new String[] {"", "users", exptId.toString()});
@@ -67,6 +69,7 @@ class AuthMiddlewareTest {
         verify(userRepository, times(1)).findByID(exptId);
     }
 
+    // no id, no token, path users/login
     @Test
     public void givenPathUsersLogin_whenAuthenticate_thenReturnUser(){
         RequestDto requestDto = new RequestDto();
@@ -79,8 +82,9 @@ class AuthMiddlewareTest {
     }
 
     // negative
+    // invalid token
     @Test
-    public void givenPathUserIdInvalidToken_whenAuthenticate_thenThrowException(){
+    public void givenInvalidToken_whenAuthenticate_thenThrowException(){
         RequestDto requestDto = new RequestDto();
         UUID mockId = UUID.fromString("ef3e67e1-9a5e-49ce-a2a7-95aa2209b295");
         requestDto.setPath(new String[] {"", "users", mockId.toString()});
@@ -92,8 +96,9 @@ class AuthMiddlewareTest {
         verifyNoInteractions(userRepository);
     }
 
+    // no user with name from token exists
     @Test
-    public void givenPathUserIdNoUserWithThisToken_whenAuthenticate_thenThrowException(){
+    public void givenTokenDoesntMatchUser_whenAuthenticate_thenThrowException(){
         RequestDto requestDto = new RequestDto();
         UUID mockId = UUID.fromString("ef3e67e1-9a5e-49ce-a2a7-95aa2209b295");
         requestDto.setPath(new String[] {"", "users", mockId.toString()});
@@ -106,8 +111,9 @@ class AuthMiddlewareTest {
         });
     }
 
+    // invalid id
     @Test
-    public void givenPathUsersInvalidUUID_whenAuthenticate_thenThrowException(){
+    public void givenInvalidUUID_whenAuthenticate_thenThrowException(){
         RequestDto requestDto = new RequestDto();
         requestDto.setPath(new String[] {"", "users", "notAnUUID"});
 
@@ -117,8 +123,9 @@ class AuthMiddlewareTest {
         verifyNoInteractions(userRepository);
     }
 
+    // no token, no user with this id
     @Test
-    public void givenPathUsersNoUserWithThisIdWithoutToken_whenAuthenticate_thenThrowException() {
+    public void givenNoUserWithThisId_whenAuthenticate_thenThrowException() {
         RequestDto requestDto = new RequestDto();
         UUID mockId = UUID.fromString("ef3e67e1-9a5e-49ce-a2a7-95aa2209b295");
         requestDto.setPath(new String[]{"", "users", mockId.toString()});
@@ -130,8 +137,9 @@ class AuthMiddlewareTest {
         });
     }
 
+    // user from id and token dont match
     @Test
-    public void givenPathUsersIdAndTokenDontMatch_whenAuthenticate_thenThrowException() {
+    public void givenIdAndTokenDontMatch_whenAuthenticate_thenThrowException() {
         RequestDto requestDto = new RequestDto();
         UUID pathId = UUID.fromString("ef3e67e1-9a5e-49ce-a2a7-95aa2209b295");
         UUID tokenId = UUID.fromString("ff3e67e1-9a5e-49ce-a2a7-95aa2209b295");

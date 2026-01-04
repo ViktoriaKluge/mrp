@@ -25,3 +25,4 @@ fragen:
 
 testnumbers (done):
     AuthMiddleware: 8
+    MediaController: 3

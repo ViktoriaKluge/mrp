@@ -5,6 +5,8 @@ for final hand-in:
     check if all status fit purpose
 
 next steps:
+    http tests:
+        was passiert ohne bearer token?
 
 errors:
 
@@ -20,3 +22,6 @@ thoughts:
 
 
 fragen:
+
+testnumbers (done):
+    AuthMiddleware: 8

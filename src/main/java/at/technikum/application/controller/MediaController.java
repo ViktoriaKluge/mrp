@@ -60,19 +60,21 @@ public class MediaController extends Controller {
             User user = requestDto.getUser();
 
             if (method.equals(Method.POST)) {
-                if (path[3].equals("rate")) {
-                    Rating rating = toOtherObject(requestDto, Rating.class);
-                    rating.setId(UUID.randomUUID());
-                    rating.setRatedMedia(media);
-                    rating.setCreator(user);
-                    rating.setStars(Stars.fromValue(requestDto.getStars())); // mapper mapt ordinal
-                    return createRating(rating);
-                }
-                if (path[3].equals("favorite")) {
-                    Favorite favorite = new Favorite();
-                    favorite.setMedia(media);
-                    favorite.setUser(user);
-                    return addFavorite(favorite);
+                if (path.length >3) {
+                    if (path[3].equals("rate")) {
+                        Rating rating = toOtherObject(requestDto, Rating.class);
+                        rating.setId(UUID.randomUUID());
+                        rating.setRatedMedia(media);
+                        rating.setCreator(user);
+                        rating.setStars(Stars.fromValue(requestDto.getStars())); // mapper mapt ordinal
+                        return createRating(rating);
+                    }
+                    if (path[3].equals("favorite")) {
+                        Favorite favorite = new Favorite();
+                        favorite.setMedia(media);
+                        favorite.setUser(user);
+                        return addFavorite(favorite);
+                    }
                 }
             }
 

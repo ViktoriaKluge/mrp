@@ -29,13 +29,13 @@ public class AuthMiddleware {
         } else {
             // check token and if there is an uid, compare
             String token = requestDto.getToken();
-            UUID pathUserID = getUserId(requestDto);
+            UUID pathUserID = getUserId();
 
-            if (token.isEmpty())
+            if (token == null || token.isEmpty())
             {
                 Optional<User> checkUser = this.userRepository.findByID(pathUserID);
                 if (checkUser.isEmpty()) {
-                    throw new NotAuthenticatedException("Could not find user (id) ");
+                    throw new EntityNotFoundException("Could not find user (id) ");
                 }
                 return checkUser.get();
             } else {
@@ -65,7 +65,7 @@ public class AuthMiddleware {
         }
     }
 
-    private UUID getUserId(RequestDto requestDto) {
+    private UUID getUserId() {
         String id ="";
         if (path[1].equals("users") && !path[2].equals("login") && !path[2].equals("register")) {
             id = path[2];
@@ -91,7 +91,7 @@ public class AuthMiddleware {
         Optional<User> checkUser = this.userRepository.findByUsername(usernameFromToken);
 
         if (checkUser.isEmpty()) {
-            throw new NotAuthenticatedException("Not authenticated (Token - Username)");
+            throw new EntityNotFoundException("Not authenticated (Token - Username)");
         }
         return checkUser.get();
     }

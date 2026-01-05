@@ -5,6 +5,7 @@ import at.technikum.application.dto.auth.UserLoggedInDto;
 import at.technikum.application.dto.auth.UserLoginDto;
 import at.technikum.application.dto.sql.SQLMediaDto;
 import at.technikum.application.dto.sql.SQLRecommendationDto;
+import at.technikum.application.dto.sql.SQLUserDto;
 import at.technikum.application.dto.users.UserProfile;
 import at.technikum.application.dto.users.UserUpdateDto;
 import at.technikum.application.enums.MediaType;
@@ -142,16 +143,16 @@ public class DbUserRepository implements UserRepository {
     }
 
     @Override
-    public List<User> userList() {
+    public List<SQLUserDto> userList() {
         try (
                 Connection conn = connectionPool.getConnection();
                 PreparedStatement prestmt = conn.prepareStatement(SELECT_ALL_USERS)
         ) {
             try (ResultSet rs = prestmt.executeQuery()) {
-                List<User> userList = new ArrayList<>();
+                List<SQLUserDto> userList = new ArrayList<>();
 
                 while (rs.next()) {
-                    userList.add(setUser(rs));
+                    userList.add(setUserList(rs));
                 }
 
                 return userList;
@@ -372,6 +373,24 @@ public class DbUserRepository implements UserRepository {
             return user;
         } catch (SQLException e) {
             throw new SQLToObjectException("Can not set up user "+e.getMessage());
+        }
+    }
+
+    private SQLUserDto setUserList(ResultSet rs) throws SQLException {
+        try {
+            SQLUserDto user = new SQLUserDto();
+            user.setId(rs.getObject("uid", UUID.class));
+            user.setUsername(rs.getString("username"));
+            user.setEmail(rs.getString("email"));
+            String ut = rs.getString("usertype");
+            if (ut.equals("User")){
+                user.setUserType(UserType.User);
+            } else if (ut.equals("Admin")){
+                user.setUserType(UserType.Admin);
+            }
+            return user;
+        } catch (SQLException e) {
+            throw new SQLToObjectException("Can not set up user for userlist "+e.getMessage());
         }
     }
 

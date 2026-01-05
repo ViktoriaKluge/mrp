@@ -10,6 +10,7 @@ import at.technikum.application.model.Favorite;
 import at.technikum.application.model.Media;
 import at.technikum.application.model.User;
 
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -296,8 +297,13 @@ public class DbMediaRespository implements MediaRepository {
             // avg rating
             try (ResultSet rs = preAVGRatings.executeQuery()) {
                 if (rs.next()) {
-                    Double stars = rs.getObject("avg_stars", Double.class);
-                    mediaProfile.setAverageRating(stars);
+                    BigDecimal sqlStars= rs.getObject("avg_stars", BigDecimal.class);
+                    if (sqlStars == null) {
+                        mediaProfile.setAverageRating(0.0);
+                    } else {
+                        Double stars = sqlStars.doubleValue();
+                        mediaProfile.setAverageRating(stars);
+                    }
                 }
             }
 

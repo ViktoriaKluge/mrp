@@ -3,6 +3,7 @@ package at.technikum.application.service;
 import at.technikum.application.dto.auth.UserLoggedInDto;
 import at.technikum.application.dto.sql.SQLFavoriteDto;
 import at.technikum.application.dto.sql.SQLRatingDto;
+import at.technikum.application.dto.sql.SQLUserDto;
 import at.technikum.application.dto.users.*;
 import at.technikum.application.exception.EntityNotFoundException;
 import at.technikum.application.exception.UnprocessableEntityException;
@@ -23,6 +24,10 @@ public class UserService {
         this.userRepository = userRepository;
         this.ratingRepository = ratingRepository;
         this.mediaRepository = mediaRepository;
+    }
+
+    public List<SQLUserDto> getUsers() {
+        return this.userRepository.userList();
     }
 
     public UserProfile profile(User user) {

@@ -69,7 +69,7 @@ class MediaControllerTest {
     // positive
     // get all media
     @Test
-    public void givenGetALLMedia_whenHandle_thenStatusIsOk() {
+    public void givenGetAllMedia_whenHandle_thenStatusIsOk() {
         RequestDto requestDto = new RequestDto();
         requestDto.setPath(new String[] {"","media"});
         requestDto.setMethod(Method.GET);
@@ -118,15 +118,15 @@ class MediaControllerTest {
     // get media profile
     @Test
     public void givenGetMediaWithId_whenHandle_thenStatusIsOk() {
-        Media expectedMedia = new Media();
+        Media media = new Media();
         MediaProfile profile = new MediaProfile();
         UUID mediaId = UUID.randomUUID();
         RequestDto requestDto = new RequestDto();
         requestDto.setPath(new String[] {"", "media", mediaId.toString()});
         requestDto.setMethod(Method.GET);
 
-        when(mediaService.findById(mediaId)).thenReturn(expectedMedia);
-        when(mediaService.profile(expectedMedia)).thenReturn(profile);
+        when(mediaService.findById(mediaId)).thenReturn(media);
+        when(mediaService.profile(media)).thenReturn(profile);
 
         Response response = mediaController.handle(requestDto);
 
@@ -134,7 +134,7 @@ class MediaControllerTest {
         assertEquals(ContentType.APPLICATION_JSON.getMimeType(), response.getContentType());
         assertNotNull(response.getBody());
         verify(mediaService, times(1)).findById(mediaId);
-        verify(mediaService, times(1)).profile(expectedMedia);
+        verify(mediaService, times(1)).profile(media);
     }
 
     // create rating
@@ -305,7 +305,7 @@ class MediaControllerTest {
     }
 
     // negative
-    // method post, path length is 3
+    // path not found
     @Test
     public void givenPostId_whenHandle_thenThrowException() {
         UUID Id = UUID.randomUUID();

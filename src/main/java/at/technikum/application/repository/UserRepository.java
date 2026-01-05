@@ -2,10 +2,7 @@ package at.technikum.application.repository;
 
 import at.technikum.application.dto.auth.UserLoggedInDto;
 import at.technikum.application.dto.auth.UserLoginDto;
-import at.technikum.application.dto.sql.SQLFavoriteDto;
-import at.technikum.application.dto.sql.SQLMediaDto;
-import at.technikum.application.dto.sql.SQLRatingDto;
-import at.technikum.application.dto.sql.SQLRecommendationDto;
+import at.technikum.application.dto.sql.*;
 import at.technikum.application.dto.users.UserProfile;
 import at.technikum.application.dto.users.UserUpdateDto;
 import at.technikum.application.enums.MediaType;
@@ -23,7 +20,7 @@ public interface UserRepository {
     Optional<User> findByUsername(String username);
     Optional<User> findByEmail(String email);
     Optional<User> findByID(UUID id);
-    List<User> userList();
+    List<SQLUserDto> userList();
     Optional<UserProfile> profile(User user);
     Optional<UserLoggedInDto> update(UserUpdateDto update);
     Optional<String> delete(User user);

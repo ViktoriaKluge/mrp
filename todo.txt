@@ -25,4 +25,6 @@ fragen:
 
 testnumbers (done):
     AuthMiddleware: 8
-    MediaController: 3
+    MediaController: 11
+    RatingController: 10
+    UserController: 11

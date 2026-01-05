@@ -47,6 +47,10 @@ Content-Type: application/json
 # USER
 # ==========
 
+### Get userlist
+GET http://localhost:8080/users/
+
+
 ### Get user profile
 GET http://localhost:8080/users/ef3e67e1-9a5e-49ce-a2a7-95aa2209b295/profile
 Authorization: Bearer userleini-mrpToken
@@ -88,16 +92,16 @@ Content-Type: application/json
 Authorization: Bearer userleini-mrpToken
 
 {
-  "title": "That one movie",
+  "title": "That other thing",
   "description": "where that person did something",
-  "genre":["Drama"],
-  "mediaType": "MOVIE",
+  "genre":["Sci-Fi", "Drama"],
+  "mediaType": "GAME",
   "releaseYear": 2010,
   "ageRestriction": 5
 }
 
 ### Get media id
-GET http://localhost:8080/media/06541519-d5e2-480f-9c16-fce4909b80e3
+GET http://localhost:8080/media/eb3f2f43-e7df-4f19-b50e-98cc88283d3c
 
 ### Put media id - Update media entry
 PUT http://localhost:8080/media/06541519-d5e2-480f-9c16-fce4909b80e3
@@ -120,7 +124,7 @@ Authorization: Bearer userleini-mrpToken
 GET http://localhost:8080/ratings
 
 ### Post media rate - rate media entry
-POST http://localhost:8080/media/c568d248-c3e6-4433-8144-ab6cb411b694/rate
+POST http://localhost:8080/media/eb3f2f43-e7df-4f19-b50e-98cc88283d3c/rate
 Content-Type: application/json
 Authorization: Bearer admin-mrpToken
 
@@ -159,7 +163,7 @@ POST http://localhost:8080/media/eb3f2f43-e7df-4f19-b50e-98cc88283d3c/favorite
 Authorization: Bearer userleini-mrpToken
 
 ### Delete media favorite
-DELETE http://localhost:8080/media/c568d248-c3e6-4433-8144-ab6cb411b694/favorite
+DELETE http://localhost:8080/media/eb3f2f43-e7df-4f19-b50e-98cc88283d3c/favorite
 Authorization: Bearer userleini-mrpToken
 
 # ==========

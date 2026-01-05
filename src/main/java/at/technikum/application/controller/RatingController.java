@@ -33,36 +33,25 @@ public class RatingController extends Controller {
         if (path.length == 2 && method == Method.GET) {
             List<SQLRatingDto> allRatings = this.ratingService.allRatings();
             return json(allRatings,Status.OK);
-        }
-
-        if (path.length > 2) {
+        } else if (path.length > 2) {
             UUID id = UUID.fromString(path[2]);
             Rating rating = this.ratingService.findById(id);
             User user = requestDto.getUser();
             User creator = rating.getCreator();
 
-            if (method.equals(Method.POST)) {
-
-                if (path[3].equals("like") && authorizedOther(user, creator)) {
-                    return like(rating,user);
-                }
-
-                if (path[3].equals("confirm")) {
-                    if (isAdmin(user)){
-                        return confirm(rating);
-                    }
-                }
-            }
-
-            if (authorizedSame(user, creator)){
-                if (method.equals(Method.PUT)) {
+            if (path.length == 3) {
+                if (method.equals(Method.PUT) && authorizedSame(user, creator)) {
                     Rating update = toOtherObject(requestDto, Rating.class);
                     update.setStars(Stars.fromValue(requestDto.getStars())); // mapper mapt ordinal
                     return updateRating(rating, update);
-                }
-
-                if (method.equals(Method.DELETE)) {
+                } else if (method.equals(Method.DELETE) && authorizedSame(user, creator)) {
                     return delete(rating);
+                }
+            } else if (method.equals(Method.POST) && path.length == 4) {
+                if (path[3].equals("like") && authorizedOther(user, creator)) {
+                    return like(rating,user);
+                } else if (path[3].equals("confirm") && isAdmin(user)) {
+                    return confirm(rating);
                 }
             }
         }
@@ -87,7 +76,7 @@ public class RatingController extends Controller {
     private Response like(Rating rating, User user) {
         Like like = new Like(rating,user);
         SQLLikeDto liked = this.ratingService.like(like);
-        return json(liked, Status.OK);
+        return json(liked, Status.CREATED);
     }
 
     private boolean authorizedSame (User user, User creator) {

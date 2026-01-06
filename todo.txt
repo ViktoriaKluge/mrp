@@ -1,5 +1,4 @@
 for final hand-in:
-    filter medias & sort / suche getByTitle?
     Update docs
     check if all exceptions fit purpose
     check if all status fit purpose
@@ -10,13 +9,11 @@ errors:
 
 little things:
 
-
 thoughts:
     Ich habe Media / Rating bei Get(id) schon gleich am Anfang da. Will es aber nicht komplett mit Creator (psw)
         retour geben. Dann trotzdem den ganzen Weg bis ins Repo und dort umwandeln?
     Im Controller sollen wir eher nur positive Ereignisse behandeln. Falls es trotzdem vorkommt, dass etwas Negatives
         passieren kann - lieber Response als Text oder auch Exceptions okay?
-
 
 fragen:
 

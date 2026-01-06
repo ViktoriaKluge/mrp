@@ -1,119 +1,107 @@
 @startuml
-' Architecture class diagram (layers only: Server / Controller / Service / Repository)
-title Architecture — Layer overview (no Model/DTO, no Utils/Exceptions)
+title MRP Architecture — compact overview (current)
 
-package "Server / HTTP" {
-  class HttpServer {
-    +start(port)
-    +sendResponse(Response)
-  }
-  class Handler {
-    +handle(HttpExchange)
-  }
-  class RequestMapper {
-    +fromExchange(HttpExchange): Request
-  }
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+package "Server" {
+  class Server
+  class Handler
+  class Request
+  class Response
+}
+
+package "Application Core" {
   class MrpApplication {
-    +handle(Request): Response
+    +handle(request: Request): Response
   }
   class Router {
     +findController(path): Optional<Controller>
   }
+  class RouterCreator
+  class ExceptionMapper {
+    +toResponse(ex): Response
+  }
 }
 
-package "Controller Layer" {
+package "Middleware" {
+  class AuthMiddleware {
+    +authenticate(requestDto: RequestDto): User
+  }
+}
+
+package "Controllers" {
   abstract class Controller {
-    +handle(Request): Response
+    +handle(requestDto: RequestDto): Response
   }
-  class AuthController {
-    +handle(Request): Response
-    -login(body): Response
-    -register(body): Response
-  }
-  class UserController {
-    +handle(Request): Response
-  }
-  class MediaController {
-    +handle(Request): Response
-  }
+  class UserController
+  class MediaController
+  class RatingController
+  class LeaderboardController
 }
 
-package "Service Layer" {
-  class AuthService {
-    +register(...)
-    +createToken(...)
-  }
-  class UserService {
-    +getUser(...)
-    +update(...)
-    +delete(...)
-  }
-  class MediaService {
-    +getMedia(...)
-    +search(...)
-  }
+package "Services" {
+  class AuthService
+  class UserService
+  class MediaService
+  class RatingService
+  class FavoritesService
+  class RecommendationService
+  class LeaderboardService
 }
 
-package "Repository Layer" {
-  interface AuthRepository {
-    +save(User): User
-    +login(...)
-    +findByUsername(String): User
-  }
-  interface UserRepository {
-    +find(String): User
-    +findAll(): List<User>
-    +update(String, ...): ...
-  }
-  interface MediaRepository {
-    +find(String): Media
-    +search(...): List<Media>
-  }
+package "Repositories" {
+  interface UserRepository
+  interface MediaRepository
+  interface RatingRepository
 
-  class MemoryAuthRepository
-  class MemoryUserRepository
-  class MemoryMediaRepository
+  class DbUserRepository
+  class DbMediaRepository
+  class DbRatingRepository
 }
 
-' Relationships
-HttpServer --> Handler : forwards HttpExchange
-Handler --> RequestMapper : builds Request
+package "Request DTO" {
+  class RequestDto
+}
+
+' ===== Flow =====
+Server --> Handler
 Handler --> MrpApplication : handle(Request)
+Handler ..> Request : builds/parses
+
+MrpApplication ..> RequestDto : request.getRequestDto()
+MrpApplication --> AuthMiddleware : authenticate()
 MrpApplication --> Router : findController(path)
-Router --> Controller : returns concrete controller
+MrpApplication --> Controller : dispatch(handle)
+MrpApplication --> ExceptionMapper : map exceptions
 
-AuthController ..> AuthService : uses
-UserController ..> UserService : uses
-MediaController ..> MediaService : uses
+RouterCreator --> Router : configures routes
 
-AuthService ..> AuthRepository : uses
-UserService ..> UserRepository : uses
-MediaService ..> MediaRepository : uses
+' ===== Controller -> Service =====
+UserController ..> UserService
+UserController ..> AuthService
+UserController ..> RecommendationService
 
-AuthRepository <|.. MemoryAuthRepository
-UserRepository <|.. MemoryUserRepository
-MediaRepository <|.. MemoryMediaRepository
+MediaController ..> MediaService
+MediaController ..> RatingService
+MediaController ..> FavoritesService
 
-' High-level notes
-note left of Controller
-  Controllers:
-  - parse Request (path, method, body)
-  - map body to DTOs (not shown)
-  - call Service layer
-  - return Response
-end note
+RatingController ..> RatingService
+LeaderboardController ..> LeaderboardService
 
-note right of "Service Layer"
-  Services:
-  - implement business logic, validation, authorization checks
-  - orchestrate repository calls
-  - convert between DTOs and domain models (not shown)
-end note
+' ===== Service -> Repo =====
+UserService ..> UserRepository
+MediaService ..> MediaRepository
+RatingService ..> RatingRepository
 
-note right of "Repository Layer"
-  Repositories:
-  - persistence abstraction (in-memory or DB)
-  - return domain models or DTOs to services
+UserRepository <|.. DbUserRepository
+MediaRepository <|.. DbMediaRepository
+RatingRepository <|.. DbRatingRepository
+
+note left of MrpApplication
+MRP request flow:
+Request -> RequestDto -> AuthMiddleware -> Router -> Controller
+Exceptions -> ExceptionMapper -> Response
 end note
 
 @enduml

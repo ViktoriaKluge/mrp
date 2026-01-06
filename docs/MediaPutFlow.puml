@@ -1,0 +1,48 @@
+@startuml
+title MRP — Sequence: PUT /media/{id} (Auth + Routing + Exception mapping)
+
+skinparam shadowing false
+
+actor Client
+
+participant "Server/Handler" as H
+participant "Request" as Req
+participant "MrpApplication" as App
+participant "AuthMiddleware" as Auth
+participant "Router" as R
+participant "MediaController" as MC
+participant "ExceptionMapper" as EM
+
+Client -> H : HTTP PUT /media/{id}\nAuthorization: Bearer <token>\nBody: { ... }
+H -> Req : build Request (method, path, headers, body)
+H -> App : handle(Req)
+
+alt path == "/"
+  App -> Client : Response 200 text/plain\n"This is the home page"
+else normal request
+  App -> Req : getRequestDto()
+  Req --> App : RequestDto
+
+  App -> Auth : authenticate(RequestDto)
+  Auth --> App : User (or throws)
+
+  App -> R : findController(Req.getPath())
+  R --> App : MediaController
+
+  App -> MC : handle(RequestDto)
+  MC --> App : Response
+
+  App --> H : Response
+  H --> Client : HTTP Response
+end
+
+== Exception Handling (centralized) ==
+
+group any exception (e.g. invalid token, not found, not authorized, mapping error)
+  App -> EM : toResponse(ex)
+  EM --> App : Response (status + body)
+  App --> H : Response
+  H --> Client : HTTP Response
+end
+
+@enduml

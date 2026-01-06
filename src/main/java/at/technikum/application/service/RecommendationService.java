@@ -1,8 +1,6 @@
 package at.technikum.application.service;
 
-import at.technikum.application.dto.sql.SQLMediaDto;
 import at.technikum.application.dto.sql.SQLRecommendationDto;
-import at.technikum.application.enums.MediaType;
 import at.technikum.application.model.User;
 import at.technikum.application.repository.UserRepository;
 

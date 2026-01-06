@@ -5,13 +5,10 @@ for final hand-in:
     check if all status fit purpose
 
 next steps:
-    http tests:
-        was passiert ohne bearer token?
 
 errors:
 
 little things:
-    in media table - owner zu user
 
 
 thoughts:
@@ -28,3 +25,8 @@ testnumbers (done):
     MediaController: 11
     RatingController: 10
     UserController: 11
+    UserCreateDto: 5
+    UserUpdateDto: 6
+    Request: 6
+    UserService: 6
+    MediaService: 3

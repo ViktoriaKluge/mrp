@@ -1,17 +1,13 @@
 package at.technikum.application.controller;
 
 import at.technikum.application.dto.authmiddleware.RequestDto;
-import at.technikum.application.dto.sql.SQLFavoriteDto;
 import at.technikum.application.dto.sql.SQLLikeDto;
-import at.technikum.application.dto.sql.SQLMediaDto;
 import at.technikum.application.dto.sql.SQLRatingDto;
 import at.technikum.application.enums.Stars;
 import at.technikum.application.enums.UserType;
 import at.technikum.application.exception.EntityNotFoundException;
 import at.technikum.application.exception.NotAuthorizedException;
 import at.technikum.application.model.*;
-import at.technikum.application.service.FavoritesService;
-import at.technikum.application.service.MediaService;
 import at.technikum.application.service.RatingService;
 import at.technikum.server.http.ContentType;
 import at.technikum.server.http.Method;

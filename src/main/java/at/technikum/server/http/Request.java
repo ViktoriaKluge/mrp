@@ -33,7 +33,7 @@ public class Request {
     private String getHeader(String name) {
        List<String> list = headers.get(name);
        if (list == null || list.isEmpty()) {
-           return "No header found";
+           return "";
        }
        return list.getFirst();
     }
@@ -41,10 +41,11 @@ public class Request {
     private String getBearerToken() {
         String authHeader = getHeader("Authorization");
         String[] parts = authHeader.trim().split(" ", 2);
-        if (parts[0].equals("Bearer")) {
+        if (parts.length == 0 || parts[0].isEmpty()) {
+            return "";
+        } else if (parts.length==2 && parts[0].equals("Bearer") && !parts[1].isEmpty()) {
             return parts[1];
-        }
-        return "None";
+        } else throw new NotAuthorizedException("Bearer token invalid");
     }
 
     private RequestDto toObject() {

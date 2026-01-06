@@ -23,11 +23,6 @@ public class Media {
         return id;
     }
 
-    @Override
-    public String toString() {
-        return String.format("media id:%s, title:%s\n", id, title);
-    }
-
     public void setId(UUID id) {
         this.id = id;
     }

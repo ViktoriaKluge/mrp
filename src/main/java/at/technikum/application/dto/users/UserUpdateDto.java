@@ -32,7 +32,7 @@ public class UserUpdateDto {
             address.validate();
             return true;
         } catch (AddressException e) {
-            return false;
+            throw new UnprocessableEntityException("No valid email adress");
         }
     }
 

@@ -1,7 +1,6 @@
 package at.technikum.application.dto.authmiddleware;
 
 import at.technikum.application.enums.MediaType;
-import at.technikum.application.enums.Stars;
 import at.technikum.application.model.Rating;
 import at.technikum.application.model.User;
 import at.technikum.server.http.ContentType;
